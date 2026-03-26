@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InvestDash - Controle de Rendimentos</title>
+    <title>InvestDash - Controle Financeiro Completo</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -413,7 +413,8 @@
             if (serieCDI.length === 0) return corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Aguardando API...</td></tr>';
             if (carteira.length === 0) {
                 corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Nenhum investimento.</td></tr>';
-                document.getElementById('dash-valor-investido').innerText = 'R$ 0,00'; document.getElementById('dash-valor-liquido').innerText = 'R$ 0,00';
+                document.getElementById('dash-valor-investido').innerText = 'R$ 0,00'; 
+                document.getElementById('dash-valor-liquido').innerText = 'R$ 0,00';
                 atualizarFiltroGrafico(); renderizarCardsBancos({}); desenharGraficoPizza({}); renderizarMetas(); return;
             }
 
@@ -449,7 +450,6 @@
             });
 
             document.getElementById('dash-valor-investido').innerText = `R$ ${valInv.toFixed(2).replace('.', ',')}`;
-            document.getElementById('dash-valor-bruto').innerText = `R$ ${valBru.toFixed(2).replace('.', ',')}`;
             document.getElementById('dash-valor-liquido').innerText = `R$ ${totalLiquidoGlobal.toFixed(2).replace('.', ',')}`;
             let rent = valInv > 0 ? ((totalLiquidoGlobal - valInv) / valInv) * 100 : 0;
             document.getElementById('dash-rentabilidade').innerText = `${rent >= 0 ? '+' : ''}${rent.toFixed(2).replace('.', ',')}%`;
