@@ -89,7 +89,7 @@
         .meta-card { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
         .barra-fundo { width: 100%; background-color: #e0e0e0; border-radius: 10px; height: 20px; margin-top: 10px; overflow: hidden; }
         .barra-progresso { background-color: #e94560; height: 100%; border-radius: 10px; transition: width 0.5s ease-in-out; }
-        .meta-info { display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.9em; font-weight: bold;}
+        .meta-info { display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.9em; font-weight: bold; align-items: center;}
         .box-resultado { background: #e9f7ef; border-left: 5px solid #28a745; padding: 15px; margin-top: 15px; border-radius: 5px; display: none; }
         
         .box-total-despesas { text-align: right; background: #fff; padding: 10px 15px; border-radius: 5px; border-left: 4px solid #17a2b8; margin-left: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
@@ -112,7 +112,7 @@
             <button onclick="navegar('tela-adicionar')">2. Novo Investimento</button>
             <button onclick="navegar('tela-resultados')">3. Meus Resultados</button>
             <button onclick="navegar('tela-transacoes')">4. Transações</button>
-            <button onclick="navegar('tela-metas')">5. Metas</button>
+            <button onclick="navegar('tela-metas')">5. Metas / Caixinhas</button>
             <button onclick="navegar('tela-simulador')">6. Simulador</button>
             <button onclick="navegar('tela-comparador')">7. Comparador</button>
             <button onclick="navegar('tela-grafico')">8. Gráfico</button>
@@ -230,11 +230,16 @@
         </section>
 
         <section id="tela-metas" class="tela">
-            <h2>Metas Financeiras (Gamificação)</h2>
-            <form onsubmit="adicionarMeta(event)" style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
-                <div style="flex: 2; min-width: 200px;"><label>Objetivo (Ex: Viagem, Carro):</label><input type="text" id="meta-nome" required></div>
-                <div style="flex: 1; min-width: 150px;"><label>Valor Alvo (R$):</label><input type="number" id="meta-valor" step="0.01" required></div>
-                <button type="submit" style="flex: 1; min-width: 150px; margin-top:0;">Criar Meta</button>
+            <h2>Caixinhas & Metas Financeiras</h2>
+            <p style="margin-bottom: 15px; color: #666;">Crie objetivos e aplique dinheiro. As caixinhas rendem CDI e os valores somam no seu Patrimônio Líquido no Dashboard!</p>
+            
+            <form onsubmit="adicionarMeta(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: end;">
+                <div><label>Nome (Ex: Viagem):</label><input type="text" id="meta-nome" required></div>
+                <div><label>Valor Alvo (R$):</label><input type="number" id="meta-alvo" step="0.01" required></div>
+                <div><label>Data da Aplicação:</label><input type="date" id="meta-data" required></div>
+                <div><label>Valor Aplicado (R$):</label><input type="number" id="meta-valor" step="0.01" required></div>
+                <div><label>Taxa (% do CDI):</label><input type="number" id="meta-taxa" step="0.1" required></div>
+                <button type="submit" style="margin-top:0;">Criar Caixinha</button>
             </form>
             <div id="container-metas" style="margin-top: 25px;"></div>
         </section>
@@ -339,6 +344,20 @@
             </div>
         </div>
 
+        <div id="modal-editar-meta" class="modal-overlay">
+            <div class="box-modal">
+                <h2 style="margin-bottom: 15px; color: #1a1a2e; text-align: center;">Editar Caixinha (Meta)</h2>
+                <input type="hidden" id="edit-meta-id">
+                <div class="grupo-input"><label>Objetivo:</label><input type="text" id="edit-meta-nome" required></div>
+                <div class="grupo-input"><label>Valor Alvo (R$):</label><input type="number" id="edit-meta-alvo" step="0.01" required></div>
+                <div class="grupo-input"><label>Data da Aplicação:</label><input type="date" id="edit-meta-data" required></div>
+                <div class="grupo-input"><label>Valor Aplicado (R$):</label><input type="number" id="edit-meta-valor" step="0.01" required></div>
+                <div class="grupo-input"><label>Taxa (% do CDI):</label><input type="number" id="edit-meta-taxa" step="0.1" required></div>
+                <button type="button" class="btn-acao" onclick="salvarEdicaoMeta()">💾 Salvar Alterações</button>
+                <button type="button" class="btn-acao terciario" onclick="fecharEdicaoMeta()">Cancelar</button>
+            </div>
+        </div>
+
     </main>
 
     <footer>
@@ -364,12 +383,12 @@
 
         let serieCDI = [];
         let carteira = [];
-        let transacoes = []; // Substituiu 'despesas'
+        let transacoes = []; 
         let listaMetas = [];
         let chartInstance = null;
         let chartPizzaInstance = null;
         let usuarioAtual = null;
-        let totalLiquidoGlobal = 0;
+        let totalLiquidoGlobal = 0; // Soma Carteira + Metas
 
         // =========================================================
         // 2. AUTENTICAÇÃO E LOGIN
@@ -414,7 +433,7 @@
                 db.collection("usuarios").doc(usuarioAtual.uid).set({ 
                     investimentos: carteira, gastos: transacoes, objetivos: listaMetas 
                 }, { merge: true })
-                  .then(() => { processarCarteira(); renderizarTransacoes(); renderizarMetas(); })
+                  .then(() => { processarCarteira(); renderizarTransacoes(); }) // Metas renderizadas via processarCarteira
                   .catch(e => alert("Erro ao salvar: " + e));
             }
         }
@@ -434,13 +453,13 @@
                     docRef.set({ acessos: acessosAtuais }, { merge: true });
                     document.getElementById('contador-acessos').innerText = `| Visitas: ${acessosAtuais}`;
                     
-                    processarCarteira(); renderizarTransacoes(); renderizarMetas();
+                    processarCarteira(); renderizarTransacoes();
                 }).catch(e => console.log("Erro banco:", e));
             }
         }
 
         // =========================================================
-        // 4. LÓGICA DE INVESTIMENTOS
+        // 4. LÓGICA DE INVESTIMENTOS E METAS (CALCULO CDI)
         // =========================================================
         async function carregarCDI() {
             try {
@@ -461,13 +480,8 @@
             let valInv = 0, valBru = 0; totalLiquidoGlobal = 0; let totaisBancos = {};
 
             if (serieCDI.length === 0) return corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Aguardando API...</td></tr>';
-            if (carteira.length === 0) {
-                corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Nenhum investimento.</td></tr>';
-                document.getElementById('dash-valor-investido').innerText = 'R$ 0,00'; 
-                document.getElementById('dash-valor-liquido').innerText = 'R$ 0,00';
-                atualizarFiltroGrafico(); renderizarCardsBancos({}); desenharGraficoPizza({}); renderizarMetas(); return;
-            }
-
+            
+            // --- PARTE 1: Processa Carteira Normal ---
             carteira.forEach(inv => {
                 const [ano, mes, dia] = inv.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
                 const nomeBanco = inv.banco || "Não Informado";
@@ -499,13 +513,52 @@
                 </tr>`;
             });
 
+            // --- PARTE 2: Processa Caixinhas (Metas) ---
+            listaMetas.forEach(meta => {
+                // Prevenção para metas antigas (legadas) que não tinham data
+                if(!meta.data) { meta.data = new Date().toISOString().split('T')[0]; meta.valor = 0; meta.taxa = 100; }
+
+                const [ano, mes, dia] = meta.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+                const nomeBanco = "Caixinhas (Metas)";
+                if (!totaisBancos[nomeBanco]) totaisBancos[nomeBanco] = { inv: 0, bru: 0, liq: 0 };
+                
+                let vAtual = parseFloat(meta.valor); valInv += vAtual; totaisBancos[nomeBanco].inv += vAtual;
+                
+                for (let i = 0; i < serieCDI.length; i++) {
+                    const [dBCB, mBCB, aBCB] = serieCDI[i].data.split('/');
+                    const dataBCB = new Date(parseInt(aBCB), parseInt(mBCB) - 1, parseInt(dBCB));
+                    if (dataBCB >= dataInv) vAtual += (vAtual * ((parseFloat(serieCDI[i].valor)/100) * (parseFloat(meta.taxa)/100)));
+                }
+                valBru += vAtual; totaisBancos[nomeBanco].bru += vAtual;
+
+                const dias = Math.ceil(Math.abs(new Date() - dataInv) / (1000 * 60 * 60 * 24));
+                let ir = 15.0; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20.0; else if (dias <= 720) ir = 17.5;
+                const rBruto = vAtual - parseFloat(meta.valor);
+                const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
+
+                totalLiquidoGlobal += vLiq; totaisBancos[nomeBanco].liq += vLiq;
+                
+                // Anexa o valor atualizado na meta para renderizar a barra corretamente
+                meta.liqAtual = vLiq;
+            });
+
+            // Fallback se não houver dados
+            if (carteira.length === 0 && listaMetas.length === 0) {
+                corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Nenhum investimento ou caixinha cadastrada.</td></tr>';
+            }
+
+            // Atualiza placares do Dashboard
             document.getElementById('dash-valor-investido').innerText = `R$ ${valInv.toFixed(2).replace('.', ',')}`;
             document.getElementById('dash-valor-liquido').innerText = `R$ ${totalLiquidoGlobal.toFixed(2).replace('.', ',')}`;
             let rent = valInv > 0 ? ((totalLiquidoGlobal - valInv) / valInv) * 100 : 0;
             document.getElementById('dash-rentabilidade').innerText = `${rent >= 0 ? '+' : ''}${rent.toFixed(2).replace('.', ',')}%`;
             document.getElementById('dash-rentabilidade').style.color = rent >= 0 ? 'green' : 'red';
 
-            renderizarCardsBancos(totaisBancos); atualizarFiltroGrafico(); desenharGraficoPizza(totaisBancos); renderizarMetas();
+            // Dispara as outras renderizações
+            renderizarCardsBancos(totaisBancos); 
+            atualizarFiltroGrafico(); 
+            desenharGraficoPizza(totaisBancos); 
+            renderizarMetas(); // Importante chamar aqui após calcular liqAtual
         }
 
         function adicionarInvestimento(e) { e.preventDefault(); carteira.push({ id: Date.now(), banco: document.getElementById('input-banco').value.trim(), data: document.getElementById('input-data').value, valor: document.getElementById('input-valor').value, taxa: document.getElementById('input-taxa').value }); document.getElementById('form-investimento').reset(); salvarNoBanco(); navegar('tela-resultados'); }
@@ -526,9 +579,7 @@
                 data: document.getElementById('trans-data').value, 
                 valor: parseFloat(document.getElementById('trans-valor').value) 
             });
-            document.getElementById('trans-desc').value = ''; 
-            document.getElementById('trans-valor').value = ''; 
-            document.getElementById('trans-cat').value = ''; 
+            document.getElementById('trans-desc').value = ''; document.getElementById('trans-valor').value = ''; document.getElementById('trans-cat').value = ''; 
             salvarNoBanco();
         }
 
@@ -536,59 +587,37 @@
             const corpo = document.getElementById('corpo-tabela-transacoes'); 
             corpo.innerHTML = '';
             
-            let totalMesDashboard = 0; 
-            let totalFiltrado = 0;
-            
-            const mAt = new Date().getMonth() + 1; // 1 a 12
-            const aAt = new Date().getFullYear();
+            let totalMesDashboard = 0; let totalFiltrado = 0;
+            const mAt = new Date().getMonth() + 1; const aAt = new Date().getFullYear();
 
-            // Pega valores dos filtros
             const fMes = document.getElementById('filtro-mes-trans').value;
             const fAno = document.getElementById('filtro-ano-trans').value;
             const fData = document.getElementById('filtro-data-trans').value;
 
-            // Ordena do mais recente pro mais antigo
             const transacoesOrdenadas = [...transacoes].sort((a,b) => new Date(b.data) - new Date(a.data));
             let ultimoGrupo = "";
 
             transacoesOrdenadas.forEach(t => {
                 const [ano, mes, dia] = t.data.split('-'); 
-                
-                // Trata legado (se não tiver tipo, vira despesa)
                 const tipoReal = t.tipo || 'despesa';
                 const multiplicador = tipoReal === 'entrada' ? 1 : -1;
                 
-                // Dashboard Card
-                if(parseInt(mes) === mAt && parseInt(ano) === aAt) {
-                    totalMesDashboard += (t.valor * multiplicador);
-                }
+                if(parseInt(mes) === mAt && parseInt(ano) === aAt) { totalMesDashboard += (t.valor * multiplicador); }
 
-                // Lógica de Filtros
                 let mostrar = true;
-                if (fData !== "") {
-                    if (t.data !== fData) mostrar = false;
-                } else {
-                    if (fMes !== 'todos' && mes !== fMes) mostrar = false;
-                    if (fAno !== 'todos' && ano !== fAno) mostrar = false;
-                }
+                if (fData !== "") { if (t.data !== fData) mostrar = false;
+                } else { if (fMes !== 'todos' && mes !== fMes) mostrar = false; if (fAno !== 'todos' && ano !== fAno) mostrar = false; }
 
                 if (mostrar) {
                     totalFiltrado += (t.valor * multiplicador);
-
-                    // Agrupamento Visual
                     if (fData === "" && (fMes === 'todos' || fAno === 'todos')) {
                         const grupoAtual = `${mes}/${ano}`;
                         if (grupoAtual !== ultimoGrupo) {
-                            corpo.innerHTML += `<tr style="background-color: #f1f3f5; border-top: 2px solid #ddd; border-bottom: 2px solid #ddd;">
-                                <td colspan="5" style="text-align: center; font-weight: bold; color: #1a1a2e;">
-                                    🗓️ Referência: ${mes}/${ano}
-                                </td>
-                            </tr>`;
+                            corpo.innerHTML += `<tr style="background-color: #f1f3f5; border-top: 2px solid #ddd; border-bottom: 2px solid #ddd;"><td colspan="5" style="text-align: center; font-weight: bold; color: #1a1a2e;">🗓️ Referência: ${mes}/${ano}</td></tr>`;
                             ultimoGrupo = grupoAtual;
                         }
                     }
 
-                    // Estilo da linha (Entrada = Verde, Saída = Vermelho)
                     const corValor = tipoReal === 'entrada' ? '#28a745' : '#dc3545';
                     const sinal = tipoReal === 'entrada' ? '+' : '-';
                     const badgeCat = tipoReal === 'entrada' ? 'badge-entrada' : 'badge-saida';
@@ -606,57 +635,97 @@
                 }
             });
 
-            // Atualiza Dashboard (Mês Atual)
             const txtDash = document.getElementById('dash-fluxo');
             txtDash.innerText = `R$ ${totalMesDashboard.toFixed(2).replace('.', ',')}`;
             txtDash.style.color = totalMesDashboard >= 0 ? '#28a745' : '#dc3545';
 
-            // Atualiza Total Visível (Filtro)
             const txtFiltro = document.getElementById('total-trans-filtrado');
             txtFiltro.innerText = `R$ ${totalFiltrado.toFixed(2).replace('.', ',')}`;
             txtFiltro.style.color = totalFiltrado >= 0 ? '#28a745' : '#dc3545';
         }
 
-        // Funções do Modal de Edição de Transações
         function abrirEdicaoTransacao(id) { 
             const t = transacoes.find(i => i.id === id); 
             if(t) { 
-                document.getElementById('edit-trans-id').value = t.id; 
-                document.getElementById('edit-trans-tipo').value = t.tipo || 'despesa'; 
-                document.getElementById('edit-trans-desc').value = t.desc; 
-                document.getElementById('edit-trans-cat').value = t.cat; 
-                document.getElementById('edit-trans-data').value = t.data; 
-                document.getElementById('edit-trans-valor').value = t.valor; 
-                document.getElementById('modal-editar-trans').style.display = 'flex'; 
+                document.getElementById('edit-trans-id').value = t.id; document.getElementById('edit-trans-tipo').value = t.tipo || 'despesa'; document.getElementById('edit-trans-desc').value = t.desc; document.getElementById('edit-trans-cat').value = t.cat; document.getElementById('edit-trans-data').value = t.data; document.getElementById('edit-trans-valor').value = t.valor; document.getElementById('modal-editar-trans').style.display = 'flex'; 
             } 
         }
         function fecharEdicaoTransacao() { document.getElementById('modal-editar-trans').style.display = 'none'; }
         function salvarEdicaoTransacao() { 
-            const id = parseInt(document.getElementById('edit-trans-id').value); 
-            const idx = transacoes.findIndex(i => i.id === id); 
+            const id = parseInt(document.getElementById('edit-trans-id').value); const idx = transacoes.findIndex(i => i.id === id); 
             if(idx !== -1) { 
-                transacoes[idx].tipo = document.getElementById('edit-trans-tipo').value; 
-                transacoes[idx].desc = document.getElementById('edit-trans-desc').value; 
-                transacoes[idx].cat = document.getElementById('edit-trans-cat').value; 
-                transacoes[idx].data = document.getElementById('edit-trans-data').value; 
-                transacoes[idx].valor = parseFloat(document.getElementById('edit-trans-valor').value); 
-                salvarNoBanco(); 
-                fecharEdicaoTransacao(); 
+                transacoes[idx].tipo = document.getElementById('edit-trans-tipo').value; transacoes[idx].desc = document.getElementById('edit-trans-desc').value; transacoes[idx].cat = document.getElementById('edit-trans-cat').value; transacoes[idx].data = document.getElementById('edit-trans-data').value; transacoes[idx].valor = parseFloat(document.getElementById('edit-trans-valor').value); salvarNoBanco(); fecharEdicaoTransacao(); 
             } 
         }
 
         // =========================================================
-        // 6. MÓDULO DE METAS
+        // 6. MÓDULO DE CAIXINHAS / METAS (ATUALIZADO)
         // =========================================================
-        function adicionarMeta(e) { e.preventDefault(); listaMetas.push({ id: Date.now(), nome: document.getElementById('meta-nome').value, alvo: parseFloat(document.getElementById('meta-valor').value) }); document.getElementById('meta-nome').value = ''; document.getElementById('meta-valor').value = ''; salvarNoBanco(); }
+        function adicionarMeta(e) { 
+            e.preventDefault(); 
+            listaMetas.push({ 
+                id: Date.now(), 
+                nome: document.getElementById('meta-nome').value, 
+                alvo: parseFloat(document.getElementById('meta-alvo').value),
+                data: document.getElementById('meta-data').value,
+                valor: parseFloat(document.getElementById('meta-valor').value),
+                taxa: parseFloat(document.getElementById('meta-taxa').value)
+            }); 
+            document.getElementById('meta-nome').value = ''; document.getElementById('meta-alvo').value = ''; 
+            document.getElementById('meta-data').value = ''; document.getElementById('meta-valor').value = ''; 
+            document.getElementById('meta-taxa').value = '';
+            salvarNoBanco(); // Isso vai chamar processarCarteira() que recalcula tudo e chama renderizarMetas()
+        }
 
         function renderizarMetas() {
             const cont = document.getElementById('container-metas'); cont.innerHTML = '';
-            if(listaMetas.length === 0) return cont.innerHTML = '<p style="text-align:center; color:#666;">Nenhuma meta definida ainda.</p>';
+            if(listaMetas.length === 0) return cont.innerHTML = '<p style="text-align:center; color:#666;">Nenhuma caixinha definida ainda.</p>';
+            
             listaMetas.forEach(m => {
-                let p = (totalLiquidoGlobal / m.alvo) * 100; if(p > 100) p = 100;
-                cont.innerHTML += `<div class="meta-card"><div class="meta-info"><span>🎯 ${m.nome}</span><button style="background:none; border:none; color:red; cursor:pointer;" onclick="deletarItem(${m.id}, 'meta')">Excluir</button></div><div class="barra-fundo"><div class="barra-progresso" style="width: ${p}%; ${p===100?'background-color:#28a745;':''}"></div></div><div class="meta-info"><span style="color:#666;">Acumulado: R$ ${totalLiquidoGlobal.toFixed(2)}</span><span style="color:#1a1a2e;">Alvo: R$ ${m.alvo.toFixed(2)} (${p.toFixed(1)}%)</span></div></div>`;
+                const liq = m.liqAtual || 0; // Valor líquido calculado na processarCarteira
+                let p = (liq / m.alvo) * 100; if(p > 100) p = 100;
+                
+                cont.innerHTML += `
+                <div class="meta-card">
+                    <div class="meta-info">
+                        <span>🎯 <strong style="font-size:1.1em; color:#1a1a2e;">${m.nome}</strong> (Taxa: ${m.taxa}%)</span>
+                        <div>
+                            <button class="btn-editar" onclick="abrirEdicaoMeta(${m.id})">Editar</button>
+                            <button class="btn-excluir" onclick="deletarItem(${m.id}, 'meta')">Excluir</button>
+                        </div>
+                    </div>
+                    <div class="barra-fundo"><div class="barra-progresso" style="width: ${p}%; ${p===100?'background-color:#28a745;':''}"></div></div>
+                    <div class="meta-info">
+                        <span style="color:#666;">Aplicado: R$ ${parseFloat(m.valor).toFixed(2)} | Atual: <strong style="color:blue;">R$ ${liq.toFixed(2)}</strong></span>
+                        <span style="color:#1a1a2e;">Alvo: R$ ${m.alvo.toFixed(2)} (${p.toFixed(1)}%)</span>
+                    </div>
+                </div>`;
             });
+        }
+
+        function abrirEdicaoMeta(id) { 
+            const m = listaMetas.find(i => i.id === id); 
+            if(m) { 
+                document.getElementById('edit-meta-id').value = m.id; 
+                document.getElementById('edit-meta-nome').value = m.nome; 
+                document.getElementById('edit-meta-alvo').value = m.alvo; 
+                document.getElementById('edit-meta-data').value = m.data; 
+                document.getElementById('edit-meta-valor').value = m.valor; 
+                document.getElementById('edit-meta-taxa').value = m.taxa; 
+                document.getElementById('modal-editar-meta').style.display = 'flex'; 
+            } 
+        }
+        function fecharEdicaoMeta() { document.getElementById('modal-editar-meta').style.display = 'none'; }
+        function salvarEdicaoMeta() { 
+            const id = parseInt(document.getElementById('edit-meta-id').value); const idx = listaMetas.findIndex(i => i.id === id); 
+            if(idx !== -1) { 
+                listaMetas[idx].nome = document.getElementById('edit-meta-nome').value; 
+                listaMetas[idx].alvo = parseFloat(document.getElementById('edit-meta-alvo').value); 
+                listaMetas[idx].data = document.getElementById('edit-meta-data').value; 
+                listaMetas[idx].valor = parseFloat(document.getElementById('edit-meta-valor').value); 
+                listaMetas[idx].taxa = parseFloat(document.getElementById('edit-meta-taxa').value); 
+                salvarNoBanco(); fecharEdicaoMeta(); 
+            } 
         }
 
         // =========================================================
@@ -689,8 +758,35 @@
         function desenharGrafico() {
             const ctx = document.getElementById('meuGrafico').getContext('2d'); const per = document.getElementById('select-periodicidade').value, bSel = document.getElementById('select-filtro-banco').value;
             if (chartInstance) chartInstance.destroy(); if (carteira.length === 0 || serieCDI.length === 0) return chartInstance = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [] } });
-            let cartProc = bSel !== 'todos' ? carteira.filter(i => (i.banco || "Não Informado") === bSel) : carteira; const ord = [...cartProc].sort((a, b) => new Date(a.data) - new Date(b.data)); const cdiF = serieCDI.map(i => { const [d,m,y] = i.data.split('/'); return { dataObj: new Date(y, m-1, d), valor: parseFloat(i.valor)/100 }; }); let lab = [], bru = [], liq = [], ativ = [], idx = 0;
-            for (let i = 0; i < cdiF.length; i++) { const dia = cdiF[i]; while (idx < ord.length && dia.dataObj >= new Date(ord[idx].data)) { ativ.push({ dataObj: new Date(ord[idx].data), valOri: parseFloat(ord[idx].valor), valAtu: parseFloat(ord[idx].valor), mult: parseFloat(ord[idx].taxa)/100 }); idx++; } if (ativ.length > 0) { let b = 0, l = 0; ativ.forEach(inv => { inv.valAtu += inv.valAtu * (dia.valor * inv.mult); b += inv.valAtu; const dias = Math.ceil(Math.abs(dia.dataObj - inv.dataObj) / (1000*60*60*24)); let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5; l += inv.valAtu - ((inv.valAtu - inv.valOri) > 0 ? (inv.valAtu - inv.valOri) * (ir/100) : 0); }); const isUlt = (i === cdiF.length - 1); let fM = isUlt, fA = isUlt; if (!isUlt) { const prx = cdiF[i+1]; if (prx.dataObj.getMonth() !== dia.dataObj.getMonth()) fM = true; if (prx.dataObj.getFullYear() !== dia.dataObj.getFullYear()) fA = true; } if (per === 'mensal' && fM) { lab.push(`${String(dia.dataObj.getMonth()+1).padStart(2,'0')}/${dia.dataObj.getFullYear()}`); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } else if (per === 'anual' && fA) { lab.push(`${dia.dataObj.getFullYear()}`); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } } }
+            
+            // Para o gráfico de linha, juntamos Carteira + Metas para ver a evolução global
+            let mixInvestimentos = [...carteira];
+            listaMetas.forEach(m => mixInvestimentos.push({banco: "Caixinhas (Metas)", data: m.data, valor: m.valor, taxa: m.taxa}));
+
+            let cartProc = bSel !== 'todos' ? mixInvestimentos.filter(i => (i.banco || "Não Informado") === bSel) : mixInvestimentos; 
+            const ord = [...cartProc].sort((a, b) => new Date(a.data) - new Date(b.data)); 
+            const cdiF = serieCDI.map(i => { const [d,m,y] = i.data.split('/'); return { dataObj: new Date(y, m-1, d), valor: parseFloat(i.valor)/100 }; }); 
+            let lab = [], bru = [], liq = [], ativ = [], idx = 0;
+            
+            for (let i = 0; i < cdiF.length; i++) { 
+                const dia = cdiF[i]; 
+                while (idx < ord.length && dia.dataObj >= new Date(ord[idx].data)) { 
+                    ativ.push({ dataObj: new Date(ord[idx].data), valOri: parseFloat(ord[idx].valor), valAtu: parseFloat(ord[idx].valor), mult: parseFloat(ord[idx].taxa)/100 }); idx++; 
+                } 
+                if (ativ.length > 0) { 
+                    let b = 0, l = 0; 
+                    ativ.forEach(inv => { 
+                        inv.valAtu += inv.valAtu * (dia.valor * inv.mult); b += inv.valAtu; 
+                        const dias = Math.ceil(Math.abs(dia.dataObj - inv.dataObj) / (1000*60*60*24)); 
+                        let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5; 
+                        l += inv.valAtu - ((inv.valAtu - inv.valOri) > 0 ? (inv.valAtu - inv.valOri) * (ir/100) : 0); 
+                    }); 
+                    const isUlt = (i === cdiF.length - 1); let fM = isUlt, fA = isUlt; 
+                    if (!isUlt) { const prx = cdiF[i+1]; if (prx.dataObj.getMonth() !== dia.dataObj.getMonth()) fM = true; if (prx.dataObj.getFullYear() !== dia.dataObj.getFullYear()) fA = true; } 
+                    if (per === 'mensal' && fM) { lab.push(`${String(dia.dataObj.getMonth()+1).padStart(2,'0')}/${dia.dataObj.getFullYear()}`); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } 
+                    else if (per === 'anual' && fA) { lab.push(`${dia.dataObj.getFullYear()}`); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } 
+                } 
+            }
             chartInstance = new Chart(ctx, { type: 'line', data: { labels: lab, datasets: [ { label: 'Valor Bruto', data: bru, borderColor: '#0f3460', backgroundColor: 'rgba(15, 52, 96, 0.1)', fill: true, tension: 0.3 }, { label: 'Valor Líquido', data: liq, borderColor: '#e94560', backgroundColor: 'rgba(233, 69, 96, 0.1)', fill: true, tension: 0.3 } ]}, options: { responsive: true, interaction: { mode: 'index', intersect: false } } });
         }
 
@@ -699,7 +795,14 @@
         // =========================================================
         function navegar(idTela) { document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); document.getElementById(idTela).classList.add('ativa'); if(idTela === 'tela-grafico') desenharGrafico(); }
         function renderizarCardsBancos(totais) { const cont = document.getElementById('container-resumo-bancos'); if (Object.keys(totais).length === 0) return cont.innerHTML = ''; let h = ``; for (const b in totais) h += `<div class="card-banco"><h4>${b}</h4><p>R$ ${totais[b].liq.toFixed(2).replace('.', ',')}</p></div>`; cont.innerHTML = h; }
-        function atualizarFiltroGrafico() { const sel = document.getElementById('select-filtro-banco'); const vAt = sel.value; const unicos = [...new Set(carteira.map(i => i.banco || "Não Informado"))].sort(); let opt = `<option value="todos">Todos</option>`; unicos.forEach(b => opt += `<option value="${b}">${b}</option>`); sel.innerHTML = opt; sel.value = unicos.includes(vAt) ? vAt : "todos"; }
+        
+        function atualizarFiltroGrafico() { 
+            const sel = document.getElementById('select-filtro-banco'); const vAt = sel.value; 
+            const unicos = [...new Set(carteira.map(i => i.banco || "Não Informado"))];
+            if(listaMetas.length > 0 && !unicos.includes("Caixinhas (Metas)")) unicos.push("Caixinhas (Metas)");
+            unicos.sort();
+            let opt = `<option value="todos">Todos</option>`; unicos.forEach(b => opt += `<option value="${b}">${b}</option>`); sel.innerHTML = opt; sel.value = unicos.includes(vAt) ? vAt : "todos"; 
+        }
         
         function deletarItem(id, tipo = 'inv') { 
             if (confirm("Excluir registro?")) { 
