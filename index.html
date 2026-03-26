@@ -44,10 +44,12 @@
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; }
         input:focus { border-color: #e94560; outline: none; }
         
-        button[type="submit"], .btn-acao { width: 100%; padding: 15px; background-color: #e94560; color: white; border: none; border-radius: 5px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button[type="button"], button[type="submit"], .btn-acao { width: 100%; padding: 15px; background-color: #e94560; color: white; border: none; border-radius: 5px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         button[type="submit"]:hover, .btn-acao:hover { background-color: #d83a53; }
         .btn-acao.secundario { background-color: #0f3460; }
         .btn-acao.secundario:hover { background-color: #16213e; }
+        .btn-acao.terciario { background: transparent; border: 1px solid #1a1a2e; color: #1a1a2e; }
+        .btn-acao.terciario:hover { background-color: #f0f2f5; }
         
         .tabela-container { overflow-x: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 15px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
@@ -66,7 +68,6 @@
         .controles-grafico select { padding: 8px; font-size: 1em; border-radius: 5px; border: 1px solid #ccc; outline: none; }
         
         .botoes-exportar { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
         footer { background-color: #1a1a2e; color: white; text-align: center; padding: 20px; margin-top: auto; font-size: 0.9em; }
 
         /* TELAS DE LOGIN */
@@ -74,7 +75,7 @@
         .box-login { max-width: 400px; margin: 40px auto; }
         .btn-sair { position: absolute; top: 20px; right: 20px; background: transparent; color: white; border: 1px solid white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.9em; }
         .btn-sair:hover { background: white; color: #1a1a2e; }
-        #msg-erro-login { color: #dc3545; text-align: center; margin-top: 10px; font-weight: bold; }
+        #msg-erro-login { color: #dc3545; text-align: center; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -82,7 +83,10 @@
     <header id="cabecalho-app">
         <h1>InvestDash</h1>
         <button class="btn-sair" onclick="fazerLogout()">Sair da Conta</button>
-        <p style="margin-top: 5px; font-size: 0.9em;" id="user-display-email"></p>
+        <p style="margin-top: 5px; font-size: 0.95em;">
+            <span id="user-display-email"></span> 
+            <span id="contador-acessos" style="color: #e94560; font-weight: bold; margin-left: 15px;"></span>
+        </p>
         <nav>
             <button onclick="navegar('tela-dashboard')">1. Dashboard</button>
             <button onclick="navegar('tela-adicionar')">2. Novo Investimento</button>
@@ -105,8 +109,11 @@
                     <label>Senha:</label>
                     <input type="password" id="login-senha" required>
                 </div>
-                <button class="btn-acao" onclick="fazerLogin()">Entrar</button>
-                <button class="btn-acao secundario" onclick="criarConta()" style="margin-top: 10px;">Criar Nova Conta</button>
+                
+                <button type="button" class="btn-acao" onclick="fazerLogin()">Entrar</button>
+                <button type="button" class="btn-acao secundario" onclick="criarConta()">Criar Nova Conta</button>
+                <button type="button" class="btn-acao terciario" onclick="recuperarSenha()">Esqueci minha senha</button>
+                
                 <p id="msg-erro-login"></p>
             </div>
         </section>
@@ -159,8 +166,8 @@
         <section id="tela-email" class="tela">
             <h2>Exportar Relatório</h2>
             <div class="botoes-exportar">
-                <button class="btn-acao" onclick="prepararEmail()">✉️ Gerar E-mail (Resumo)</button>
-                <button class="btn-acao secundario" onclick="baixarCSV()">📥 Baixar Planilha (CSV)</button>
+                <button type="button" class="btn-acao" onclick="prepararEmail()">✉️ Gerar E-mail (Resumo)</button>
+                <button type="button" class="btn-acao secundario" onclick="baixarCSV()">📥 Baixar Planilha (CSV)</button>
             </div>
             <div id="preview-email" class="card" style="margin-top: 20px; font-family: monospace; font-size: 12px; white-space: pre-wrap;"></div>
         </section>
@@ -169,7 +176,7 @@
             <h2>Importar Investimentos (CSV)</h2>
             <div class="card">
                 <input type="file" id="input-csv" accept=".csv" style="margin-top: 20px; padding: 10px; border: 1px dashed #ccc; width: 100%; cursor: pointer;">
-                <button class="btn-acao secundario" onclick="importarCSV()">Carregar Arquivo CSV</button>
+                <button type="button" class="btn-acao secundario" onclick="importarCSV()">Carregar Arquivo CSV</button>
             </div>
         </section>
     </main>
@@ -180,15 +187,15 @@
 
     <script>
         // =========================================================
-        // 1. CHAVES DO FIREBASE ATUALIZADAS
+        // 1. CHAVES DO FIREBASE (COLE SUAS CHAVES AQUI DENTRO)
         // =========================================================
         const firebaseConfig = {
-            apiKey: "AIzaSyBhiK51VWfa7juHSkYJSKY9wuRViT-3SKk",
-            authDomain: "investdash-f7382.firebaseapp.com",
-            projectId: "investdash-f7382",
-            storageBucket: "investdash-f7382.firebasestorage.app",
-            messagingSenderId: "420408560315",
-            appId: "1:420408560315:web:0d31909b2175ec6d84f79e"
+            apiKey: "COLE_SUA_API_KEY_AQUI",
+            authDomain: "COLE_SEU_AUTH_DOMAIN_AQUI",
+            projectId: "COLE_SEU_PROJECT_ID_AQUI",
+            storageBucket: "COLE_SEU_STORAGE_BUCKET_AQUI",
+            messagingSenderId: "COLE_SEU_MESSAGING_SENDER_ID_AQUI",
+            appId: "COLE_SEU_APP_ID_AQUI"
         };
 
         // Inicializa o Firebase
@@ -247,11 +254,35 @@
         function fazerLogout() { auth.signOut(); }
 
         // =========================================================
-        // 3. BANCO DE DADOS (FIRESTORE)
+        // 3. RECUPERAR SENHA (NOVA FUNÇÃO)
+        // =========================================================
+        function recuperarSenha() {
+            const email = document.getElementById('login-email').value;
+            const msgErro = document.getElementById('msg-erro-login');
+
+            if(!email) {
+                return msgErro.innerText = "Para recuperar a senha, digite seu e-mail acima e clique em 'Esqueci minha senha'.";
+            }
+
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    alert("E-mail de recuperação enviado! Verifique sua caixa de entrada (e a pasta de Spam).");
+                    msgErro.innerText = "";
+                })
+                .catch(error => {
+                    msgErro.innerText = "Erro ao enviar e-mail. Verifique se o endereço foi digitado corretamente.";
+                });
+        }
+
+        // =========================================================
+        // 4. BANCO DE DADOS (FIRESTORE) E CONTADOR DE ACESSOS
         // =========================================================
         function salvarNoBanco() {
             if (usuarioAtual) {
-                db.collection("usuarios").doc(usuarioAtual.uid).set({ investimentos: carteira })
+                // { merge: true } garante que não vamos apagar o número de acessos ao salvar a carteira
+                db.collection("usuarios").doc(usuarioAtual.uid).set({ 
+                    investimentos: carteira 
+                }, { merge: true })
                   .then(() => processarCarteira())
                   .catch(e => alert("Erro ao salvar: " + e));
             }
@@ -260,16 +291,36 @@
         function carregarDadosDoBanco() {
             if (usuarioAtual) {
                 document.getElementById('status-api').innerText = " Baixando dados da nuvem...";
-                db.collection("usuarios").doc(usuarioAtual.uid).get()
-                    .then(doc => {
-                        carteira = doc.exists ? doc.data().investimentos || [] : [];
-                        processarCarteira();
-                    }).catch(e => console.log("Erro banco:", e));
+                
+                const docRef = db.collection("usuarios").doc(usuarioAtual.uid);
+
+                docRef.get().then(doc => {
+                    let acessosAtuais = 1;
+                    
+                    if (doc.exists) {
+                        carteira = doc.data().investimentos || [];
+                        // Pega o número de acessos anterior e soma 1
+                        acessosAtuais = (doc.data().acessos || 0) + 1;
+                    } else {
+                        carteira = [];
+                    }
+
+                    // Salva o novo número de acessos no banco de dados
+                    docRef.set({
+                        investimentos: carteira,
+                        acessos: acessosAtuais
+                    }, { merge: true });
+
+                    // Exibe o número no topo da tela
+                    document.getElementById('contador-acessos').innerText = `| Visitas: ${acessosAtuais}`;
+                    
+                    processarCarteira();
+                }).catch(e => console.log("Erro banco:", e));
             }
         }
 
         // =========================================================
-        // 4. LÓGICA FINANCEIRA DO APP
+        // 5. LÓGICA FINANCEIRA DO APP
         // =========================================================
         async function carregarCDI() {
             try {
