@@ -68,9 +68,9 @@
         .btn-editar:hover { background-color: #e0a800; }
 
         .grafico-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 15px; }
-        .controles-grafico { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: center; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ddd; }
+        .controles-grafico { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ddd; }
         .controles-grafico div { display: flex; align-items: center; gap: 10px; }
-        .controles-grafico select { padding: 8px; font-size: 1em; border-radius: 5px; border: 1px solid #ccc; outline: none; }
+        .controles-grafico select, .controles-grafico input { padding: 8px; font-size: 1em; border-radius: 5px; border: 1px solid #ccc; outline: none; }
         
         .botoes-exportar { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         footer { background-color: #1a1a2e; color: white; text-align: center; padding: 20px; margin-top: auto; font-size: 0.9em; }
@@ -92,6 +92,10 @@
         .barra-progresso { background-color: #e94560; height: 100%; border-radius: 10px; transition: width 0.5s ease-in-out; }
         .meta-info { display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.9em; font-weight: bold;}
         .box-resultado { background: #e9f7ef; border-left: 5px solid #28a745; padding: 15px; margin-top: 15px; border-radius: 5px; display: none; }
+        
+        /* Box Totalizador Despesas */
+        .box-total-despesas { text-align: right; background: #fff; padding: 10px 15px; border-radius: 5px; border-left: 4px solid #dc3545; margin-left: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        @media (max-width: 600px) { .box-total-despesas { margin-left: 0; width: 100%; text-align: center; } }
     </style>
 </head>
 <body>
@@ -187,6 +191,7 @@
 
         <section id="tela-despesas" class="tela">
             <h2>Controle de Despesas</h2>
+            
             <form onsubmit="adicionarDespesa(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
                 <div><label>Descrição:</label><input type="text" id="desp-desc" required></div>
                 <div><label>Categoria:</label><select id="desp-cat"><option value="Moradia">Moradia</option><option value="Alimentação">Alimentação</option><option value="Transporte">Transporte</option><option value="Lazer">Lazer</option><option value="Outros">Outros</option></select></div>
@@ -194,7 +199,38 @@
                 <div><label>Valor (R$):</label><input type="number" id="desp-valor" step="0.01" required></div>
                 <button type="submit" style="margin-top:0;">Adicionar Gasto</button>
             </form>
-            <div class="tabela-container">
+
+            <div class="controles-grafico" style="margin-top: 20px; justify-content: flex-start;">
+                <div>
+                    <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Mês:</label>
+                    <select id="filtro-mes-desp" onchange="renderizarDespesas()">
+                        <option value="todos">Todos</option>
+                        <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+                        <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+                        <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+                        <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Ano:</label>
+                    <select id="filtro-ano-desp" onchange="renderizarDespesas()">
+                        <option value="todos">Todos</option>
+                        <option value="2024">2024</option><option value="2025">2025</option>
+                        <option value="2026">2026</option><option value="2027">2027</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Data Exata:</label>
+                    <input type="date" id="filtro-data-desp" onchange="renderizarDespesas()">
+                </div>
+                
+                <div class="box-total-despesas">
+                    <span style="font-size: 0.85em; color: #666; font-weight: bold;">Total Visível:</span><br>
+                    <strong id="total-despesas-filtrado" style="font-size: 1.3em; color: #dc3545;">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <div class="tabela-container" style="margin-top: 0;">
                 <table id="tabela-despesas">
                     <thead><tr><th>Descrição</th><th>Categoria</th><th>Data</th><th>Valor</th><th>Ação</th></tr></thead>
                     <tbody id="corpo-tabela-despesas"></tbody>
@@ -257,7 +293,7 @@
         <section id="tela-grafico" class="tela">
             <h2>Evolução Patrimonial Total (Linha do Tempo)</h2>
             <div class="grafico-container">
-                <div class="controles-grafico">
+                <div class="controles-grafico" style="justify-content: center;">
                     <div><label><strong>Banco:</strong></label><select id="select-filtro-banco" onchange="desenharGrafico()"><option value="todos">Todos os Bancos</option></select></div>
                     <div><label><strong>Período:</strong> </label><select id="select-periodicidade" onchange="desenharGrafico()"><option value="mensal">Evolução Mensal</option><option value="anual">Evolução Anual</option></select></div>
                 </div>
@@ -340,6 +376,13 @@
                 document.getElementById('user-display-email').innerText = `Logado como: ${user.email}`;
                 cabecalho.style.display = 'block';
                 msgErro.innerText = "";
+                
+                // Configura filtros iniciais para o Mês Atual
+                const mStr = (new Date().getMonth() + 1).toString().padStart(2, '0');
+                const aStr = new Date().getFullYear().toString();
+                document.getElementById('filtro-mes-desp').value = mStr;
+                document.getElementById('filtro-ano-desp').value = aStr;
+
                 navegar('tela-dashboard');
                 carregarDadosDoBanco();
                 carregarCDI();
@@ -459,13 +502,12 @@
         }
 
         function adicionarInvestimento(e) { e.preventDefault(); carteira.push({ id: Date.now(), banco: document.getElementById('input-banco').value.trim(), data: document.getElementById('input-data').value, valor: document.getElementById('input-valor').value, taxa: document.getElementById('input-taxa').value }); document.getElementById('form-investimento').reset(); salvarNoBanco(); navegar('tela-resultados'); }
-        
         function abrirEdicao(id) { const inv = carteira.find(i => i.id === id); if(inv) { document.getElementById('edit-id').value = inv.id; document.getElementById('edit-banco').value = inv.banco || ""; document.getElementById('edit-data').value = inv.data; document.getElementById('edit-valor').value = inv.valor; document.getElementById('edit-taxa').value = inv.taxa; document.getElementById('modal-editar').style.display = 'flex'; } }
         function fecharEdicao() { document.getElementById('modal-editar').style.display = 'none'; }
         function salvarEdicao() { const id = parseInt(document.getElementById('edit-id').value); const idx = carteira.findIndex(i => i.id === id); if(idx !== -1) { carteira[idx].banco = document.getElementById('edit-banco').value; carteira[idx].data = document.getElementById('edit-data').value; carteira[idx].valor = parseFloat(document.getElementById('edit-valor').value); carteira[idx].taxa = parseFloat(document.getElementById('edit-taxa').value); salvarNoBanco(); fecharEdicao(); } }
 
         // =========================================================
-        // 5. MÓDULO DE DESPESAS
+        // 5. MÓDULO DE DESPESAS (COM FILTROS NOVOS)
         // =========================================================
         function adicionarDespesa(e) {
             e.preventDefault();
@@ -474,13 +516,71 @@
         }
 
         function renderizarDespesas() {
-            const corpo = document.getElementById('corpo-tabela-despesas'); corpo.innerHTML = '';
-            let totalMes = 0; const mAt = new Date().getMonth(); const aAt = new Date().getFullYear();
-            despesas.sort((a,b) => new Date(b.data) - new Date(a.data)).forEach(d => {
-                const [ano, mes, dia] = d.data.split('-'); if(parseInt(mes)-1 === mAt && parseInt(ano) === aAt) totalMes += d.valor;
-                corpo.innerHTML += `<tr><td>${d.desc}</td><td>${d.cat}</td><td>${dia}/${mes}/${ano}</td><td style="color:red;">R$ ${d.valor.toFixed(2)}</td><td><button class="btn-excluir" onclick="deletarItem(${d.id}, 'desp')">Excluir</button></td></tr>`;
+            const corpo = document.getElementById('corpo-tabela-despesas'); 
+            corpo.innerHTML = '';
+            
+            let totalMesDashboard = 0; 
+            let totalFiltrado = 0;
+            
+            const mAt = new Date().getMonth() + 1; // 1 a 12
+            const aAt = new Date().getFullYear();
+
+            // Pega valores dos filtros
+            const fMes = document.getElementById('filtro-mes-desp').value;
+            const fAno = document.getElementById('filtro-ano-desp').value;
+            const fData = document.getElementById('filtro-data-desp').value;
+
+            // Ordena do mais recente pro mais antigo
+            const despesasOrdenadas = [...despesas].sort((a,b) => new Date(b.data) - new Date(a.data));
+            let ultimoGrupo = "";
+
+            despesasOrdenadas.forEach(d => {
+                const [ano, mes, dia] = d.data.split('-'); 
+                
+                // Sempre calcula o mês atual para o Dashboard principal
+                if(parseInt(mes) === mAt && parseInt(ano) === aAt) {
+                    totalMesDashboard += d.valor;
+                }
+
+                // Lógica de Filtros
+                let mostrar = true;
+                if (fData !== "") {
+                    // Se digitou data exata, ignora mes/ano
+                    if (d.data !== fData) mostrar = false;
+                } else {
+                    if (fMes !== 'todos' && mes !== fMes) mostrar = false;
+                    if (fAno !== 'todos' && ano !== fAno) mostrar = false;
+                }
+
+                if (mostrar) {
+                    totalFiltrado += d.valor;
+
+                    // Agrupamento Visual se escolheu "Todos" em Mês ou Ano (ou ambos)
+                    if (fData === "" && (fMes === 'todos' || fAno === 'todos')) {
+                        const grupoAtual = `${mes}/${ano}`;
+                        if (grupoAtual !== ultimoGrupo) {
+                            corpo.innerHTML += `<tr style="background-color: #f1f3f5; border-top: 2px solid #ddd; border-bottom: 2px solid #ddd;">
+                                <td colspan="5" style="text-align: center; font-weight: bold; color: #1a1a2e;">
+                                    🗓️ Referência: ${mes}/${ano}
+                                </td>
+                            </tr>`;
+                            ultimoGrupo = grupoAtual;
+                        }
+                    }
+
+                    corpo.innerHTML += `<tr>
+                        <td>${d.desc}</td>
+                        <td><span style="background:#e0e0e0; padding:3px 8px; border-radius:10px; font-size:0.85em;">${d.cat}</span></td>
+                        <td>${dia}/${mes}/${ano}</td>
+                        <td style="color:#dc3545; font-weight:bold;">R$ ${d.valor.toFixed(2)}</td>
+                        <td><button class="btn-excluir" onclick="deletarItem(${d.id}, 'desp')">Excluir</button></td>
+                    </tr>`;
+                }
             });
-            document.getElementById('dash-despesas').innerText = `R$ ${totalMes.toFixed(2).replace('.', ',')}`;
+
+            // Atualiza placares
+            document.getElementById('dash-despesas').innerText = `R$ ${totalMesDashboard.toFixed(2).replace('.', ',')}`;
+            document.getElementById('total-despesas-filtrado').innerText = `R$ ${totalFiltrado.toFixed(2).replace('.', ',')}`;
         }
 
         // =========================================================
