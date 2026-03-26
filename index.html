@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvestDash - Controle de Rendimentos</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+        header { background-color: #1a1a2e; color: white; padding: 20px; text-align: center; }
+        nav { margin-top: 15px; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+        nav button { background-color: #16213e; color: white; border: 1px solid #0f3460; padding: 10px 15px; cursor: pointer; border-radius: 5px; transition: 0.3s; font-weight: bold; }
+        nav button:hover { background-color: #e94560; border-color: #e94560; }
+        main { flex: 1; padding: 20px; max-width: 1100px; margin: 0 auto; width: 100%; }
+        
+        .tela { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .tela.ativa { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 10px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
+        .dashboard-grid .card { margin-top: 0; text-align: center; border-top: 4px solid #1a1a2e; }
+        .dashboard-grid .card.destaque { border-top: 4px solid #e94560; background-color: #f8f9fa; }
+        .dashboard-grid .card h3 { font-size: 1.8em; margin-top: 10px; color: #1a1a2e; }
+        
+        .bancos-container { margin-top: 40px; }
+        .bancos-container h3 { border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; color: #1a1a2e; }
+        .bancos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .card-banco { background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #0f3460; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card-banco h4 { color: #1a1a2e; margin-bottom: 5px; text-transform: uppercase; font-size: 0.9em; }
+        .card-banco p { font-size: 1.2em; font-weight: bold; color: #e94560; }
+
+        .status-api { font-size: 0.9em; color: #666; text-align: center; margin-top: 20px; font-weight: bold; }
+        
+        form { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 15px; }
+        .grupo-input { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #1a1a2e; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; }
+        input:focus { border-color: #e94560; outline: none; }
+        
+        button[type="submit"], .btn-acao { width: 100%; padding: 15px; background-color: #e94560; color: white; border: none; border-radius: 5px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button[type="submit"]:hover, .btn-acao:hover { background-color: #d83a53; }
+        .btn-acao.secundario { background-color: #0f3460; }
+        .btn-acao.secundario:hover { background-color: #16213e; }
+        
+        .tabela-container { overflow-x: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #1a1a2e; color: white; white-space: nowrap; }
+        tr:hover { background-color: #f1f1f1; }
+        
+        .btn-limpar { background-color: #dc3545; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 25px; width: 100%; transition: 0.3s; font-size: 1em; }
+        .btn-limpar:hover { background-color: #c82333; }
+        .btn-excluir { background-color: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; transition: 0.3s; }
+        .btn-excluir:hover { background-color: #c82333; }
+
+        .grafico-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 15px; }
+        .controles-grafico { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: center; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ddd; }
+        .controles-grafico div { display: flex; align-items: center; gap: 10px; }
+        .controles-grafico select { padding: 8px; font-size: 1em; border-radius: 5px; border: 1px solid #ccc; outline: none; }
+        
+        .botoes-exportar { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        footer { background-color: #1a1a2e; color: white; text-align: center; padding: 20px; margin-top: auto; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>InvestDash</h1>
+        <nav>
+            <button onclick="navegar('tela-dashboard')">1. Dashboard</button>
+            <button onclick="navegar('tela-adicionar')">2. Novo Investimento</button>
+            <button onclick="navegar('tela-resultados')">3. Meus Resultados</button>
+            <button onclick="navegar('tela-grafico')">4. Gráfico</button>
+            <button onclick="navegar('tela-email')">5. Exportar</button>
+            <button onclick="navegar('tela-importar')">6. Importar CSV</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="tela-dashboard" class="tela ativa">
+            <h2>Resumo Geral da Carteira</h2>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <p>Total Aplicado</p>
+                    <h3 id="dash-valor-investido">R$ 0,00</h3>
+                </div>
+                <div class="card">
+                    <p>Valor Bruto Total</p>
+                    <h3 id="dash-valor-bruto">R$ 0,00</h3>
+                </div>
+                <div class="card destaque">
+                    <p>Valor Líquido Total</p>
+                    <h3 id="dash-valor-liquido">R$ 0,00</h3>
+                </div>
+                <div class="card">
+                    <p>Rentabilidade Líquida</p>
+                    <h3 id="dash-rentabilidade" style="color: green;">0,00%</h3>
+                </div>
+            </div>
+
+            <div class="bancos-container" id="container-resumo-bancos">
+                </div>
+            
+            <button class="btn-limpar" onclick="limparTudo()">🗑️ Limpar Todos os Investimentos</button>
+            
+            <div class="status-api" id="status-api">Aguardando conexão...</div>
+        </section>
+
+        <section id="tela-adicionar" class="tela">
+            <h2>Adicionar Novo Investimento (CDB/LC)</h2>
+            <form id="form-investimento" onsubmit="adicionarInvestimento(event)">
+                <div class="grupo-input">
+                    <label>Instituição Financeira (Banco/Corretora):</label>
+                    <input type="text" id="input-banco" placeholder="Ex: Nubank, Banco Inter, XP..." required>
+                </div>
+                <div class="grupo-input">
+                    <label>Data da Aplicação:</label>
+                    <input type="date" id="input-data" required>
+                </div>
+                <div class="grupo-input">
+                    <label>Valor Aplicado (R$):</label>
+                    <input type="number" id="input-valor" step="0.01" min="1" required>
+                </div>
+                <div class="grupo-input">
+                    <label>Taxa (% do CDI):</label>
+                    <input type="number" id="input-taxa" step="0.1" placeholder="Ex: 110" required>
+                </div>
+                <button type="submit">Salvar Investimento</button>
+            </form>
+        </section>
+
+        <section id="tela-resultados" class="tela">
+            <h2>Detalhamento e Imposto Regressivo</h2>
+            <div class="tabela-container">
+                <table id="tabela-resultados">
+                    <thead>
+                        <tr>
+                            <th>Banco</th>
+                            <th>Data</th>
+                            <th>Valor Inicial</th>
+                            <th>Taxa</th>
+                            <th>Dias</th>
+                            <th>IR (%)</th>
+                            <th>Valor Bruto</th>
+                            <th>Valor Líquido</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpo-tabela">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="tela-grafico" class="tela">
+            <h2>Evolução Patrimonial Total (Linha do Tempo)</h2>
+            <div class="grafico-container">
+                <div class="controles-grafico">
+                    <div>
+                        <label><strong>Banco:</strong></label>
+                        <select id="select-filtro-banco" onchange="desenharGrafico()">
+                            <option value="todos">Todos os Bancos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label><strong>Período:</strong> </label>
+                        <select id="select-periodicidade" onchange="desenharGrafico()">
+                            <option value="mensal">Evolução Mensal</option>
+                            <option value="anual">Evolução Anual</option>
+                        </select>
+                    </div>
+                </div>
+                <canvas id="meuGrafico"></canvas>
+            </div>
+        </section>
+
+        <section id="tela-email" class="tela">
+            <h2>Exportar Relatório</h2>
+            <p style="margin-bottom: 15px;">Escolha como deseja exportar os dados da sua carteira.</p>
+            
+            <div class="botoes-exportar">
+                <button class="btn-acao" onclick="prepararEmail()">✉️ Gerar E-mail (Resumo)</button>
+                <button class="btn-acao secundario" onclick="baixarCSV()">📥 Baixar Planilha (CSV)</button>
+            </div>
+            
+            <div id="preview-email" class="card" style="margin-top: 20px; font-family: monospace; font-size: 12px; white-space: pre-wrap;"></div>
+        </section>
+
+        <section id="tela-importar" class="tela">
+            <h2>Importar Investimentos (CSV)</h2>
+            <div class="card">
+                <p>Selecione um arquivo CSV previamente exportado por este sistema.</p>
+                <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Formato esperado com vírgulas: banco, data, valor, taxa.</p>
+                
+                <input type="file" id="input-csv" accept=".csv" style="margin-top: 20px; padding: 10px; border: 1px dashed #ccc; width: 100%; cursor: pointer;">
+                
+                <button class="btn-acao secundario" onclick="importarCSV()">Carregar Arquivo CSV</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Desenvolvido por Alexandre da Silva Alves Rodrigues | Desafio Acadêmico</p>
+    </footer>
+
+    <script>
+        // VARIÁVEIS GLOBAIS
+        let serieCDI = [];
+        let carteira = JSON.parse(localStorage.getItem('investimentos')) || [];
+        let chartInstance = null;
+
+        // 1. CONEXÃO COM A API DO BANCO CENTRAL
+        async function carregarCDI() {
+            try {
+                document.getElementById('status-api').innerText = " Buscando dados na API do Banco Central...";
+                
+                const hoje = new Date();
+                const dataInicio = new Date();
+                dataInicio.setFullYear(hoje.getFullYear() - 9);
+                
+                const formata = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                
+                const dataFinalStr = formata(hoje);
+                const dataInicialStr = formata(dataInicio);
+                
+                const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${dataInicialStr}&dataFinal=${dataFinalStr}`;
+
+                const response = await fetch(url);
+                serieCDI = await response.json();
+                
+                if (!Array.isArray(serieCDI) || serieCDI.length === 0) {
+                    throw new Error("A API não retornou uma lista válida.");
+                }
+                
+                document.getElementById('status-api').innerText = ` API Conectada! Baixados ${serieCDI.length} dias úteis de CDI.`;
+                processarCarteira();
+            } catch (error) {
+                document.getElementById('status-api').innerText = " Erro ao conectar com o Banco Central.";
+                console.error("Erro API:", error);
+            }
+        }
+
+        // 2. CÁLCULOS FINANCEIROS TOTAIS E POR BANCO
+        function processarCarteira() {
+            const corpoTabela = document.getElementById('corpo-tabela');
+            corpoTabela.innerHTML = '';
+            
+            let valorInvestidoTotal = 0;
+            let valorBrutoTotal = 0;
+            let valorLiquidoTotal = 0;
+            
+            // Objeto para agrupar totais por banco
+            let totaisBancos = {};
+
+            if (serieCDI.length === 0) {
+                corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Aguardando retorno da API para calcular...</td></tr>';
+                return;
+            }
+
+            if (carteira.length === 0) {
+                corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Nenhum investimento cadastrado.</td></tr>';
+                atualizarFiltroGrafico(); // Atualiza select mesmo vazio
+                renderizarCardsBancos({});
+                return;
+            }
+
+            carteira.forEach(inv => {
+                const [ano, mes, dia] = inv.data.split('-');
+                const dataInvestimento = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+                const nomeBanco = inv.banco ? inv.banco : "Não Informado";
+                
+                // Inicializa o banco no objeto se não existir
+                if (!totaisBancos[nomeBanco]) {
+                    totaisBancos[nomeBanco] = { investido: 0, bruto: 0, liquido: 0 };
+                }
+                
+                let valorAtual = parseFloat(inv.valor);
+                valorInvestidoTotal += valorAtual;
+                totaisBancos[nomeBanco].investido += valorAtual;
+
+                for (let i = 0; i < serieCDI.length; i++) {
+                    const [diaBCB, mesBCB, anoBCB] = serieCDI[i].data.split('/');
+                    const dataBCB = new Date(parseInt(anoBCB), parseInt(mesBCB) - 1, parseInt(diaBCB));
+
+                    if (dataBCB >= dataInvestimento) {
+                        const taxaDiaria = parseFloat(serieCDI[i].valor) / 100;
+                        const multiplicador = parseFloat(inv.taxa) / 100;
+                        valorAtual = valorAtual + (valorAtual * (taxaDiaria * multiplicador));
+                    }
+                }
+                
+                valorBrutoTotal += valorAtual;
+                totaisBancos[nomeBanco].bruto += valorAtual;
+
+                const dataHoje = new Date();
+                const diffTempo = Math.abs(dataHoje - dataInvestimento);
+                const diasCalendario = Math.ceil(diffTempo / (1000 * 60 * 60 * 24));
+                
+                let aliquotaIR = 15.0;
+                if (diasCalendario <= 180) aliquotaIR = 22.5;
+                else if (diasCalendario <= 360) aliquotaIR = 20.0;
+                else if (diasCalendario <= 720) aliquotaIR = 17.5;
+
+                const rendimentoBruto = valorAtual - parseFloat(inv.valor);
+                const valorImposto = rendimentoBruto > 0 ? rendimentoBruto * (aliquotaIR / 100) : 0;
+                const valorLiquido = valorAtual - valorImposto;
+
+                valorLiquidoTotal += valorLiquido;
+                totaisBancos[nomeBanco].liquido += valorLiquido;
+
+                corpoTabela.innerHTML += `
+                    <tr>
+                        <td style="font-weight: bold;">${nomeBanco}</td>
+                        <td>${dia}/${mes}/${ano}</td>
+                        <td>R$ ${parseFloat(inv.valor).toFixed(2)}</td>
+                        <td>${inv.taxa}%</td>
+                        <td>${diasCalendario}</td>
+                        <td>${aliquotaIR}%</td>
+                        <td style="color: green;">R$ ${valorAtual.toFixed(2)}</td>
+                        <td style="color: blue; font-weight: bold;">R$ ${valorLiquido.toFixed(2)}</td>
+                        <td><button class="btn-excluir" onclick="deletarItem(${inv.id})">Excluir</button></td>
+                    </tr>
+                `;
+            });
+
+            // Atualiza Dashboard Principal
+            document.getElementById('dash-valor-investido').innerText = `R$ ${valorInvestidoTotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('dash-valor-bruto').innerText = `R$ ${valorBrutoTotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('dash-valor-liquido').innerText = `R$ ${valorLiquidoTotal.toFixed(2).replace('.', ',')}`;
+            
+            let rentabilidade = 0;
+            if (valorInvestidoTotal > 0) {
+                rentabilidade = ((valorLiquidoTotal - valorInvestidoTotal) / valorInvestidoTotal) * 100;
+            }
+            document.getElementById('dash-rentabilidade').innerText = `${rentabilidade >= 0 ? '+' : ''}${rentabilidade.toFixed(2).replace('.', ',')}%`;
+            document.getElementById('dash-rentabilidade').style.color = rentabilidade >= 0 ? 'green' : 'red';
+
+            renderizarCardsBancos(totaisBancos);
+            atualizarFiltroGrafico();
+        }
+
+        function renderizarCardsBancos(totaisBancos) {
+            const container = document.getElementById('container-resumo-bancos');
+            
+            if (Object.keys(totaisBancos).length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = `<h3>Patrimônio Líquido por Instituição</h3><div class="bancos-grid">`;
+            for (const banco in totaisBancos) {
+                html += `
+                    <div class="card-banco">
+                        <h4>${banco}</h4>
+                        <p>R$ ${totaisBancos[banco].liquido.toFixed(2).replace('.', ',')}</p>
+                    </div>
+                `;
+            }
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function atualizarFiltroGrafico() {
+            const selectFiltro = document.getElementById('select-filtro-banco');
+            const valorSelecionadoAtual = selectFiltro.value;
+            
+            // Pega todos os bancos únicos na carteira
+            const bancosUnicos = [...new Set(carteira.map(inv => inv.banco || "Não Informado"))].sort();
+            
+            let options = `<option value="todos">Todos os Bancos</option>`;
+            bancosUnicos.forEach(banco => {
+                options += `<option value="${banco}">${banco}</option>`;
+            });
+            
+            selectFiltro.innerHTML = options;
+            
+            // Mantém a seleção se o banco ainda existir, caso contrário volta para "todos"
+            if (bancosUnicos.includes(valorSelecionadoAtual)) {
+                selectFiltro.value = valorSelecionadoAtual;
+            } else {
+                selectFiltro.value = "todos";
+            }
+        }
+
+        // 3. NAVEGAÇÃO
+        function navegar(idTela) {
+            document.querySelectorAll('.tela').forEach(tela => tela.classList.remove('ativa'));
+            document.getElementById(idTela).classList.add('ativa');
+            if(idTela === 'tela-grafico') desenharGrafico();
+        }
+
+        // 4. ADICIONAR INVESTIMENTO
+        function adicionarInvestimento(event) {
+            event.preventDefault();
+            const banco = document.getElementById('input-banco').value.trim();
+            const data = document.getElementById('input-data').value;
+            const valor = document.getElementById('input-valor').value;
+            const taxa = document.getElementById('input-taxa').value;
+
+            const [ano, mes, dia] = data.split('-');
+            const dataEscolhida = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+            const dataHoje = new Date();
+            
+            if(dataEscolhida > dataHoje) {
+                return alert("A data não pode ser no futuro!");
+            }
+
+            const novoInvestimento = { id: Date.now(), banco, data, valor, taxa };
+            carteira.push(novoInvestimento);
+            
+            localStorage.setItem('investimentos', JSON.stringify(carteira));
+            document.getElementById('form-investimento').reset();
+            
+            processarCarteira();
+            navegar('tela-resultados');
+        }
+
+        // 5. EXCLUIR E LIMPAR TUDO
+        function deletarItem(id) {
+            if (confirm("Tem certeza que deseja excluir este investimento?")) {
+                carteira = carteira.filter(inv => inv.id !== id);
+                localStorage.setItem('investimentos', JSON.stringify(carteira));
+                processarCarteira();
+                
+                if(document.getElementById('tela-grafico').classList.contains('ativa')) {
+                    desenharGrafico();
+                }
+            }
+        }
+
+        function limparTudo() {
+            if (carteira.length === 0) {
+                return alert("A carteira já está vazia!");
+            }
+            if (confirm("ATENÇÃO: Isso apagará TODOS os seus investimentos. Deseja continuar?")) {
+                carteira = [];
+                localStorage.removeItem('investimentos');
+                processarCarteira();
+            }
+        }
+
+        // 6. EVOLUÇÃO DA CARTEIRA NO TEMPO (COM FILTRO DE BANCO)
+        function obterDadosEvolucao(periodicidade, bancoSelecionado) {
+            if (carteira.length === 0 || serieCDI.length === 0) return { labels: [], brutos: [], liquidos: [] };
+
+            // Aplica o filtro de banco antes de processar a linha do tempo
+            let carteiraParaProcessar = carteira;
+            if (bancoSelecionado !== 'todos') {
+                carteiraParaProcessar = carteira.filter(inv => (inv.banco || "Não Informado") === bancoSelecionado);
+            }
+
+            if (carteiraParaProcessar.length === 0) return { labels: [], brutos: [], liquidos: [] };
+
+            const carteiraOrdenada = [...carteiraParaProcessar].sort((a, b) => new Date(a.data) - new Date(b.data));
+            
+            const cdiFormatado = serieCDI.map(item => {
+                const [d, m, y] = item.data.split('/');
+                return {
+                    dataObj: new Date(y, m - 1, d),
+                    valor: parseFloat(item.valor) / 100
+                };
+            });
+
+            let labels = [];
+            let brutos = [];
+            let liquidos = [];
+
+            let ativos = [];
+            let indexCarteira = 0;
+
+            for (let i = 0; i < cdiFormatado.length; i++) {
+                const diaCDI = cdiFormatado[i];
+
+                while (indexCarteira < carteiraOrdenada.length) {
+                    const inv = carteiraOrdenada[indexCarteira];
+                    const invDate = new Date(inv.data);
+                    
+                    if (diaCDI.dataObj >= invDate) {
+                        ativos.push({
+                            dataObj: invDate,
+                            valorOriginal: parseFloat(inv.valor),
+                            valorAtual: parseFloat(inv.valor),
+                            multiplicador: parseFloat(inv.taxa) / 100
+                        });
+                        indexCarteira++;
+                    } else {
+                        break;
+                    }
+                }
+
+                if (ativos.length > 0) {
+                    let totalBrutoDia = 0;
+                    let totalLiquidoDia = 0;
+
+                    ativos.forEach(inv => {
+                        inv.valorAtual += inv.valorAtual * (diaCDI.valor * inv.multiplicador);
+                        totalBrutoDia += inv.valorAtual;
+
+                        const diffTempo = Math.abs(diaCDI.dataObj - inv.dataObj);
+                        const diasCalendario = Math.ceil(diffTempo / (1000 * 60 * 60 * 24));
+                        
+                        let aliquotaIR = 15.0;
+                        if (diasCalendario <= 180) aliquotaIR = 22.5;
+                        else if (diasCalendario <= 360) aliquotaIR = 20.0;
+                        else if (diasCalendario <= 720) aliquotaIR = 17.5;
+
+                        const rendimentoBruto = inv.valorAtual - inv.valorOriginal;
+                        const valorImposto = rendimentoBruto > 0 ? rendimentoBruto * (aliquotaIR / 100) : 0;
+                        totalLiquidoDia += (inv.valorAtual - valorImposto);
+                    });
+
+                    const isUltimoDia = (i === cdiFormatado.length - 1);
+                    let fimMes = isUltimoDia;
+                    let fimAno = isUltimoDia;
+
+                    if (!isUltimoDia) {
+                        const proxDia = cdiFormatado[i + 1];
+                        if (proxDia.dataObj.getMonth() !== diaCDI.dataObj.getMonth()) fimMes = true;
+                        if (proxDia.dataObj.getFullYear() !== diaCDI.dataObj.getFullYear()) fimAno = true;
+                    }
+
+                    if (periodicidade === 'mensal' && fimMes) {
+                        labels.push(`${String(diaCDI.dataObj.getMonth() + 1).padStart(2, '0')}/${diaCDI.dataObj.getFullYear()}`);
+                        brutos.push(totalBrutoDia.toFixed(2));
+                        liquidos.push(totalLiquidoDia.toFixed(2));
+                    } else if (periodicidade === 'anual' && fimAno) {
+                        labels.push(`${diaCDI.dataObj.getFullYear()}`);
+                        brutos.push(totalBrutoDia.toFixed(2));
+                        liquidos.push(totalLiquidoDia.toFixed(2));
+                    }
+                }
+            }
+            return { labels, brutos, liquidos };
+        }
+
+        // 7. DESENHAR GRÁFICO
+        function desenharGrafico() {
+            const ctx = document.getElementById('meuGrafico').getContext('2d');
+            const periodicidade = document.getElementById('select-periodicidade').value;
+            const bancoSelecionado = document.getElementById('select-filtro-banco').value;
+            
+            const dados = obterDadosEvolucao(periodicidade, bancoSelecionado);
+
+            if (chartInstance) chartInstance.destroy();
+            
+            if (dados.labels.length === 0) {
+                chartInstance = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [] } });
+                return;
+            }
+
+            let tituloLiquido = 'Valor Líquido (R$)';
+            let tituloBruto = 'Valor Bruto (R$)';
+            if(bancoSelecionado !== 'todos') {
+                tituloLiquido += ` - ${bancoSelecionado}`;
+                tituloBruto += ` - ${bancoSelecionado}`;
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { 
+                    labels: dados.labels, 
+                    datasets: [
+                        { label: tituloBruto, data: dados.brutos, borderColor: '#0f3460', backgroundColor: 'rgba(15, 52, 96, 0.1)', fill: true, tension: 0.3, pointRadius: 3 },
+                        { label: tituloLiquido, data: dados.liquidos, borderColor: '#e94560', backgroundColor: 'rgba(233, 69, 96, 0.1)', fill: true, tension: 0.3, pointRadius: 3 }
+                    ]
+                },
+                options: { responsive: true, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: false } } }
+            });
+        }
+
+        // 8. EXPORTAR EMAIL E CSV
+        function prepararEmail() {
+            if(carteira.length === 0) return alert("Adicione investimentos primeiro!");
+            let corpoTexto = "Relatório de Investimentos - InvestDash\n\n";
+            document.querySelectorAll('#corpo-tabela tr').forEach(linha => {
+                const cols = linha.querySelectorAll('td');
+                if(cols.length >= 8) corpoTexto += `Banco: ${cols[0].innerText} | Data: ${cols[1].innerText} | Inicial: ${cols[2].innerText} | Taxa: ${cols[3].innerText} | Dias: ${cols[4].innerText} | IR: ${cols[5].innerText} | Líquido: ${cols[7].innerText}\n`;
+            });
+            corpoTexto += `\nVALOR TOTAL LÍQUIDO GERAL: ${document.getElementById('dash-valor-liquido').innerText}\n`;
+            document.getElementById('preview-email').innerText = corpoTexto;
+            window.location.href = `mailto:?subject=Relatorio&body=${encodeURIComponent(corpoTexto)}`;
+        }
+
+        function baixarCSV() {
+            if (carteira.length === 0) return alert("Não há investimentos para exportar.");
+            
+            let csvContent = "banco,data,valor,taxa\n"; // Atualizado com Banco
+            carteira.forEach(inv => {
+                const bancoStr = inv.banco ? inv.banco.replace(/,/g, '') : "Não Informado"; // Remove vírgulas do nome do banco para não quebrar o CSV
+                csvContent += `${bancoStr},${inv.data},${inv.valor},${inv.taxa}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "meus_investimentos.csv");
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 9. IMPORTAR CSV
+        function importarCSV() {
+            const fileInput = document.getElementById('input-csv');
+            const file = fileInput.files[0];
+            
+            if (!file) return alert("Por favor, selecione um arquivo CSV primeiro.");
+
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const texto = e.target.result;
+                const linhas = texto.split('\n');
+                let importados = 0;
+
+                // Começa do i=1 para pular o cabeçalho (banco,data,valor,taxa)
+                for (let i = 1; i < linhas.length; i++) {
+                    const colunas = linhas[i].split(',');
+                    
+                    if (colunas.length >= 4) { // Agora espera 4 colunas
+                        const banco = colunas[0].trim();
+                        const data = colunas[1].trim();
+                        const valor = parseFloat(colunas[2].trim());
+                        const taxa = parseFloat(colunas[3].trim());
+                        
+                        if (banco && data && !isNaN(valor) && !isNaN(taxa)) {
+                            carteira.push({ 
+                                id: Date.now() + i, 
+                                banco: banco,
+                                data: data, 
+                                valor: valor, 
+                                taxa: taxa 
+                            });
+                            importados++;
+                        }
+                    }
+                }
+                
+                if (importados > 0) {
+                    localStorage.setItem('investimentos', JSON.stringify(carteira));
+                    processarCarteira();
+                    alert(`${importados} investimentos foram importados com sucesso!`);
+                    fileInput.value = ''; 
+                    navegar('tela-resultados'); 
+                } else {
+                    alert("Nenhum dado válido encontrado. Verifique se o formato do CSV está correto (banco,data,valor,taxa).");
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Inicia o site buscando a API
+        window.onload = carregarCDI;
+    </script>
+</body>
+</html>
