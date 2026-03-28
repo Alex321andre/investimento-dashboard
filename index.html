@@ -1,3 +1,10 @@
+Excelente ideia! Isso vai te ajudar a bater o olho no painel e entender exatamente o porquê de alguma diferença de centavos, pois você vai ver na hora qual foi o último dia útil que o Banco Central atualizou a taxa.
+
+Para fazer isso, eu alterei a função `carregarCDI()` no JavaScript. Agora, logo após baixar os dados do Banco Central, o código pega a primeira e a última data da lista que o banco enviou e escreve na tela.
+
+Aqui está o código completo já com essa alteração. Pode copiar tudo, substituir no seu `index.html` e subir para o GitHub!
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -517,7 +524,7 @@
         function deletarItemGerenciador(idx) { if(confirm("Apagar este item?")) { const tipo = document.getElementById('tipo-gerenciador-ativo').value; const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais; lista.splice(idx, 1); salvarNoBanco(); abrirModalGerenciador(tipo); } }
 
         // =========================================================
-        // 4. LÓGICA CORE (COM TRUNCAMENTO B3)
+        // 4. LÓGICA CORE (COM TRUNCAMENTO B3) E DATA NA TELA
         // =========================================================
         async function carregarCDI() {
             try {
@@ -525,7 +532,17 @@
                 const formata = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
                 const res = await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${formata(dIni)}&dataFinal=${formata(hoje)}`);
                 serieCDI = await res.json();
-                document.getElementById('status-api').innerText = ` API e Nuvem OK!`; processarCarteira();
+                
+                // NOVIDADE AQUI: Mostra as datas do CDI na tela!
+                let textoStatus = "✅ API e Nuvem OK!";
+                if(serieCDI.length > 0) {
+                    const dtIni = serieCDI[0].data;
+                    const dtFim = serieCDI[serieCDI.length - 1].data;
+                    textoStatus += ` (CDI de ${dtIni} até ${dtFim})`;
+                }
+                document.getElementById('status-api').innerText = textoStatus;
+                
+                processarCarteira();
             } catch (e) { document.getElementById('status-api').innerText = " Erro na API do BCB."; }
         }
 
@@ -706,13 +723,13 @@
         function deletarAporte(metaId, aporteId) { if(confirm("Deseja excluir esta aplicação da Caixinha?")) { const idx = listaMetas.findIndex(m => m.id === metaId); if(idx !== -1) { listaMetas[idx].aportes = listaMetas[idx].aportes.filter(a => a.id !== aporteId); salvarNoBanco(); } } }
 
         // =========================================================
-        // 7. SIMULADOR E COMPARADOR 
+        // 7. SIMULADOR E COMPARADOR
         // =========================================================
         function calcularSimulacao() { const p = parseFloat(document.getElementById('sim-inicial').value)||0, pmt = parseFloat(document.getElementById('sim-mensal').value)||0, rAn = parseFloat(document.getElementById('sim-taxa').value)||0, anos = parseInt(document.getElementById('sim-anos').value)||0; const rMes = (Math.pow(1 + (rAn/100), 1/12) - 1), nMeses = anos * 12; let fv = p * Math.pow(1 + rMes, nMeses); if(rMes>0) fv += pmt * ((Math.pow(1 + rMes, nMeses) - 1) / rMes); else fv += pmt * nMeses; const tInv = p + (pmt * nMeses); document.getElementById('sim-res-investido').innerText = fMoeda(tInv); document.getElementById('sim-res-juros').innerText = fMoeda(fv-tInv); document.getElementById('sim-res-total').innerText = fMoeda(fv); document.getElementById('resultado-simulador').style.display = 'block'; }
         function calcularComparacao() { const v = parseFloat(document.getElementById('comp-valor').value)||0, dias = parseInt(document.getElementById('comp-dias').value)||1, tCdb = parseFloat(document.getElementById('comp-cdb').value)/100, tLci = parseFloat(document.getElementById('comp-lci').value)/100, cdiAno = parseFloat(document.getElementById('comp-cdi').value)/100; const rCDB = cdiAno * tCdb, rLCI = cdiAno * tLci; let ir = 15; if (dias<=180) ir=22.5; else if(dias<=360) ir=20; else if(dias<=720) ir=17.5; const bCDB = v * (rCDB * (dias/365)), lCDB = bCDB - (bCDB * (ir/100)), lLCI = v * (rLCI * (dias/365)); document.getElementById('comp-res-cdb').innerText = fMoeda(v+lCDB); document.getElementById('comp-res-lci').innerText = fMoeda(v+lLCI); const txt = document.getElementById('comp-vencedor'); if(lCDB>lLCI){txt.innerText="🏆 O CDB é a melhor opção!";txt.style.color="#1a1a2e";}else if(lLCI>lCDB){txt.innerText="🏆 A LCI/LCA é a melhor opção!";txt.style.color="#28a745";}else{txt.innerText="⚖️ Ambos rendem igual.";txt.style.color="#666";} document.getElementById('resultado-comparador').style.display = 'block'; }
 
         // =========================================================
-        // 8. GRÁFICOS 
+        // 8. GRÁFICOS
         // =========================================================
         function desenharGraficoPizza(totais) { const ctx = document.getElementById('graficoPizza').getContext('2d'); if (chartPizzaInstance) chartPizzaInstance.destroy(); const bancos = Object.keys(totais); const valores = Object.values(totais).map(t => t.liq); if (bancos.length === 0) return; chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: bancos, datasets: [{ data: valores, backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } } }); }
         
