@@ -54,9 +54,10 @@
         .btn-acao.header-btn { background-color: #17a2b8; color: white; border-radius: 5px; padding: 10px 20px; font-size: 1em; border: none; cursor: pointer; transition: 0.3s; }
         .btn-acao.header-btn:hover { background-color: #138496; }
         
-        .tabela-container { overflow-x: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
-        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        /* Modificações de tamanho para a tabela caber inteira na tela */
+        .tabela-container { overflow-x: auto; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8em; }
+        th, td { padding: 8px 4px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background-color: #1a1a2e; color: white; white-space: nowrap; vertical-align: top; }
         tr:hover { background-color: #f1f1f1; }
         
@@ -148,7 +149,20 @@
             
             <div class="bancos-container">
                 <div><h3 style="margin-bottom: 15px; color: #1a1a2e;">Patrimônio por Instituição</h3><div class="bancos-grid" id="container-resumo-bancos"></div></div>
-                <div class="card" style="margin-top:0;"><h3 style="text-align: center; margin-bottom: 10px;">Distribuição da Carteira</h3><div style="height: 250px; display: flex; justify-content: center;"><canvas id="graficoPizza"></canvas></div></div>
+                <div class="card" style="margin-top:0;">
+                    <h3 style="text-align: center; margin-bottom: 10px;">Distribuição da Carteira</h3>
+                    
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Liquidez Diária:</label>
+                        <select id="filtro-liquidez-pizza" onchange="atualizarGraficoPizza()" style="width: auto; padding: 5px; font-size: 0.9em; border-radius: 5px; border: 1px solid #ccc; margin-left: 5px; outline: none;">
+                            <option value="todos">Todos</option>
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
+                    </div>
+
+                    <div style="height: 250px; display: flex; justify-content: center;"><canvas id="graficoPizza"></canvas></div>
+                </div>
             </div>
             
             <div class="status-api" id="status-api">Aguardando conexão...</div>
@@ -628,6 +642,9 @@
                 let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5;
                 const rBruto = vAtual - valOriginal; const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
 
+                // SALVA O LÍQUIDO NO OBJETO PARA USO NO GRÁFICO DE PIZZA POSTERIORMENTE
+                inv.liqCalculado = vLiq;
+
                 if(!isResgatado) {
                     valInv += valOriginal;
                     valBru += vAtual; 
@@ -706,7 +723,7 @@
             document.getElementById('dash-rentabilidade').innerText = `${rent >= 0 ? '+' : ''}${fNum(rent)}%`;
             document.getElementById('dash-rentabilidade').style.color = rent >= 0 ? 'green' : 'red';
 
-            renderizarCardsBancos(totaisBancos); atualizarFiltroGrafico(); desenharGraficoPizza(totaisBancos); renderizarMetas();
+            renderizarCardsBancos(totaisBancos); atualizarFiltroGrafico(); atualizarGraficoPizza(); renderizarMetas();
             
             // Calcula e renderiza a barra de total da tabela na hora que carrega a página
             calcularTotaisInvestimentos();
@@ -801,7 +818,7 @@
             calcularTotaisInvestimentos();
         }
 
-        // NOVO: Cálculo Dinâmico de Totais da Tabela de Investimentos
+        // Cálculo Dinâmico de Totais da Tabela de Investimentos
         function calcularTotaisInvestimentos() {
             const rows = document.querySelectorAll('#corpo-tabela tr');
             let sumInicial = 0, sumBruto = 0, sumLiquido = 0;
@@ -937,9 +954,80 @@
         function calcularComparacao() { const v = parseFloat(document.getElementById('comp-valor').value)||0, dias = parseInt(document.getElementById('comp-dias').value)||1, tCdb = parseFloat(document.getElementById('comp-cdb').value)/100, tLci = parseFloat(document.getElementById('comp-lci').value)/100, cdiAno = parseFloat(document.getElementById('comp-cdi').value)/100; const rCDB = cdiAno * tCdb, rLCI = cdiAno * tLci; let ir = 15; if (dias<=180) ir=22.5; else if(dias<=360) ir=20; else if(dias<=720) ir=17.5; const bCDB = v * (rCDB * (dias/365)), lCDB = bCDB - (bCDB * (ir/100)), lLCI = v * (rLCI * (dias/365)); document.getElementById('comp-res-cdb').innerText = fMoeda(v+lCDB); document.getElementById('comp-res-lci').innerText = fMoeda(v+lLCI); const txt = document.getElementById('comp-vencedor'); if(lCDB>lLCI){txt.innerText="🏆 O CDB é a melhor opção!";txt.style.color="#1a1a2e";}else if(lLCI>lCDB){txt.innerText="🏆 A LCI/LCA é a melhor opção!";txt.style.color="#28a745";}else{txt.innerText="⚖️ Ambos rendem igual.";txt.style.color="#666";} document.getElementById('resultado-comparador').style.display = 'block'; }
 
         // =========================================================
-        // 8. GRÁFICOS
+        // 8. GRÁFICOS E FILTROS DINÂMICOS
         // =========================================================
-        function desenharGraficoPizza(totais) { const ctx = document.getElementById('graficoPizza').getContext('2d'); if (chartPizzaInstance) chartPizzaInstance.destroy(); const bancos = Object.keys(totais); const valores = Object.values(totais).map(t => t.liq); if (bancos.length === 0) return; chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: bancos, datasets: [{ data: valores, backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } } }); }
+
+        // Nova Função que filtra, recalcula percentuais e desenha o Gráfico de Pizza
+        function atualizarGraficoPizza() {
+            const filtroLiquidez = document.getElementById('filtro-liquidez-pizza').value;
+            let totaisPizza = {};
+            let totalGeralPizza = 0;
+
+            // Percorre a carteira aplicando o filtro de liquidez
+            carteira.forEach(inv => {
+                if(inv.dataResgate) return; // ignora os resgatados
+                const liq = inv.liquidez || 'Sim'; // o padrão é Sim
+                if(filtroLiquidez !== 'todos' && liq !== filtroLiquidez) return;
+                
+                const nomeBanco = inv.banco || "Não Informado";
+                if(!totaisPizza[nomeBanco]) totaisPizza[nomeBanco] = 0;
+                totaisPizza[nomeBanco] += (inv.liqCalculado || 0);
+                totalGeralPizza += (inv.liqCalculado || 0);
+            });
+
+            // Percorre as Metas (Caixinhas são consideradas Liquidez = Sim por padrão)
+            listaMetas.forEach(meta => {
+                if(filtroLiquidez !== 'todos' && filtroLiquidez !== 'Sim') return; 
+                
+                const nomeBancoMeta = "Caixinhas (Metas)";
+                if(!totaisPizza[nomeBancoMeta]) totaisPizza[nomeBancoMeta] = 0;
+                totaisPizza[nomeBancoMeta] += (meta.liqAtual || 0);
+                totalGeralPizza += (meta.liqAtual || 0);
+            });
+
+            const ctx = document.getElementById('graficoPizza').getContext('2d'); 
+            if (chartPizzaInstance) chartPizzaInstance.destroy(); 
+            
+            const bancos = Object.keys(totaisPizza);
+            const valores = Object.values(totaisPizza);
+            
+            if (bancos.length === 0) { 
+                chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); 
+                return; 
+            }
+
+            // Calcula e embute o percentual diretamente no nome de cada fatia para mostrar na legenda
+            const labelsComPerc = bancos.map(b => {
+                let perc = totalGeralPizza > 0 ? ((totaisPizza[b] / totalGeralPizza) * 100).toFixed(1) : 0;
+                return `${b} (${perc}%)`;
+            });
+
+            chartPizzaInstance = new Chart(ctx, { 
+                type: 'doughnut', 
+                data: { 
+                    labels: labelsComPerc, 
+                    datasets: [{ 
+                        data: valores, 
+                        backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d', '#fd7e14', '#6610f2'] 
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { position: 'right', labels: { font: { size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let value = context.parsed || 0;
+                                    return ` ${fMoeda(value)}`;
+                                }
+                            }
+                        }
+                    } 
+                } 
+            });
+        }
         
         function desenharGrafico() {
             const ctx = document.getElementById('meuGrafico').getContext('2d'); const per = document.getElementById('select-periodicidade').value, bSel = document.getElementById('select-filtro-banco').value;
@@ -1008,7 +1096,6 @@
             if (Object.keys(totais).length === 0) return cont.innerHTML = ''; 
             let h = ``; 
             for (const b in totais) {
-                // Cálculo da taxa média ponderada
                 let taxaPonderada = totais[b].bru > 0 ? (totais[b].bruVezesTaxa / totais[b].bru) : 0;
 
                 h += `<div class="card-banco">
