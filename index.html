@@ -451,6 +451,17 @@
             return parseFloat(str);
         }
 
+        // Novo formatador específico para exibir a taxa com até 8 casas decimais
+        function fTaxa(valor) {
+            if (!valor) return "0,00";
+            let str = valor.toString();
+            let pontoIdx = str.indexOf('.');
+            if (pontoIdx !== -1 && str.length > pontoIdx + 9) {
+                str = str.substring(0, pontoIdx + 9);
+            }
+            return parseFloat(str).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
+        }
+
         // =========================================================
         // 1. CONFIGURAÇÃO FIREBASE
         // =========================================================
@@ -623,8 +634,9 @@
                        <button class="btn-editar" onclick="abrirEdicao(${inv.id})">Editar</button>
                        <button class="btn-excluir" onclick="deletarItem(${inv.id}, 'inv')">Excluir</button>`;
 
+                // AQUI USAMOS fTaxa EM VEZ DE fNum PARA A TAXA DO INVESTIMENTO
                 corpoTabela.innerHTML += `<tr ${isResgatado ? 'style="background-color: #e9ecef; opacity: 0.8;"' : ''}>
-                    <td><b>${nomeBanco}</b>${strStatus}</td><td>${dia}/${mes}/${ano}</td><td>${fMoeda(valOriginal)}</td><td>${fNum(parseFloat(inv.taxa))}%</td><td>${dias}</td><td>${fNum(ir)}%</td>
+                    <td><b>${nomeBanco}</b>${strStatus}</td><td>${dia}/${mes}/${ano}</td><td>${fMoeda(valOriginal)}</td><td>${fTaxa(parseFloat(inv.taxa))}%</td><td>${dias}</td><td>${fNum(ir)}%</td>
                     <td style="color:${isResgatado?'#666':'green'};">${fMoeda(vAtual)}</td><td style="color:${isResgatado?'#666':'blue'}; font-weight:bold;">${fMoeda(vLiq)}</td>
                     <td style="white-space: nowrap;">${botoes}</td>
                 </tr>`;
@@ -782,7 +794,9 @@
             listaMetas.forEach(m => {
                 let p = (m.liqAtual / m.alvo) * 100; if(p > 100) p = 100;
                 let htmlAportes = `<table style="width:100%; font-size:0.9em; margin-top:15px; border-top: 1px solid #eee; padding-top: 10px;"><tr style="text-align:left; color:#666; border-bottom:1px solid #ddd;"><th>Data</th><th>Investido</th><th>Taxa</th><th>Líquido Atual</th><th></th></tr>`;
-                if(m.aportes && m.aportes.length > 0) { m.aportes.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(ap => { const [ano, mes, dia] = ap.data.split('-'); htmlAportes += `<tr><td>${dia}/${mes}/${ano}</td><td>${fMoeda(ap.valor)}</td><td>${fNum(ap.taxa)}%</td><td style="color:blue; font-weight:bold;">${fMoeda(ap.liqCalculado||0)}</td><td style="text-align:right;"><button style="background:none;border:none;cursor:pointer;font-size:1.1em;margin-right:8px;" onclick="abrirAporte(${m.id}, ${ap.id})" title="Editar Aplicação">✏️</button><button style="background:none;border:none;cursor:pointer;font-size:1.1em;" onclick="deletarAporte(${m.id}, ${ap.id})" title="Excluir Aplicação">❌</button></td></tr>`; }); } htmlAportes += `</table>`;
+                
+                // AQUI USAMOS fTaxa EM VEZ DE fNum PARA A TAXA DA CAIXINHA
+                if(m.aportes && m.aportes.length > 0) { m.aportes.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(ap => { const [ano, mes, dia] = ap.data.split('-'); htmlAportes += `<tr><td>${dia}/${mes}/${ano}</td><td>${fMoeda(ap.valor)}</td><td>${fTaxa(ap.taxa)}%</td><td style="color:blue; font-weight:bold;">${fMoeda(ap.liqCalculado||0)}</td><td style="text-align:right;"><button style="background:none;border:none;cursor:pointer;font-size:1.1em;margin-right:8px;" onclick="abrirAporte(${m.id}, ${ap.id})" title="Editar Aplicação">✏️</button><button style="background:none;border:none;cursor:pointer;font-size:1.1em;" onclick="deletarAporte(${m.id}, ${ap.id})" title="Excluir Aplicação">❌</button></td></tr>`; }); } htmlAportes += `</table>`;
                 cont.innerHTML += `<div class="meta-card"><div class="meta-info" style="margin-bottom: 10px;"><span style="font-size:1.2em;">🎯 <strong style="color:#1a1a2e;">${m.nome}</strong></span><div><button class="btn-editar" onclick="abrirEdicaoMeta(${m.id})">Editar Alvo</button><button class="btn-excluir" onclick="deletarItem(${m.id}, 'meta')">Excluir Caixinha</button></div></div><div class="meta-info"><span style="color:#666;">Total Aplicado: ${fMoeda(m.invAtual||0)} | Total Atual: <strong style="color:blue;">${fMoeda(m.liqAtual||0)}</strong></span><span style="color:#1a1a2e;">Alvo: ${fMoeda(m.alvo)} (${fNum(p)}%)</span></div><div class="barra-fundo" style="margin-top:5px; height:10px;"><div class="barra-progresso" style="width: ${p}%; ${p===100?'background-color:#28a745;':''}"></div></div>${htmlAportes}<button class="btn-acao secundario" style="margin-top:15px; font-size:0.9em; padding:10px;" onclick="abrirAporte(${m.id}, null)">+ Nova Aplicação nesta Caixinha</button></div>`;
             });
         }
@@ -879,7 +893,7 @@
                         <h4>${b}</h4>
                         <p style="font-size: 0.85em; color: #666; font-weight: normal; margin-bottom: 3px;">Bruto: ${fMoeda(totais[b].bru)}</p>
                         <p title="Valor Líquido">Líq: ${fMoeda(totais[b].liq)}</p>
-                        <p style="font-size: 0.8em; color: #e94560; font-weight: bold; margin-top: 5px; border-top: 1px solid #eee; padding-top: 3px;" title="Taxa Média Ponderada baseada no montante bruto de cada ativo">CDI Médio: ${fNum(taxaPonderada)}%</p>
+                        <p style="font-size: 0.8em; color: #e94560; font-weight: bold; margin-top: 5px; border-top: 1px solid #eee; padding-top: 3px;" title="Taxa Média Ponderada baseada no montante bruto de cada ativo">CDI Médio: ${fTaxa(taxaPonderada)}%</p>
                       </div>`;
             }
             cont.innerHTML = h; 
