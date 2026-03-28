@@ -191,6 +191,7 @@
                         </tr>
                     </thead>
                     <tbody id="corpo-tabela"></tbody>
+                    <tfoot id="tfoot-resultados"></tfoot>
                 </table>
             </div>
         </section>
@@ -587,7 +588,11 @@
             const corpoTabela = document.getElementById('corpo-tabela'); corpoTabela.innerHTML = '';
             let valInv = 0, valBru = 0; totalLiquidoGlobal = 0; let totaisBancos = {};
 
-            if (serieCDI.length === 0) return corpoTabela.innerHTML = '<tr><td colspan="11" style="text-align:center;">Aguardando API...</td></tr>';
+            if (serieCDI.length === 0) {
+                corpoTabela.innerHTML = '<tr><td colspan="11" style="text-align:center;">Aguardando API...</td></tr>';
+                calcularTotaisInvestimentos();
+                return;
+            }
 
             // PARTE A: CARTEIRA
             carteira.forEach(inv => {
@@ -640,11 +645,11 @@
                        <button class="btn-editar" onclick="abrirEdicao(${inv.id})">Editar</button>
                        <button class="btn-excluir" onclick="deletarItem(${inv.id}, 'inv')">Excluir</button>`;
 
-                // Labels de novos campos
                 const liquidezDisplay = (inv.liquidez === 'Não') ? '<span style="color:#dc3545; font-weight:bold;">Não</span>' : '<span style="color:#28a745; font-weight:bold;">Sim</span>';
                 const vencimentoDisplay = inv.vencimento ? inv.vencimento.split('-').reverse().join('/') : '-';
 
-                corpoTabela.innerHTML += `<tr ${isResgatado ? 'style="background-color: #e9ecef; opacity: 0.8;"' : ''}>
+                // Usando atributos data-* para os totais dinâmicos calcularem de forma exata depois
+                corpoTabela.innerHTML += `<tr data-val-inicial="${valOriginal}" data-taxa="${parseFloat(inv.taxa)}" data-ir="${ir}" data-val-bruto="${vAtual}" data-val-liquido="${vLiq}" ${isResgatado ? 'style="background-color: #e9ecef; opacity: 0.8;"' : ''}>
                     <td><b>${nomeBanco}</b>${strStatus}</td>
                     <td>${dia}/${mes}/${ano}</td>
                     <td>${liquidezDisplay}</td>
@@ -691,7 +696,9 @@
                 meta.liqAtual = metaLiqAtual; meta.invAtual = metaInvAtual;
             });
 
-            if (carteira.length === 0 && listaMetas.length === 0) corpoTabela.innerHTML = '<tr><td colspan="11" style="text-align:center;">Nenhuma aplicação ou caixinha cadastrada.</td></tr>';
+            if (carteira.length === 0 && listaMetas.length === 0) {
+                corpoTabela.innerHTML = '<tr><td colspan="11" style="text-align:center;">Nenhuma aplicação ou caixinha cadastrada.</td></tr>';
+            }
 
             document.getElementById('dash-valor-investido').innerText = fMoeda(valInv);
             document.getElementById('dash-valor-liquido').innerText = fMoeda(totalLiquidoGlobal);
@@ -700,6 +707,9 @@
             document.getElementById('dash-rentabilidade').style.color = rent >= 0 ? 'green' : 'red';
 
             renderizarCardsBancos(totaisBancos); atualizarFiltroGrafico(); desenharGraficoPizza(totaisBancos); renderizarMetas();
+            
+            // Calcula e renderiza a barra de total da tabela na hora que carrega a página
+            calcularTotaisInvestimentos();
         }
 
         // TELA DE INVESTIMENTOS
@@ -769,6 +779,8 @@
             const rows = document.querySelectorAll('#corpo-tabela tr');
 
             rows.forEach(row => {
+                if (!row.hasAttribute('data-val-inicial')) return; // ignora linhas de alerta
+
                 let mostrarLinha = true;
                 inputs.forEach((input, index) => {
                     const textoFiltro = input.value.toLowerCase();
@@ -784,6 +796,58 @@
                 });
                 row.style.display = mostrarLinha ? '' : 'none';
             });
+
+            // Recalcula os totais usando a nova visualização filtrada
+            calcularTotaisInvestimentos();
+        }
+
+        // NOVO: Cálculo Dinâmico de Totais da Tabela de Investimentos
+        function calcularTotaisInvestimentos() {
+            const rows = document.querySelectorAll('#corpo-tabela tr');
+            let sumInicial = 0, sumBruto = 0, sumLiquido = 0;
+            let sumBrutoVezesTaxa = 0, sumBrutoVezesIR = 0;
+            let countVisible = 0;
+
+            rows.forEach(row => {
+                // Se a linha estiver visível e contiver dados válidos, some na conta global
+                if (row.style.display !== 'none' && row.hasAttribute('data-val-inicial')) {
+                    const vIni = parseFloat(row.getAttribute('data-val-inicial')) || 0;
+                    const vBru = parseFloat(row.getAttribute('data-val-bruto')) || 0;
+                    const vLiq = parseFloat(row.getAttribute('data-val-liquido')) || 0;
+                    const taxa = parseFloat(row.getAttribute('data-taxa')) || 0;
+                    const ir = parseFloat(row.getAttribute('data-ir')) || 0;
+
+                    sumInicial += vIni;
+                    sumBruto += vBru;
+                    sumLiquido += vLiq;
+                    sumBrutoVezesTaxa += (vBru * taxa);
+                    sumBrutoVezesIR += (vBru * ir);
+                    countVisible++;
+                }
+            });
+
+            const tfoot = document.getElementById('tfoot-resultados');
+            if (countVisible === 0) {
+                tfoot.innerHTML = '';
+                return;
+            }
+
+            // Cálculos de Média Ponderada
+            const taxaMedia = sumBruto > 0 ? (sumBrutoVezesTaxa / sumBruto) : 0;
+            const irMedio = sumBruto > 0 ? (sumBrutoVezesIR / sumBruto) : 0;
+
+            tfoot.innerHTML = `
+                <tr style="background-color: #0f3460; color: white; font-weight: bold; border-top: 3px solid #e94560;">
+                    <td colspan="4" style="text-align: right; padding: 15px 10px;">📊 TOTAIS (Filtro Ativo):</td>
+                    <td style="padding: 15px 10px;">${fMoeda(sumInicial)}</td>
+                    <td style="padding: 15px 10px;" title="Taxa Média Ponderada">${fTaxa(taxaMedia)}%</td>
+                    <td style="padding: 15px 10px; text-align: center;">-</td>
+                    <td style="padding: 15px 10px;" title="IR Médio Ponderado">${fNum(irMedio)}%</td>
+                    <td style="padding: 15px 10px;">${fMoeda(sumBruto)}</td>
+                    <td style="padding: 15px 10px; color: #a8d5ff;">${fMoeda(sumLiquido)}</td>
+                    <td></td>
+                </tr>
+            `;
         }
 
         // =========================================================
