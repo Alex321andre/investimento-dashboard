@@ -76,7 +76,6 @@
         footer { background-color: #1a1a2e; color: white; text-align: center; padding: 20px; margin-top: auto; font-size: 0.9em; }
         footer a:hover { text-decoration: underline !important; }
 
-        /* TELAS DE LOGIN E MODAIS */
         #cabecalho-app { display: none; }
         .box-login { max-width: 400px; margin: 40px auto; }
         .btn-sair { position: absolute; top: 20px; right: 20px; background: transparent; color: white; border: 1px solid white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.9em; }
@@ -86,7 +85,6 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; padding: 20px; }
         .box-modal { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;}
 
-        /* ESTILOS EXTRAS */
         .meta-card { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .barra-fundo { width: 100%; background-color: #e0e0e0; border-radius: 10px; height: 20px; margin-top: 15px; margin-bottom: 10px; overflow: hidden; }
         .barra-progresso { background-color: #e94560; height: 100%; border-radius: 10px; transition: width 0.5s ease-in-out; }
@@ -305,10 +303,18 @@
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 <div class="card" style="border-top: 4px solid #1a1a2e; margin-top: 0;">
-                    <h3>📥 Importar Dados</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Arquivo CSV contendo: banco; data; valor; taxa.</p>
+                    <h3>📥 Importar Arquivo CSV</h3>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Arquivo contendo: banco; data; valor; taxa.</p>
                     <input type="file" id="input-csv" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" onclick="importarCSV()">Carregar Arquivo CSV</button>
+                </div>
+
+                <div class="card" style="border-top: 4px solid #28a745; margin-top: 0;">
+                    <h3>📋 Importar via Texto</h3>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Cole os dados no formato: <strong>banco;data;valor;taxa</strong></p>
+                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Ex: C6;2024-10-21;301.00;103.0 (Uma linha por vez)</p>
+                    <textarea id="input-csv-texto" rows="5" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
+                    <button type="button" class="btn-acao secundario" style="background-color: #28a745; border-color: #28a745;" onclick="importarCSVTexto()">Importar Texto Colado</button>
                 </div>
 
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
@@ -443,7 +449,6 @@
                 usuarioAtual = user; document.getElementById('user-display-email').innerText = `Logado: ${user.email}`; cab.style.display = 'block';
                 const m = (new Date().getMonth() + 1).toString().padStart(2, '0'); const a = new Date().getFullYear().toString();
                 
-                // Set default month/year in filters
                 document.getElementById('filtro-mes-trans').value = m; document.getElementById('filtro-ano-trans').value = a;
                 document.getElementById('filtro-graf-mes-desp').value = m; document.getElementById('filtro-graf-ano-desp').value = a;
 
@@ -489,20 +494,16 @@
         }
 
         function atualizarSelectsGerenciador() {
-            // Categorias
             let optCat = ''; categoriasAtuais.sort().forEach(c => optCat += `<option value="${c}">${c}</option>`);
             [document.getElementById('trans-cat'), document.getElementById('edit-trans-cat')].forEach(s => { if(s) { const val = s.value; s.innerHTML = optCat; if(categoriasAtuais.includes(val)) s.value = val; }});
             
-            // Categorias (Filtro Gráfico)
             const selCatGraf = document.getElementById('filtro-graf-cat-desp');
             let optCatGraf = '<option value="todas">Todas</option>' + optCat;
             if(selCatGraf) { const val = selCatGraf.value; selCatGraf.innerHTML = optCatGraf; if(categoriasAtuais.includes(val)) selCatGraf.value = val; }
 
-            // Descrições
             let optDesc = ''; descricoesAtuais.sort().forEach(d => optDesc += `<option value="${d}">${d}</option>`);
             [document.getElementById('trans-desc'), document.getElementById('edit-trans-desc')].forEach(s => { if(s) { const val = s.value; s.innerHTML = optDesc; if(descricoesAtuais.includes(val)) s.value = val; }});
 
-            // Descrições (Filtro Gráfico)
             const selDescGraf = document.getElementById('filtro-graf-desc-desp');
             let optDescGraf = '<option value="todas">Todas</option>' + optDesc;
             if(selDescGraf) { const val = selDescGraf.value; selDescGraf.innerHTML = optDescGraf; if(descricoesAtuais.includes(val)) selDescGraf.value = val; }
@@ -532,7 +533,6 @@
 
             if (serieCDI.length === 0) return corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Aguardando API...</td></tr>';
 
-            // PARTE A: CARTEIRA NORMAL
             carteira.forEach(inv => {
                 const isResgatado = !!inv.dataResgate;
                 const [ano, mes, dia] = inv.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
@@ -582,7 +582,6 @@
                 </tr>`;
             });
 
-            // PARTE B: CAIXINHAS / METAS
             const nomeBancoMeta = "Caixinhas (Metas)";
             listaMetas.forEach(meta => {
                 if (!meta.aportes) { meta.aportes = []; if (meta.data && meta.valor) { meta.aportes.push({ id: Date.now(), data: meta.data, valor: meta.valor, taxa: meta.taxa || 100 }); } }
@@ -602,7 +601,6 @@
 
             if (carteira.length === 0 && listaMetas.length === 0) corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Nenhuma aplicação ou caixinha cadastrada.</td></tr>';
 
-            // ATUALIZA DASHBOARD
             document.getElementById('dash-valor-investido').innerText = fMoeda(valInv);
             document.getElementById('dash-valor-liquido').innerText = fMoeda(totalLiquidoGlobal);
             let rent = valInv > 0 ? ((totalLiquidoGlobal - valInv) / valInv) * 100 : 0;
@@ -612,14 +610,12 @@
             renderizarCardsBancos(totaisBancos); atualizarFiltroGrafico(); desenharGraficoPizza(totaisBancos); renderizarMetas();
         }
 
-        // TELA DE INVESTIMENTOS
         function toggleFormInvestimento() { const f = document.getElementById('form-investimento'); f.style.display = f.style.display === 'none' ? 'grid' : 'none'; }
         function adicionarInvestimento(e) { e.preventDefault(); carteira.push({ id: Date.now(), banco: document.getElementById('input-banco').value.trim(), data: document.getElementById('input-data').value, valor: document.getElementById('input-valor').value, taxa: document.getElementById('input-taxa').value }); document.getElementById('form-investimento').reset(); toggleFormInvestimento(); salvarNoBanco(); }
         function abrirEdicao(id) { const inv = carteira.find(i => i.id === id); if(inv) { document.getElementById('edit-id').value = inv.id; document.getElementById('edit-banco').value = inv.banco || ""; document.getElementById('edit-data').value = inv.data; document.getElementById('edit-valor').value = inv.valor; document.getElementById('edit-taxa').value = inv.taxa; document.getElementById('modal-editar').style.display = 'flex'; } }
         function fecharEdicao() { document.getElementById('modal-editar').style.display = 'none'; }
         function salvarEdicao() { const id = parseInt(document.getElementById('edit-id').value); const idx = carteira.findIndex(i => i.id === id); if(idx !== -1) { carteira[idx].banco = document.getElementById('edit-banco').value; carteira[idx].data = document.getElementById('edit-data').value; carteira[idx].valor = parseFloat(document.getElementById('edit-valor').value); carteira[idx].taxa = parseFloat(document.getElementById('edit-taxa').value); salvarNoBanco(); fecharEdicao(); } }
         
-        // NOVO: RESGATE
         function abrirResgate(id) { document.getElementById('resgate-id').value = id; document.getElementById('resgate-data').value = new Date().toISOString().split('T')[0]; document.getElementById('modal-resgatar').style.display = 'flex'; }
         function fecharResgate() { document.getElementById('modal-resgatar').style.display = 'none'; }
         function confirmarResgate() {
@@ -702,15 +698,7 @@
             if (carteira.length === 0 && listaMetas.length === 0) return chartInstance = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [] } });
             
             let mixLinhaTempo = [];
-            
-            // Adiciona apenas investimentos não resgatados, ou conta apenas o rendimento deles até a data do resgate.
-            carteira.forEach(inv => {
-                mixLinhaTempo.push({
-                    banco: inv.banco, data: inv.data, valor: inv.valor, taxa: inv.taxa,
-                    dataResgate: inv.dataResgate
-                });
-            });
-            
+            carteira.forEach(inv => { mixLinhaTempo.push({ banco: inv.banco, data: inv.data, valor: inv.valor, taxa: inv.taxa, dataResgate: inv.dataResgate }); });
             listaMetas.forEach(m => { if(m.aportes) m.aportes.forEach(ap => mixLinhaTempo.push({banco: "Caixinhas (Metas)", data: ap.data, valor: ap.valor, taxa: ap.taxa, dataResgate: null})); });
             
             let cartProc = bSel !== 'todos' ? mixLinhaTempo.filter(i => (i.banco || "Não Informado") === bSel) : mixLinhaTempo; 
@@ -798,7 +786,7 @@
         function baixarCSV() { if(carteira.length===0)return alert("Sem dados."); let csv="banco;data;valor;taxa\n"; carteira.forEach(i=>{ const val = i.valor.toString().replace('.', ','); const tx = i.taxa.toString().replace('.', ','); csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${i.data};${val};${tx}\n`;}); const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); }
         function prepararEmail() { if(carteira.length===0)return alert("Sem dados!"); let msg="Relatório - InvestDash\n\n"; document.querySelectorAll('#corpo-tabela tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=8) msg+=`${tds[0].innerText} | ${tds[1].innerText} | Inicial: ${tds[2].innerText} | Liq: ${tds[7].innerText}\n`; }); window.location.href=`mailto:?subject=Relatorio&body=${encodeURIComponent(msg)}`; }
         
-        // --- FUNÇÃO DE IMPORTAÇÃO CORRIGIDA ---
+        // --- IMPORTAR VIA ARQUIVO ---
         function importarCSV() { 
             const f = document.getElementById('input-csv').files[0]; 
             if(!f) return alert("Selecione o arquivo."); 
@@ -809,7 +797,7 @@
                 let q = 0; 
                 
                 for(let i=1; i<l.length; i++){ 
-                    // Remove as aspas indesejadas que o Excel coloca ao salvar CSVs com ponto e vírgula
+                    if(l[i].trim() === '') continue; // Pula linha vazia
                     let linhaLimpa = l[i].replace(/"/g, ''); 
                     
                     const sep = linhaLimpa.includes(';') ? ';' : ','; 
@@ -829,11 +817,53 @@
                 } 
                 if(q > 0) { 
                     salvarNoBanco(); 
-                    alert(`${q} registros importados com sucesso!`); 
+                    alert(`${q} registros importados do arquivo com sucesso!`); 
                     navegar('tela-investimentos'); 
                 } 
             }; 
             r.readAsText(f); 
+        }
+
+        // --- NOVIDADE: IMPORTAR VIA TEXTO COLADO ---
+        function importarCSVTexto() {
+            const texto = document.getElementById('input-csv-texto').value.trim();
+            if(!texto) return alert("Cole os dados no campo de texto primeiro.");
+            
+            const l = texto.split('\n');
+            let q = 0;
+            
+            // Se a pessoa colar o cabeçalho "banco;data...", pula a primeira linha
+            let inicio = 0;
+            if(l[0].toLowerCase().includes('banco')) inicio = 1;
+
+            for(let i = inicio; i < l.length; i++){
+                if(l[i].trim() === '') continue; // Pula linha vazia
+                let linhaLimpa = l[i].replace(/"/g, '');
+                
+                const sep = linhaLimpa.includes(';') ? ';' : ',';
+                const c = linhaLimpa.split(sep);
+                
+                if(c.length >= 4){
+                    const b = c[0].trim();
+                    const d = c[1].trim();
+                    const v = parseFloat(c[2].replace(',','.'));
+                    const t = parseFloat(c[3].replace(',','.'));
+                    
+                    if(b && d && !isNaN(v) && !isNaN(t)){
+                        carteira.push({id: Date.now() + i, banco: b, data: d, valor: v, taxa: t});
+                        q++;
+                    }
+                }
+            }
+            
+            if(q > 0) {
+                document.getElementById('input-csv-texto').value = ''; // Limpa o quadro
+                salvarNoBanco();
+                alert(`${q} registros importados a partir do texto com sucesso!`);
+                navegar('tela-investimentos');
+            } else {
+                alert("Nenhum dado válido encontrado. Verifique se o formato está correto (Ex: C6;2024-10-21;301.00;103.0)");
+            }
         }
     </script>
 </body>
