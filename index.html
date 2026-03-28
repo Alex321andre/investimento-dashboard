@@ -167,6 +167,8 @@
                     <div><label>Data da Aplicação:</label><input type="date" id="input-data" required></div>
                     <div><label>Valor Aplicado (R$):</label><input type="number" id="input-valor" step="0.01" min="1" required></div>
                     <div><label>Taxa (% do CDI):</label><input type="number" id="input-taxa" step="0.1" required></div>
+                    <div><label>Liquidez Diária:</label><select id="input-liquidez"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
+                    <div><label>Vencimento / Resgate:</label><input type="date" id="input-vencimento"></div>
                     <button type="submit" style="margin-top: 0;">Salvar Investimento</button>
                 </div>
             </form>
@@ -177,6 +179,8 @@
                         <tr>
                             <th>Banco / Status <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Data Aplicação <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>Liq. Diária <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>Vencimento <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Valor Inicial <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Taxa <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Dias <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
@@ -326,15 +330,15 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 <div class="card" style="border-top: 4px solid #1a1a2e; margin-top: 0;">
                     <h3>📥 Importar Arquivo CSV</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Arquivo contendo: banco; data; valor; taxa.</p>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Arquivo contendo: banco; data; valor; taxa; liquidez; vencimento.</p>
                     <input type="file" id="input-csv" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" onclick="importarCSV()">Carregar Arquivo CSV</button>
                 </div>
 
                 <div class="card" style="border-top: 4px solid #28a745; margin-top: 0;">
                     <h3>📋 Importar via Texto</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Cole os dados no formato: <strong>banco;data;valor;taxa</strong></p>
-                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Ex: C6;2024-10-21;301.00;103.0</p>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Cole os dados no formato: <strong>banco;data;valor;taxa;liquidez;vencimento</strong></p>
+                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Ex: C6;2024-10-21;301.00;103.0;Sim;2026-10-21</p>
                     <textarea id="input-csv-texto" rows="5" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
                     <button type="button" class="btn-acao secundario" style="background-color: #28a745; border-color: #28a745;" onclick="importarCSVTexto()">Importar Texto Colado</button>
                 </div>
@@ -381,10 +385,14 @@
             <div class="box-modal">
                 <h2 style="margin-bottom: 15px; text-align: center;">Editar Investimento</h2>
                 <input type="hidden" id="edit-id">
-                <div class="grupo-input"><label>Banco:</label><input type="text" id="edit-banco" required></div>
-                <div class="grupo-input"><label>Data:</label><input type="date" id="edit-data" required></div>
-                <div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-valor" step="0.01" required></div>
-                <div class="grupo-input"><label>Taxa (% CDI):</label><input type="number" id="edit-taxa" step="0.1" required></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="grupo-input" style="grid-column: 1 / -1;"><label>Banco:</label><input type="text" id="edit-banco" required></div>
+                    <div class="grupo-input"><label>Data:</label><input type="date" id="edit-data" required></div>
+                    <div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-valor" step="0.01" required></div>
+                    <div class="grupo-input"><label>Taxa (% CDI):</label><input type="number" id="edit-taxa" step="0.1" required></div>
+                    <div class="grupo-input"><label>Liquidez Diária:</label><select id="edit-liquidez"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
+                    <div class="grupo-input" style="grid-column: 1 / -1;"><label>Data de Vencimento / Resgate:</label><input type="date" id="edit-vencimento"></div>
+                </div>
                 <button type="button" class="btn-acao" onclick="salvarEdicao()">💾 Salvar</button>
                 <button type="button" class="btn-acao terciario" onclick="fecharEdicao()">Cancelar</button>
             </div>
@@ -451,7 +459,6 @@
             return parseFloat(str);
         }
 
-        // Novo formatador específico para exibir a taxa com até 8 casas decimais
         function fTaxa(valor) {
             if (!valor) return "0,00";
             let str = valor.toString();
@@ -550,7 +557,7 @@
         function deletarItemGerenciador(idx) { if(confirm("Apagar este item?")) { const tipo = document.getElementById('tipo-gerenciador-ativo').value; const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais; lista.splice(idx, 1); salvarNoBanco(); abrirModalGerenciador(tipo); } }
 
         // =========================================================
-        // 4. LÓGICA CORE (COM TRUNCAMENTO B3) E DATA NA TELA
+        // 4. LÓGICA CORE E RENDERIZAÇÃO
         // =========================================================
         async function carregarCDI() {
             try {
@@ -580,7 +587,7 @@
             const corpoTabela = document.getElementById('corpo-tabela'); corpoTabela.innerHTML = '';
             let valInv = 0, valBru = 0; totalLiquidoGlobal = 0; let totaisBancos = {};
 
-            if (serieCDI.length === 0) return corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Aguardando API...</td></tr>';
+            if (serieCDI.length === 0) return corpoTabela.innerHTML = '<tr><td colspan="11" style="text-align:center;">Aguardando API...</td></tr>';
 
             // PARTE A: CARTEIRA
             carteira.forEach(inv => {
@@ -623,7 +630,6 @@
                     totaisBancos[nomeBanco].inv += valOriginal;
                     totaisBancos[nomeBanco].bru += vAtual;
                     totaisBancos[nomeBanco].liq += vLiq;
-                    // Acumulando a taxa para o cálculo ponderado
                     totaisBancos[nomeBanco].bruVezesTaxa += (vAtual * parseFloat(inv.taxa));
                 }
 
@@ -634,10 +640,21 @@
                        <button class="btn-editar" onclick="abrirEdicao(${inv.id})">Editar</button>
                        <button class="btn-excluir" onclick="deletarItem(${inv.id}, 'inv')">Excluir</button>`;
 
-                // AQUI USAMOS fTaxa EM VEZ DE fNum PARA A TAXA DO INVESTIMENTO
+                // Labels de novos campos
+                const liquidezDisplay = (inv.liquidez === 'Não') ? '<span style="color:#dc3545; font-weight:bold;">Não</span>' : '<span style="color:#28a745; font-weight:bold;">Sim</span>';
+                const vencimentoDisplay = inv.vencimento ? inv.vencimento.split('-').reverse().join('/') : '-';
+
                 corpoTabela.innerHTML += `<tr ${isResgatado ? 'style="background-color: #e9ecef; opacity: 0.8;"' : ''}>
-                    <td><b>${nomeBanco}</b>${strStatus}</td><td>${dia}/${mes}/${ano}</td><td>${fMoeda(valOriginal)}</td><td>${fTaxa(parseFloat(inv.taxa))}%</td><td>${dias}</td><td>${fNum(ir)}%</td>
-                    <td style="color:${isResgatado?'#666':'green'};">${fMoeda(vAtual)}</td><td style="color:${isResgatado?'#666':'blue'}; font-weight:bold;">${fMoeda(vLiq)}</td>
+                    <td><b>${nomeBanco}</b>${strStatus}</td>
+                    <td>${dia}/${mes}/${ano}</td>
+                    <td>${liquidezDisplay}</td>
+                    <td>${vencimentoDisplay}</td>
+                    <td>${fMoeda(valOriginal)}</td>
+                    <td>${fTaxa(parseFloat(inv.taxa))}%</td>
+                    <td>${dias}</td>
+                    <td>${fNum(ir)}%</td>
+                    <td style="color:${isResgatado?'#666':'green'};">${fMoeda(vAtual)}</td>
+                    <td style="color:${isResgatado?'#666':'blue'}; font-weight:bold;">${fMoeda(vLiq)}</td>
                     <td style="white-space: nowrap;">${botoes}</td>
                 </tr>`;
             });
@@ -665,7 +682,6 @@
                     
                     let vAtual = Math.round((valOriginal * fatorAcumulado) * 100) / 100;
                     valBru += vAtual; totaisBancos[nomeBancoMeta].bru += vAtual;
-                    // Acumulando a taxa para o cálculo ponderado
                     totaisBancos[nomeBancoMeta].bruVezesTaxa += (vAtual * parseFloat(aporte.taxa));
 
                     const dias = Math.ceil(Math.abs(new Date() - dataInv) / (1000 * 60 * 60 * 24)); let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5;
@@ -675,7 +691,7 @@
                 meta.liqAtual = metaLiqAtual; meta.invAtual = metaInvAtual;
             });
 
-            if (carteira.length === 0 && listaMetas.length === 0) corpoTabela.innerHTML = '<tr><td colspan="9" style="text-align:center;">Nenhuma aplicação ou caixinha cadastrada.</td></tr>';
+            if (carteira.length === 0 && listaMetas.length === 0) corpoTabela.innerHTML = '<tr><td colspan="11" style="text-align:center;">Nenhuma aplicação ou caixinha cadastrada.</td></tr>';
 
             document.getElementById('dash-valor-investido').innerText = fMoeda(valInv);
             document.getElementById('dash-valor-liquido').innerText = fMoeda(totalLiquidoGlobal);
@@ -688,10 +704,53 @@
 
         // TELA DE INVESTIMENTOS
         function toggleFormInvestimento() { const f = document.getElementById('form-investimento'); f.style.display = f.style.display === 'none' ? 'grid' : 'none'; }
-        function adicionarInvestimento(e) { e.preventDefault(); carteira.push({ id: Date.now(), banco: document.getElementById('input-banco').value.trim(), data: document.getElementById('input-data').value, valor: document.getElementById('input-valor').value, taxa: document.getElementById('input-taxa').value }); document.getElementById('form-investimento').reset(); toggleFormInvestimento(); salvarNoBanco(); }
-        function abrirEdicao(id) { const inv = carteira.find(i => i.id === id); if(inv) { document.getElementById('edit-id').value = inv.id; document.getElementById('edit-banco').value = inv.banco || ""; document.getElementById('edit-data').value = inv.data; document.getElementById('edit-valor').value = inv.valor; document.getElementById('edit-taxa').value = inv.taxa; document.getElementById('modal-editar').style.display = 'flex'; } }
+        
+        function adicionarInvestimento(e) { 
+            e.preventDefault(); 
+            carteira.push({ 
+                id: Date.now(), 
+                banco: document.getElementById('input-banco').value.trim(), 
+                data: document.getElementById('input-data').value, 
+                valor: document.getElementById('input-valor').value, 
+                taxa: document.getElementById('input-taxa').value,
+                liquidez: document.getElementById('input-liquidez').value,
+                vencimento: document.getElementById('input-vencimento').value
+            }); 
+            document.getElementById('form-investimento').reset(); 
+            toggleFormInvestimento(); 
+            salvarNoBanco(); 
+        }
+
+        function abrirEdicao(id) { 
+            const inv = carteira.find(i => i.id === id); 
+            if(inv) { 
+                document.getElementById('edit-id').value = inv.id; 
+                document.getElementById('edit-banco').value = inv.banco || ""; 
+                document.getElementById('edit-data').value = inv.data; 
+                document.getElementById('edit-valor').value = inv.valor; 
+                document.getElementById('edit-taxa').value = inv.taxa; 
+                document.getElementById('edit-liquidez').value = inv.liquidez || "Sim";
+                document.getElementById('edit-vencimento').value = inv.vencimento || "";
+                document.getElementById('modal-editar').style.display = 'flex'; 
+            } 
+        }
+
         function fecharEdicao() { document.getElementById('modal-editar').style.display = 'none'; }
-        function salvarEdicao() { const id = parseInt(document.getElementById('edit-id').value); const idx = carteira.findIndex(i => i.id === id); if(idx !== -1) { carteira[idx].banco = document.getElementById('edit-banco').value; carteira[idx].data = document.getElementById('edit-data').value; carteira[idx].valor = parseFloat(document.getElementById('edit-valor').value); carteira[idx].taxa = parseFloat(document.getElementById('edit-taxa').value); salvarNoBanco(); fecharEdicao(); } }
+        
+        function salvarEdicao() { 
+            const id = parseInt(document.getElementById('edit-id').value); 
+            const idx = carteira.findIndex(i => i.id === id); 
+            if(idx !== -1) { 
+                carteira[idx].banco = document.getElementById('edit-banco').value; 
+                carteira[idx].data = document.getElementById('edit-data').value; 
+                carteira[idx].valor = parseFloat(document.getElementById('edit-valor').value); 
+                carteira[idx].taxa = parseFloat(document.getElementById('edit-taxa').value); 
+                carteira[idx].liquidez = document.getElementById('edit-liquidez').value;
+                carteira[idx].vencimento = document.getElementById('edit-vencimento').value;
+                salvarNoBanco(); 
+                fecharEdicao(); 
+            } 
+        }
         
         function abrirResgate(id) { document.getElementById('resgate-id').value = id; document.getElementById('resgate-data').value = new Date().toISOString().split('T')[0]; document.getElementById('modal-resgatar').style.display = 'flex'; }
         function fecharResgate() { document.getElementById('modal-resgatar').style.display = 'none'; }
@@ -795,7 +854,6 @@
                 let p = (m.liqAtual / m.alvo) * 100; if(p > 100) p = 100;
                 let htmlAportes = `<table style="width:100%; font-size:0.9em; margin-top:15px; border-top: 1px solid #eee; padding-top: 10px;"><tr style="text-align:left; color:#666; border-bottom:1px solid #ddd;"><th>Data</th><th>Investido</th><th>Taxa</th><th>Líquido Atual</th><th></th></tr>`;
                 
-                // AQUI USAMOS fTaxa EM VEZ DE fNum PARA A TAXA DA CAIXINHA
                 if(m.aportes && m.aportes.length > 0) { m.aportes.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(ap => { const [ano, mes, dia] = ap.data.split('-'); htmlAportes += `<tr><td>${dia}/${mes}/${ano}</td><td>${fMoeda(ap.valor)}</td><td>${fTaxa(ap.taxa)}%</td><td style="color:blue; font-weight:bold;">${fMoeda(ap.liqCalculado||0)}</td><td style="text-align:right;"><button style="background:none;border:none;cursor:pointer;font-size:1.1em;margin-right:8px;" onclick="abrirAporte(${m.id}, ${ap.id})" title="Editar Aplicação">✏️</button><button style="background:none;border:none;cursor:pointer;font-size:1.1em;" onclick="deletarAporte(${m.id}, ${ap.id})" title="Excluir Aplicação">❌</button></td></tr>`; }); } htmlAportes += `</table>`;
                 cont.innerHTML += `<div class="meta-card"><div class="meta-info" style="margin-bottom: 10px;"><span style="font-size:1.2em;">🎯 <strong style="color:#1a1a2e;">${m.nome}</strong></span><div><button class="btn-editar" onclick="abrirEdicaoMeta(${m.id})">Editar Alvo</button><button class="btn-excluir" onclick="deletarItem(${m.id}, 'meta')">Excluir Caixinha</button></div></div><div class="meta-info"><span style="color:#666;">Total Aplicado: ${fMoeda(m.invAtual||0)} | Total Atual: <strong style="color:blue;">${fMoeda(m.liqAtual||0)}</strong></span><span style="color:#1a1a2e;">Alvo: ${fMoeda(m.alvo)} (${fNum(p)}%)</span></div><div class="barra-fundo" style="margin-top:5px; height:10px;"><div class="barra-progresso" style="width: ${p}%; ${p===100?'background-color:#28a745;':''}"></div></div>${htmlAportes}<button class="btn-acao secundario" style="margin-top:15px; font-size:0.9em; padding:10px;" onclick="abrirAporte(${m.id}, null)">+ Nova Aplicação nesta Caixinha</button></div>`;
             });
@@ -902,8 +960,8 @@
         function atualizarFiltroGrafico() { const sel = document.getElementById('select-filtro-banco'); const vAt = sel.value; const unicos = [...new Set(carteira.map(i => i.banco || "Não Informado"))]; if(listaMetas.length > 0 && !unicos.includes("Caixinhas (Metas)")) unicos.push("Caixinhas (Metas)"); unicos.sort(); let opt = `<option value="todos">Todos</option>`; unicos.forEach(b => opt += `<option value="${b}">${b}</option>`); sel.innerHTML = opt; sel.value = unicos.includes(vAt) ? vAt : "todos"; }
         function deletarItem(id, tipo = 'inv') { if (confirm("Excluir registro?")) { if(tipo === 'inv') carteira = carteira.filter(i => i.id !== id); if(tipo === 'trans') transacoes = transacoes.filter(i => i.id !== id); if(tipo === 'meta') listaMetas = listaMetas.filter(i => i.id !== id); salvarNoBanco(); if(document.getElementById('tela-grafico').classList.contains('ativa')) { desenharGrafico(); desenharGraficoDespesas(); } } }
         function limparTudo() { if (confirm("Certeza ABSOLUTA? Esta ação apagará permanentemente todo o seu histórico e não pode ser desfeita.")) { carteira = []; transacoes = []; listaMetas = []; salvarNoBanco(); } }
-        function baixarCSV() { if(carteira.length===0)return alert("Sem dados."); let csv="banco;data;valor;taxa\n"; carteira.forEach(i=>{ const val = i.valor.toString().replace('.', ','); const tx = i.taxa.toString().replace('.', ','); csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${i.data};${val};${tx}\n`;}); const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); }
-        function prepararEmail() { if(carteira.length===0)return alert("Sem dados!"); let msg="Relatório - InvestDash\n\n"; document.querySelectorAll('#corpo-tabela tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=8) msg+=`${tds[0].innerText} | ${tds[1].innerText} | Inicial: ${tds[2].innerText} | Liq: ${tds[7].innerText}\n`; }); window.location.href=`mailto:?subject=Relatorio&body=${encodeURIComponent(msg)}`; }
+        function baixarCSV() { if(carteira.length===0)return alert("Sem dados."); let csv="banco;data;valor;taxa;liquidez;vencimento\n"; carteira.forEach(i=>{ const val = i.valor.toString().replace('.', ','); const tx = i.taxa.toString().replace('.', ','); csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${i.data};${val};${tx};${i.liquidez||'Sim'};${i.vencimento||''}\n`;}); const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); }
+        function prepararEmail() { if(carteira.length===0)return alert("Sem dados!"); let msg="Relatório - InvestDash\n\n"; document.querySelectorAll('#corpo-tabela tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=10) msg+=`${tds[0].innerText} | ${tds[1].innerText} | Inicial: ${tds[4].innerText} | Liq: ${tds[9].innerText}\n`; }); window.location.href=`mailto:?subject=Relatorio&body=${encodeURIComponent(msg)}`; }
         
         function importarCSV() { 
             const f = document.getElementById('input-csv').files[0]; 
@@ -918,7 +976,9 @@
                     const c = linhaLimpa.split(sep); 
                     if(c.length >= 4){ 
                         const b = c[0].trim(); const d = c[1].trim(); const v = parseFloat(c[2].replace(',','.')); const t = parseFloat(c[3].replace(',','.')); 
-                        if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, data:d, valor:v, taxa:t}); q++; } 
+                        const liq = c[4] ? c[4].trim() : "Sim";
+                        const ven = c[5] ? c[5].trim() : "";
+                        if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, data:d, valor:v, taxa:t, liquidez:liq, vencimento:ven}); q++; } 
                     } 
                 } 
                 if(q > 0) { salvarNoBanco(); alert(`${q} registros importados com sucesso!`); navegar('tela-investimentos'); } 
@@ -937,11 +997,13 @@
                 const c = linhaLimpa.split(sep);
                 if(c.length >= 4){
                     const b = c[0].trim(); const d = c[1].trim(); const v = parseFloat(c[2].replace(',','.')); const t = parseFloat(c[3].replace(',','.'));
-                    if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: Date.now() + i, banco: b, data: d, valor: v, taxa: t}); q++; }
+                    const liq = c[4] ? c[4].trim() : "Sim";
+                    const ven = c[5] ? c[5].trim() : "";
+                    if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: Date.now() + i, banco: b, data: d, valor: v, taxa: t, liquidez: liq, vencimento: ven}); q++; }
                 }
             }
             if(q > 0) { document.getElementById('input-csv-texto').value = ''; salvarNoBanco(); alert(`${q} registros importados com sucesso!`); navegar('tela-investimentos'); } 
-            else { alert("Nenhum dado válido encontrado. Verifique se o formato está correto (Ex: C6;2024-10-21;301.00;103.0)"); }
+            else { alert("Nenhum dado válido encontrado. Verifique se o formato está correto (Ex: C6;2024-10-21;301.00;103.0;Sim;2026-10-21)"); }
         }
     </script>
 </body>
