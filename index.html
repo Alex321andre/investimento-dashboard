@@ -74,6 +74,7 @@
         .controles-grafico select, .controles-grafico input { padding: 8px; font-size: 1em; border-radius: 5px; border: 1px solid #ccc; outline: none; }
         
         footer { background-color: #1a1a2e; color: white; text-align: center; padding: 20px; margin-top: auto; font-size: 0.9em; }
+        footer a:hover { text-decoration: underline !important; }
 
         /* TELAS DE LOGIN E MODAIS */
         #cabecalho-app { display: none; }
@@ -401,6 +402,11 @@
 
     </main>
 
+    <footer>
+        <p>Desenvolvido por <strong>Alexandre da Silva Alves Rodrigues</strong> | Desafio Acadêmico</p>
+        <p style="margin-top: 5px; font-size: 0.9em;">Contato: <a href="mailto:alex321andre@gmail.com" style="color: #e94560; text-decoration: none; font-weight: bold;">alex321andre@gmail.com</a></p>
+    </footer>
+
     <script>
         // =========================================================
         // 0. FORMATADORES GLOBAIS (Padrão PT-BR)
@@ -436,8 +442,11 @@
             if (user) {
                 usuarioAtual = user; document.getElementById('user-display-email').innerText = `Logado: ${user.email}`; cab.style.display = 'block';
                 const m = (new Date().getMonth() + 1).toString().padStart(2, '0'); const a = new Date().getFullYear().toString();
+                
+                // Set default month/year in filters
                 document.getElementById('filtro-mes-trans').value = m; document.getElementById('filtro-ano-trans').value = a;
                 document.getElementById('filtro-graf-mes-desp').value = m; document.getElementById('filtro-graf-ano-desp').value = a;
+
                 navegar('tela-dashboard'); carregarDadosDoBanco(); carregarCDI();
             } else {
                 usuarioAtual = null; carteira = []; transacoes = []; listaMetas = []; cab.style.display = 'none';
@@ -480,13 +489,23 @@
         }
 
         function atualizarSelectsGerenciador() {
+            // Categorias
             let optCat = ''; categoriasAtuais.sort().forEach(c => optCat += `<option value="${c}">${c}</option>`);
             [document.getElementById('trans-cat'), document.getElementById('edit-trans-cat')].forEach(s => { if(s) { const val = s.value; s.innerHTML = optCat; if(categoriasAtuais.includes(val)) s.value = val; }});
-            const selCatGraf = document.getElementById('filtro-graf-cat-desp'); let optCatGraf = '<option value="todas">Todas</option>' + optCat; if(selCatGraf) { const val = selCatGraf.value; selCatGraf.innerHTML = optCatGraf; if(categoriasAtuais.includes(val)) selCatGraf.value = val; }
+            
+            // Categorias (Filtro Gráfico)
+            const selCatGraf = document.getElementById('filtro-graf-cat-desp');
+            let optCatGraf = '<option value="todas">Todas</option>' + optCat;
+            if(selCatGraf) { const val = selCatGraf.value; selCatGraf.innerHTML = optCatGraf; if(categoriasAtuais.includes(val)) selCatGraf.value = val; }
 
+            // Descrições
             let optDesc = ''; descricoesAtuais.sort().forEach(d => optDesc += `<option value="${d}">${d}</option>`);
             [document.getElementById('trans-desc'), document.getElementById('edit-trans-desc')].forEach(s => { if(s) { const val = s.value; s.innerHTML = optDesc; if(descricoesAtuais.includes(val)) s.value = val; }});
-            const selDescGraf = document.getElementById('filtro-graf-desc-desp'); let optDescGraf = '<option value="todas">Todas</option>' + optDesc; if(selDescGraf) { const val = selDescGraf.value; selDescGraf.innerHTML = optDescGraf; if(descricoesAtuais.includes(val)) selDescGraf.value = val; }
+
+            // Descrições (Filtro Gráfico)
+            const selDescGraf = document.getElementById('filtro-graf-desc-desp');
+            let optDescGraf = '<option value="todas">Todas</option>' + optDesc;
+            if(selDescGraf) { const val = selDescGraf.value; selDescGraf.innerHTML = optDescGraf; if(descricoesAtuais.includes(val)) selDescGraf.value = val; }
         }
 
         function abrirModalGerenciador(tipo) { document.getElementById('tipo-gerenciador-ativo').value = tipo; document.getElementById('titulo-modal-gerenciador').innerText = tipo === 'categorias' ? "Gerenciar Categorias" : "Gerenciar Descrições"; const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais; const ul = document.getElementById('lista-gerenciador-ui'); ul.innerHTML = ''; lista.sort().forEach((item, index) => { ul.innerHTML += `<li><span>${item}</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="deletarItemGerenciador(${index})" title="Excluir">❌</button></li>`; }); document.getElementById('modal-gerenciador').style.display = 'flex'; }
@@ -516,8 +535,7 @@
             // PARTE A: CARTEIRA NORMAL
             carteira.forEach(inv => {
                 const isResgatado = !!inv.dataResgate;
-                const [ano, mes, dia] = inv.data.split('-'); 
-                const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+                const [ano, mes, dia] = inv.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
                 
                 let dataFim = new Date();
                 if(isResgatado) {
@@ -686,11 +704,10 @@
             let mixLinhaTempo = [];
             
             // Adiciona apenas investimentos não resgatados, ou conta apenas o rendimento deles até a data do resgate.
-            // Para o gráfico de evolução, itens resgatados "saem" da carteira.
             carteira.forEach(inv => {
                 mixLinhaTempo.push({
                     banco: inv.banco, data: inv.data, valor: inv.valor, taxa: inv.taxa,
-                    dataResgate: inv.dataResgate // passamos adiante
+                    dataResgate: inv.dataResgate
                 });
             });
             
@@ -704,20 +721,12 @@
             for (let i = 0; i < cdiF.length; i++) { 
                 const dia = cdiF[i]; 
                 while (idx < ord.length && dia.dataObj >= new Date(ord[idx].data + 'T00:00:00')) { 
-                    ativ.push({ 
-                        dataObj: new Date(ord[idx].data + 'T00:00:00'), 
-                        valOri: parseFloat(ord[idx].valor), 
-                        valAtu: parseFloat(ord[idx].valor), 
-                        mult: parseFloat(ord[idx].taxa)/100,
-                        dataResg: ord[idx].dataResgate ? new Date(ord[idx].dataResgate + 'T00:00:00') : null
-                    }); 
+                    ativ.push({ dataObj: new Date(ord[idx].data + 'T00:00:00'), valOri: parseFloat(ord[idx].valor), valAtu: parseFloat(ord[idx].valor), mult: parseFloat(ord[idx].taxa)/100, dataResg: ord[idx].dataResgate ? new Date(ord[idx].dataResgate + 'T00:00:00') : null }); 
                     idx++; 
                 } 
                 
                 if (ativ.length > 0) { 
                     let b = 0, l = 0; 
-                    
-                    // FILTRO MAGICO: Se o dia atual do gráfico passou da data de resgate, esse dinheiro sai da carteira ativa!
                     ativ = ativ.filter(inv => !inv.dataResg || dia.dataObj <= inv.dataResg);
 
                     ativ.forEach(inv => { 
