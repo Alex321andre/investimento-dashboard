@@ -797,7 +797,44 @@
         
         function baixarCSV() { if(carteira.length===0)return alert("Sem dados."); let csv="banco;data;valor;taxa\n"; carteira.forEach(i=>{ const val = i.valor.toString().replace('.', ','); const tx = i.taxa.toString().replace('.', ','); csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${i.data};${val};${tx}\n`;}); const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); }
         function prepararEmail() { if(carteira.length===0)return alert("Sem dados!"); let msg="Relatório - InvestDash\n\n"; document.querySelectorAll('#corpo-tabela tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=8) msg+=`${tds[0].innerText} | ${tds[1].innerText} | Inicial: ${tds[2].innerText} | Liq: ${tds[7].innerText}\n`; }); window.location.href=`mailto:?subject=Relatorio&body=${encodeURIComponent(msg)}`; }
-        function importarCSV() { const f=document.getElementById('input-csv').files[0]; if(!f) return alert("Selecione o arquivo."); const r=new FileReader(); r.onload=function(e){ const l=e.target.result.split('\n'); let q=0; for(let i=1;i<l.length;i++){ const sep = l[i].includes(';') ? ';' : ','; const c=l[i].split(sep); if(c.length>=4){ const b=c[0].trim(), d=c[1].trim(), v=parseFloat(c[2].replace(',','.')), t=parseFloat(c[3].replace(',','.')); if(b&&d&&!isNaN(v)&&!isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, data:d, valor:v, taxa:t}); q++; } } } if(q>0) { salvarNoBanco(); alert(`${q} importados!`); navegar('tela-investimentos'); } }; r.readAsText(f); }
+        
+        // --- FUNÇÃO DE IMPORTAÇÃO CORRIGIDA ---
+        function importarCSV() { 
+            const f = document.getElementById('input-csv').files[0]; 
+            if(!f) return alert("Selecione o arquivo."); 
+            
+            const r = new FileReader(); 
+            r.onload = function(e){ 
+                const l = e.target.result.split('\n'); 
+                let q = 0; 
+                
+                for(let i=1; i<l.length; i++){ 
+                    // Remove as aspas indesejadas que o Excel coloca ao salvar CSVs com ponto e vírgula
+                    let linhaLimpa = l[i].replace(/"/g, ''); 
+                    
+                    const sep = linhaLimpa.includes(';') ? ';' : ','; 
+                    const c = linhaLimpa.split(sep); 
+                    
+                    if(c.length >= 4){ 
+                        const b = c[0].trim(); 
+                        const d = c[1].trim(); 
+                        const v = parseFloat(c[2].replace(',','.')); 
+                        const t = parseFloat(c[3].replace(',','.')); 
+                        
+                        if(b && d && !isNaN(v) && !isNaN(t)){ 
+                            carteira.push({id:Date.now()+i, banco:b, data:d, valor:v, taxa:t}); 
+                            q++; 
+                        } 
+                    } 
+                } 
+                if(q > 0) { 
+                    salvarNoBanco(); 
+                    alert(`${q} registros importados com sucesso!`); 
+                    navegar('tela-investimentos'); 
+                } 
+            }; 
+            r.readAsText(f); 
+        }
     </script>
 </body>
 </html>
