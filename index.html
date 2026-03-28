@@ -60,6 +60,8 @@
         th { background-color: #1a1a2e; color: white; white-space: nowrap; vertical-align: top; }
         tr:hover { background-color: #f1f1f1; }
         
+        .input-filtro-tabela { width: 100%; padding: 6px; margin-top: 8px; font-size: 0.9em; font-weight: normal; color: #333; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; display: block; }
+
         .btn-limpar { background-color: #dc3545; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 25px; width: 100%; transition: 0.3s; font-size: 1em; }
         .btn-limpar:hover { background-color: #c82333; }
         
@@ -173,14 +175,14 @@
                 <table id="tabela-resultados">
                     <thead>
                         <tr>
-                            <th>Banco / Status <input type="text" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..." style="width: 100%; padding: 4px; margin-top: 5px; font-size: 0.8em; font-weight: normal; color: #333;"></th>
-                            <th>Data Aplicação <input type="text" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..." style="width: 100%; padding: 4px; margin-top: 5px; font-size: 0.8em; font-weight: normal; color: #333;"></th>
-                            <th>Valor Inicial <input type="text" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..." style="width: 100%; padding: 4px; margin-top: 5px; font-size: 0.8em; font-weight: normal; color: #333;"></th>
-                            <th>Taxa <input type="text" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..." style="width: 100%; padding: 4px; margin-top: 5px; font-size: 0.8em; font-weight: normal; color: #333;"></th>
-                            <th>Dias <input type="text" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..." style="width: 100%; padding: 4px; margin-top: 5px; font-size: 0.8em; font-weight: normal; color: #333;"></th>
-                            <th>IR (%) <input type="text" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..." style="width: 100%; padding: 4px; margin-top: 5px; font-size: 0.8em; font-weight: normal; color: #333;"></th>
-                            <th>Valor Bruto <input type="text" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..." style="width: 100%; padding: 4px; margin-top: 5px; font-size: 0.8em; font-weight: normal; color: #333;"></th>
-                            <th>Valor Líquido <input type="text" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..." style="width: 100%; padding: 4px; margin-top: 5px; font-size: 0.8em; font-weight: normal; color: #333;"></th>
+                            <th>Banco / Status <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>Data Aplicação <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>Valor Inicial <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>Taxa <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>Dias <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>IR (%) <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>Valor Bruto <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>Valor Líquido <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -219,7 +221,15 @@
 
             <div class="tabela-container" style="margin-top: 0;">
                 <table id="tabela-transacoes">
-                    <thead><tr><th>Descrição</th><th>Categoria</th><th>Data</th><th>Valor</th><th>Ações</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Descrição <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
+                            <th>Categoria <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
+                            <th>Data <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
+                            <th>Valor <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
                     <tbody id="corpo-tabela-transacoes"></tbody>
                 </table>
             </div>
@@ -728,6 +738,32 @@
             const dFx = document.getElementById('dash-fluxo'); dFx.innerText = fMoeda(tMesDash); dFx.style.color = tMesDash >= 0 ? '#28a745' : '#dc3545';
             const dFlt = document.getElementById('total-trans-filtrado'); dFlt.innerText = fMoeda(tFilt); dFlt.style.color = tFilt >= 0 ? '#28a745' : '#dc3545';
         }
+
+        function filtrarTabelaTransacoes() {
+            const inputs = document.querySelectorAll('#tabela-transacoes thead input');
+            const rows = document.querySelectorAll('#corpo-tabela-transacoes tr');
+
+            rows.forEach(row => {
+                // Ignora linhas de agrupamento (mes/ano) que têm menos células
+                if(row.cells.length < 5) return; 
+
+                let mostrarLinha = true;
+                inputs.forEach((input, index) => {
+                    const textoFiltro = input.value.toLowerCase();
+                    if (textoFiltro !== '') {
+                        const celula = row.cells[index];
+                        if (celula) {
+                            const textoCelula = celula.textContent.toLowerCase(); 
+                            if (!textoCelula.includes(textoFiltro)) {
+                                mostrarLinha = false;
+                            }
+                        }
+                    }
+                });
+                row.style.display = mostrarLinha ? '' : 'none';
+            });
+        }
+
         function abrirEdicaoTransacao(id) { const t = transacoes.find(i => i.id === id); if(t) { document.getElementById('edit-trans-id').value = t.id; document.getElementById('edit-trans-tipo').value = t.tipo || 'despesa'; document.getElementById('edit-trans-data').value = t.data; document.getElementById('edit-trans-valor').value = t.valor; const selDesc = document.getElementById('edit-trans-desc'); if(!descricoesAtuais.includes(t.desc)) selDesc.innerHTML += `<option value="${t.desc}">${t.desc}</option>`; selDesc.value = t.desc; const selCat = document.getElementById('edit-trans-cat'); if(!categoriasAtuais.includes(t.cat)) selCat.innerHTML += `<option value="${t.cat}">${t.cat}</option>`; selCat.value = t.cat; document.getElementById('modal-editar-trans').style.display = 'flex'; } }
         function fecharEdicaoTransacao() { document.getElementById('modal-editar-trans').style.display = 'none'; }
         function salvarEdicaoTransacao() { const id = parseInt(document.getElementById('edit-trans-id').value); const idx = transacoes.findIndex(i => i.id === id); if(idx !== -1) { transacoes[idx].tipo = document.getElementById('edit-trans-tipo').value; transacoes[idx].desc = document.getElementById('edit-trans-desc').value; transacoes[idx].cat = document.getElementById('edit-trans-cat').value; transacoes[idx].data = document.getElementById('edit-trans-data').value; transacoes[idx].valor = parseFloat(document.getElementById('edit-trans-valor').value); salvarNoBanco(); fecharEdicaoTransacao(); } }
