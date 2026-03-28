@@ -1,3 +1,13 @@
+Isso faz todo o sentido. Manter o mesmo padrão visual e de comportamento em todas as telas é a regra de ouro para um aplicativo fácil de usar (UX/UI). 
+
+Fiz exatamente a mesma coisa na aba de **Caixinhas / Metas**:
+1. O título agora tem um botão **"+ Nova Caixinha"** ao lado.
+2. O formulário grandão de criação sumiu e só aparece quando você clica nesse botão (com a animação suave de deslizar).
+3. Ao clicar em "Criar Caixinha", ele salva os dados e esconde o formulário automaticamente, deixando a tela limpa para você focar no rendimento das suas metas.
+
+**Copie o código completo abaixo, cole no seu `index.html` e faça o Commit para atualizar:**
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -178,8 +188,14 @@
         </section>
 
         <section id="tela-transacoes" class="tela">
-            <h2>Controle de Caixa (Entradas e Saídas)</h2>
-            <form onsubmit="adicionarTransacao(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h2>Controle de Caixa (Entradas e Saídas)</h2>
+                <button class="btn-acao header-btn" style="margin: 0; width: auto;" onclick="toggleFormTransacao()">+ Nova Transação</button>
+            </div>
+            
+            <form id="form-transacao" onsubmit="adicionarTransacao(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.3s ease-in-out; margin-bottom: 20px;">
+                <div style="grid-column: 1 / -1;"><h3 style="font-size: 1.1em; color: #1a1a2e; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Registrar Movimentação</h3></div>
+                
                 <div><label>Tipo:</label><select id="trans-tipo"><option value="despesa">Saída (Despesa)</option><option value="entrada">Entrada (Receita)</option></select></div>
                 
                 <div>
@@ -223,10 +239,13 @@
         </section>
 
         <section id="tela-metas" class="tela">
-            <h2>Caixinhas & Metas Financeiras</h2>
-            <p style="margin-bottom: 15px; color: #666;">Crie uma caixinha e vá depositando seus aportes nela. Tudo rende CDI e vai para o seu Dashboard!</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h2>Caixinhas & Metas Financeiras</h2>
+                <button class="btn-acao header-btn" style="margin: 0; width: auto;" onclick="toggleFormMeta()">+ Nova Caixinha</button>
+            </div>
+            <p style="margin-top: 5px; margin-bottom: 15px; color: #666;">Crie uma caixinha e vá depositando seus aportes nela. Tudo rende CDI e vai para o seu Dashboard!</p>
             
-            <form onsubmit="adicionarMeta(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end;">
+            <form id="form-meta" onsubmit="adicionarMeta(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.3s ease-in-out; margin-bottom: 20px;">
                 <div style="grid-column: 1 / -1;"><h3 style="font-size: 1.1em; color: #1a1a2e; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Nova Caixinha e Primeira Aplicação</h3></div>
                 <div><label>Nome (Ex: Viagem):</label><input type="text" id="meta-nome" required></div>
                 <div><label>Valor Alvo Geral (R$):</label><input type="number" id="meta-alvo" step="0.01" required></div>
@@ -235,6 +254,7 @@
                 <div><label>Taxa 1 (% do CDI):</label><input type="number" id="meta-taxa" step="0.1" required></div>
                 <button type="submit" style="margin-top:0;">Criar Caixinha</button>
             </form>
+            
             <div id="container-metas" style="margin-top: 25px;"></div>
         </section>
 
@@ -400,7 +420,6 @@
 
         let serieCDI = []; let carteira = []; let transacoes = []; let listaMetas = [];
         
-        // Listas robustas pré-carregadas
         let categoriasAtuais = ["Alimentação", "Assinaturas/Serviços", "Cuidados Pessoais", "Doações", "Educação", "Impostos", "Lazer", "Moradia", "Outros", "Pets", "Presentes", "Rendimentos", "Salário", "Saúde", "Taxas", "Transporte", "Vestuário", "Viagem"];
         let descricoesAtuais = ["Academia", "Aluguel", "Cartão de Crédito", "Condomínio", "Conta de Água", "Conta de Luz", "Farmácia", "Freelance", "Gasolina", "Ifood/Delivery", "Internet/TV", "Mensalidade", "Mesada", "Padaria", "Salário", "Supermercado", "Uber/App de Transporte"];
         
@@ -456,7 +475,6 @@
             }
         }
 
-        // Função universal para atualizar os Selects na tela
         function atualizarSelectsGerenciador() {
             const selsCat = [document.getElementById('trans-cat'), document.getElementById('edit-trans-cat')];
             let optCat = ''; categoriasAtuais.sort().forEach(c => optCat += `<option value="${c}">${c}</option>`);
@@ -467,7 +485,6 @@
             selsDesc.forEach(s => { if(s) { const val = s.value; s.innerHTML = optDesc; if(descricoesAtuais.includes(val)) s.value = val; }});
         }
 
-        // Gerenciador Universal (Modal)
         function abrirModalGerenciador(tipo) {
             document.getElementById('tipo-gerenciador-ativo').value = tipo;
             document.getElementById('titulo-modal-gerenciador').innerText = tipo === 'categorias' ? "Gerenciar Categorias" : "Gerenciar Descrições";
@@ -488,19 +505,15 @@
             const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais;
 
             if(nova && !lista.includes(nova)) { 
-                lista.push(nova); 
-                document.getElementById('novo-item-nome').value = ''; 
-                salvarNoBanco(); 
-                abrirModalGerenciador(tipo); // Recarrega a UI do modal
+                lista.push(nova); document.getElementById('novo-item-nome').value = ''; 
+                salvarNoBanco(); abrirModalGerenciador(tipo); 
             }
         }
         function deletarItemGerenciador(idx) { 
             if(confirm("Apagar este item?")) { 
                 const tipo = document.getElementById('tipo-gerenciador-ativo').value;
                 const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais;
-                lista.splice(idx, 1); 
-                salvarNoBanco(); 
-                abrirModalGerenciador(tipo); 
+                lista.splice(idx, 1); salvarNoBanco(); abrirModalGerenciador(tipo); 
             } 
         }
 
@@ -590,16 +603,34 @@
         }
 
         // TELA DE INVESTIMENTOS (UNIFICADA)
-        function toggleFormInvestimento() { const f = document.getElementById('form-investimento'); f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+        function toggleFormInvestimento() { const f = document.getElementById('form-investimento'); f.style.display = f.style.display === 'none' ? 'grid' : 'none'; }
         function adicionarInvestimento(e) { e.preventDefault(); carteira.push({ id: Date.now(), banco: document.getElementById('input-banco').value.trim(), data: document.getElementById('input-data').value, valor: document.getElementById('input-valor').value, taxa: document.getElementById('input-taxa').value }); document.getElementById('form-investimento').reset(); toggleFormInvestimento(); salvarNoBanco(); }
         function abrirEdicao(id) { const inv = carteira.find(i => i.id === id); if(inv) { document.getElementById('edit-id').value = inv.id; document.getElementById('edit-banco').value = inv.banco || ""; document.getElementById('edit-data').value = inv.data; document.getElementById('edit-valor').value = inv.valor; document.getElementById('edit-taxa').value = inv.taxa; document.getElementById('modal-editar').style.display = 'flex'; } }
         function fecharEdicao() { document.getElementById('modal-editar').style.display = 'none'; }
         function salvarEdicao() { const id = parseInt(document.getElementById('edit-id').value); const idx = carteira.findIndex(i => i.id === id); if(idx !== -1) { carteira[idx].banco = document.getElementById('edit-banco').value; carteira[idx].data = document.getElementById('edit-data').value; carteira[idx].valor = parseFloat(document.getElementById('edit-valor').value); carteira[idx].taxa = parseFloat(document.getElementById('edit-taxa').value); salvarNoBanco(); fecharEdicao(); } }
 
         // =========================================================
-        // 5. TRANSAÇÕES
+        // 5. TRANSAÇÕES (CAIXA)
         // =========================================================
-        function adicionarTransacao(e) { e.preventDefault(); transacoes.push({ id: Date.now(), tipo: document.getElementById('trans-tipo').value, desc: document.getElementById('trans-desc').value, cat: document.getElementById('trans-cat').value, data: document.getElementById('trans-data').value, valor: parseFloat(document.getElementById('trans-valor').value) }); document.getElementById('trans-valor').value = ''; salvarNoBanco(); }
+        function toggleFormTransacao() { 
+            const f = document.getElementById('form-transacao'); 
+            f.style.display = (f.style.display === 'none' || f.style.display === '') ? 'grid' : 'none'; 
+        }
+        function adicionarTransacao(e) { 
+            e.preventDefault(); 
+            transacoes.push({ 
+                id: Date.now(), 
+                tipo: document.getElementById('trans-tipo').value, 
+                desc: document.getElementById('trans-desc').value, 
+                cat: document.getElementById('trans-cat').value, 
+                data: document.getElementById('trans-data').value, 
+                valor: parseFloat(document.getElementById('trans-valor').value) 
+            }); 
+            document.getElementById('trans-valor').value = ''; 
+            toggleFormTransacao(); 
+            salvarNoBanco(); 
+        }
+
         function renderizarTransacoes() {
             const corpo = document.getElementById('corpo-tabela-transacoes'); corpo.innerHTML = '';
             let tMesDash = 0, tFilt = 0; const mAt = new Date().getMonth() + 1, aAt = new Date().getFullYear();
@@ -623,6 +654,7 @@
             const dFx = document.getElementById('dash-fluxo'); dFx.innerText = fMoeda(tMesDash); dFx.style.color = tMesDash >= 0 ? '#28a745' : '#dc3545';
             const dFlt = document.getElementById('total-trans-filtrado'); dFlt.innerText = fMoeda(tFilt); dFlt.style.color = tFilt >= 0 ? '#28a745' : '#dc3545';
         }
+        
         function abrirEdicaoTransacao(id) { 
             const t = transacoes.find(i => i.id === id); 
             if(t) { 
@@ -644,8 +676,13 @@
         function salvarEdicaoTransacao() { const id = parseInt(document.getElementById('edit-trans-id').value); const idx = transacoes.findIndex(i => i.id === id); if(idx !== -1) { transacoes[idx].tipo = document.getElementById('edit-trans-tipo').value; transacoes[idx].desc = document.getElementById('edit-trans-desc').value; transacoes[idx].cat = document.getElementById('edit-trans-cat').value; transacoes[idx].data = document.getElementById('edit-trans-data').value; transacoes[idx].valor = parseFloat(document.getElementById('edit-trans-valor').value); salvarNoBanco(); fecharEdicaoTransacao(); } }
 
         // =========================================================
-        // 6. CAIXINHAS / METAS (NOVO FORMATO MULTI-APORTES)
+        // 6. CAIXINHAS / METAS (MÚLTIPLOS APORTES)
         // =========================================================
+        function toggleFormMeta() { 
+            const f = document.getElementById('form-meta'); 
+            f.style.display = (f.style.display === 'none' || f.style.display === '') ? 'grid' : 'none'; 
+        }
+
         function adicionarMeta(e) { 
             e.preventDefault(); 
             listaMetas.push({ 
@@ -657,6 +694,7 @@
             document.getElementById('meta-nome').value = ''; document.getElementById('meta-alvo').value = ''; 
             document.getElementById('meta-data').value = ''; document.getElementById('meta-valor').value = ''; 
             document.getElementById('meta-taxa').value = '';
+            toggleFormMeta();
             salvarNoBanco(); 
         }
 
@@ -723,7 +761,7 @@
         function calcularComparacao() { const v = parseFloat(document.getElementById('comp-valor').value)||0, dias = parseInt(document.getElementById('comp-dias').value)||1, tCdb = parseFloat(document.getElementById('comp-cdb').value)/100, tLci = parseFloat(document.getElementById('comp-lci').value)/100, cdiAno = parseFloat(document.getElementById('comp-cdi').value)/100; const rCDB = cdiAno * tCdb, rLCI = cdiAno * tLci; let ir = 15; if (dias<=180) ir=22.5; else if(dias<=360) ir=20; else if(dias<=720) ir=17.5; const bCDB = v * (rCDB * (dias/365)), lCDB = bCDB - (bCDB * (ir/100)), lLCI = v * (rLCI * (dias/365)); document.getElementById('comp-res-cdb').innerText = fMoeda(v+lCDB); document.getElementById('comp-res-lci').innerText = fMoeda(v+lLCI); const txt = document.getElementById('comp-vencedor'); if(lCDB>lLCI){txt.innerText="🏆 O CDB é a melhor opção!";txt.style.color="#1a1a2e";}else if(lLCI>lCDB){txt.innerText="🏆 A LCI/LCA é a melhor opção!";txt.style.color="#28a745";}else{txt.innerText="⚖️ Ambos rendem igual.";txt.style.color="#666";} document.getElementById('resultado-comparador').style.display = 'block'; }
 
         // =========================================================
-        // 8. GRÁFICOS (PIZZA E LINHA)
+        // 8. GRÁFICOS E UTILIDADES
         // =========================================================
         function desenharGraficoPizza(totais) { const ctx = document.getElementById('graficoPizza').getContext('2d'); if (chartPizzaInstance) chartPizzaInstance.destroy(); const bancos = Object.keys(totais); const valores = Object.values(totais).map(t => t.liq); if (bancos.length === 0) return; chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: bancos, datasets: [{ data: valores, backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } } }); }
         
@@ -739,9 +777,6 @@
             chartInstance = new Chart(ctx, { type: 'line', data: { labels: lab, datasets: [ { label: 'Valor Bruto', data: bru, borderColor: '#0f3460', backgroundColor: 'rgba(15, 52, 96, 0.1)', fill: true, tension: 0.3 }, { label: 'Valor Líquido', data: liq, borderColor: '#e94560', backgroundColor: 'rgba(233, 69, 96, 0.1)', fill: true, tension: 0.3 } ]}, options: { responsive: true, interaction: { mode: 'index', intersect: false } } });
         }
 
-        // =========================================================
-        // 9. FUNÇÕES GERAIS
-        // =========================================================
         function navegar(idTela) { document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); document.getElementById(idTela).classList.add('ativa'); if(idTela === 'tela-grafico') desenharGrafico(); }
         function renderizarCardsBancos(totais) { const cont = document.getElementById('container-resumo-bancos'); if (Object.keys(totais).length === 0) return cont.innerHTML = ''; let h = ``; for (const b in totais) h += `<div class="card-banco"><h4>${b}</h4><p>${fMoeda(totais[b].liq)}</p></div>`; cont.innerHTML = h; }
         
@@ -770,3 +805,4 @@
     </script>
 </body>
 </html>
+```
