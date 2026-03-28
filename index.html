@@ -725,4 +725,48 @@
         // =========================================================
         // 8. GRÁFICOS (PIZZA E LINHA)
         // =========================================================
-        function desenharGraficoPizza(totais) { const ctx = document.getElementById('graficoPizza').getContext('2d'); if (chartPizzaInstance) chartPizzaInstance.destroy(); const bancos = Object.keys(totais); const valores = Object.values(totais).map(t => t.liq); if (bancos.length === 0) return; chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels
+        function desenharGraficoPizza(totais) { const ctx = document.getElementById('graficoPizza').getContext('2d'); if (chartPizzaInstance) chartPizzaInstance.destroy(); const bancos = Object.keys(totais); const valores = Object.values(totais).map(t => t.liq); if (bancos.length === 0) return; chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: bancos, datasets: [{ data: valores, backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } } }); }
+        
+        function desenharGrafico() {
+            const ctx = document.getElementById('meuGrafico').getContext('2d'); const per = document.getElementById('select-periodicidade').value, bSel = document.getElementById('select-filtro-banco').value;
+            if (chartInstance) chartInstance.destroy(); 
+            if (carteira.length === 0 && listaMetas.length === 0) return chartInstance = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [] } });
+            
+            let mixLinhaTempo = [...carteira]; listaMetas.forEach(m => { if(m.aportes) m.aportes.forEach(ap => mixLinhaTempo.push({banco: "Caixinhas (Metas)", data: ap.data, valor: ap.valor, taxa: ap.taxa})); });
+            let cartProc = bSel !== 'todos' ? mixLinhaTempo.filter(i => (i.banco || "Não Informado") === bSel) : mixLinhaTempo; 
+            const ord = [...cartProc].sort((a, b) => new Date(a.data) - new Date(b.data)); const cdiF = serieCDI.map(i => { const [d,m,y] = i.data.split('/'); return { dataObj: new Date(y, m-1, d), valor: parseFloat(i.valor)/100 }; }); let lab = [], bru = [], liq = [], ativ = [], idx = 0;
+            for (let i = 0; i < cdiF.length; i++) { const dia = cdiF[i]; while (idx < ord.length && dia.dataObj >= new Date(ord[idx].data)) { ativ.push({ dataObj: new Date(ord[idx].data), valOri: parseFloat(ord[idx].valor), valAtu: parseFloat(ord[idx].valor), mult: parseFloat(ord[idx].taxa)/100 }); idx++; } if (ativ.length > 0) { let b = 0, l = 0; ativ.forEach(inv => { inv.valAtu += inv.valAtu * (dia.valor * inv.mult); b += inv.valAtu; const dias = Math.ceil(Math.abs(dia.dataObj - inv.dataObj) / (1000*60*60*24)); let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5; l += inv.valAtu - ((inv.valAtu - inv.valOri) > 0 ? (inv.valAtu - inv.valOri) * (ir/100) : 0); }); const isUlt = (i === cdiF.length - 1); let fM = isUlt, fA = isUlt; if (!isUlt) { const prx = cdiF[i+1]; if (prx.dataObj.getMonth() !== dia.dataObj.getMonth()) fM = true; if (prx.dataObj.getFullYear() !== dia.dataObj.getFullYear()) fA = true; } if (per === 'mensal' && fM) { lab.push(`${String(dia.dataObj.getMonth()+1).padStart(2,'0')}/${dia.dataObj.getFullYear()}`); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } else if (per === 'anual' && fA) { lab.push(`${dia.dataObj.getFullYear()}`); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } } }
+            chartInstance = new Chart(ctx, { type: 'line', data: { labels: lab, datasets: [ { label: 'Valor Bruto', data: bru, borderColor: '#0f3460', backgroundColor: 'rgba(15, 52, 96, 0.1)', fill: true, tension: 0.3 }, { label: 'Valor Líquido', data: liq, borderColor: '#e94560', backgroundColor: 'rgba(233, 69, 96, 0.1)', fill: true, tension: 0.3 } ]}, options: { responsive: true, interaction: { mode: 'index', intersect: false } } });
+        }
+
+        // =========================================================
+        // 9. FUNÇÕES GERAIS
+        // =========================================================
+        function navegar(idTela) { document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); document.getElementById(idTela).classList.add('ativa'); if(idTela === 'tela-grafico') desenharGrafico(); }
+        function renderizarCardsBancos(totais) { const cont = document.getElementById('container-resumo-bancos'); if (Object.keys(totais).length === 0) return cont.innerHTML = ''; let h = ``; for (const b in totais) h += `<div class="card-banco"><h4>${b}</h4><p>${fMoeda(totais[b].liq)}</p></div>`; cont.innerHTML = h; }
+        
+        function atualizarFiltroGrafico() { 
+            const sel = document.getElementById('select-filtro-banco'); const vAt = sel.value; 
+            const unicos = [...new Set(carteira.map(i => i.banco || "Não Informado"))];
+            if(listaMetas.length > 0 && !unicos.includes("Caixinhas (Metas)")) unicos.push("Caixinhas (Metas)");
+            unicos.sort(); let opt = `<option value="todos">Todos</option>`; unicos.forEach(b => opt += `<option value="${b}">${b}</option>`); sel.innerHTML = opt; sel.value = unicos.includes(vAt) ? vAt : "todos"; 
+        }
+        
+        function deletarItem(id, tipo = 'inv') { 
+            if (confirm("Excluir registro?")) { 
+                if(tipo === 'inv') carteira = carteira.filter(i => i.id !== id);
+                if(tipo === 'trans') transacoes = transacoes.filter(i => i.id !== id);
+                if(tipo === 'meta') listaMetas = listaMetas.filter(i => i.id !== id);
+                salvarNoBanco(); if(document.getElementById('tela-grafico').classList.contains('ativa')) desenharGrafico(); 
+            } 
+        }
+
+        function limparTudo() { if (confirm("Certeza ABSOLUTA? Esta ação apagará permanentemente todo o seu histórico e não pode ser desfeita.")) { carteira = []; transacoes = []; listaMetas = []; salvarNoBanco(); } }
+        
+        // Exportar e Importar
+        function baixarCSV() { if(carteira.length===0)return alert("Sem dados."); let csv="banco;data;valor;taxa\n"; carteira.forEach(i=>{ const val = i.valor.toString().replace('.', ','); const tx = i.taxa.toString().replace('.', ','); csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${i.data};${val};${tx}\n`;}); const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); }
+        function prepararEmail() { if(carteira.length===0)return alert("Sem dados!"); let msg="Relatório - InvestDash\n\n"; document.querySelectorAll('#corpo-tabela tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=8) msg+=`${tds[0].innerText} | ${tds[1].innerText} | Inicial: ${tds[2].innerText} | Liq: ${tds[7].innerText}\n`; }); window.location.href=`mailto:?subject=Relatorio&body=${encodeURIComponent(msg)}`; }
+        function importarCSV() { const f=document.getElementById('input-csv').files[0]; if(!f) return alert("Selecione o arquivo."); const r=new FileReader(); r.onload=function(e){ const l=e.target.result.split('\n'); let q=0; for(let i=1;i<l.length;i++){ const sep = l[i].includes(';') ? ';' : ','; const c=l[i].split(sep); if(c.length>=4){ const b=c[0].trim(), d=c[1].trim(), v=parseFloat(c[2].replace(',','.')), t=parseFloat(c[3].replace(',','.')); if(b&&d&&!isNaN(v)&&!isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, data:d, valor:v, taxa:t}); q++; } } } if(q>0) { salvarNoBanco(); alert(`${q} importados!`); navegar('tela-investimentos'); } }; r.readAsText(f); }
+    </script>
+</body>
+</html>
