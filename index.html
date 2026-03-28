@@ -548,7 +548,6 @@
                 const res = await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${formata(dIni)}&dataFinal=${formata(hoje)}`);
                 serieCDI = await res.json();
                 
-                // NOVIDADE AQUI: Mostra as datas do CDI na tela e o fator!
                 let textoStatus = "✅ API e Nuvem OK!";
                 if(serieCDI.length > 0) {
                     const dtIni = serieCDI[0].data;
@@ -556,7 +555,6 @@
                     const dtFim = ultimoRegistro.data;
                     textoStatus += ` (CDI de ${dtIni} até ${dtFim})`;
 
-                    // Calcula o fator de truncamento do último dia útil (100% do CDI)
                     let taxaDiaria = parseFloat(ultimoRegistro.valor) / 100;
                     let fatorDia = truncaFatorB3(1 + taxaDiaria);
                     textoStatus += `<br><span style="font-size: 0.85em; font-weight: normal; color: #666;">Fator multiplicador do último dia útil (100% CDI): <strong>${fatorDia}</strong></span>`;
@@ -585,7 +583,7 @@
                 }
 
                 const nomeBanco = inv.banco || "Não Informado";
-                if (!totaisBancos[nomeBanco]) totaisBancos[nomeBanco] = { inv: 0, bru: 0, liq: 0 };
+                if (!totaisBancos[nomeBanco]) totaisBancos[nomeBanco] = { inv: 0, bru: 0, liq: 0, bruVezesTaxa: 0 };
                 
                 let valOriginal = parseFloat(inv.valor); 
                 let percentualCDI = parseFloat(inv.taxa) / 100;
@@ -614,6 +612,8 @@
                     totaisBancos[nomeBanco].inv += valOriginal;
                     totaisBancos[nomeBanco].bru += vAtual;
                     totaisBancos[nomeBanco].liq += vLiq;
+                    // Acumulando a taxa para o cálculo ponderado
+                    totaisBancos[nomeBanco].bruVezesTaxa += (vAtual * parseFloat(inv.taxa));
                 }
 
                 const strStatus = isResgatado ? `<br><span class="badge-resgatado">Resgatado em ${inv.dataResgate.split('-').reverse().join('/')}</span>` : '';
@@ -634,7 +634,7 @@
             const nomeBancoMeta = "Caixinhas (Metas)";
             listaMetas.forEach(meta => {
                 if (!meta.aportes) { meta.aportes = []; if (meta.data && meta.valor) { meta.aportes.push({ id: Date.now(), data: meta.data, valor: meta.valor, taxa: meta.taxa || 100 }); } }
-                if (!totaisBancos[nomeBancoMeta]) totaisBancos[nomeBancoMeta] = { inv: 0, bru: 0, liq: 0 };
+                if (!totaisBancos[nomeBancoMeta]) totaisBancos[nomeBancoMeta] = { inv: 0, bru: 0, liq: 0, bruVezesTaxa: 0 };
                 let metaLiqAtual = 0; let metaInvAtual = 0;
                 meta.aportes.forEach(aporte => {
                     const [ano, mes, dia] = aporte.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
@@ -653,6 +653,9 @@
                     
                     let vAtual = Math.round((valOriginal * fatorAcumulado) * 100) / 100;
                     valBru += vAtual; totaisBancos[nomeBancoMeta].bru += vAtual;
+                    // Acumulando a taxa para o cálculo ponderado
+                    totaisBancos[nomeBancoMeta].bruVezesTaxa += (vAtual * parseFloat(aporte.taxa));
+
                     const dias = Math.ceil(Math.abs(new Date() - dataInv) / (1000 * 60 * 60 * 24)); let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5;
                     const rBruto = vAtual - valOriginal; const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
                     totalLiquidoGlobal += vLiq; totaisBancos[nomeBancoMeta].liq += vLiq; metaLiqAtual += vLiq; aporte.liqCalculado = vLiq; 
@@ -869,10 +872,14 @@
             if (Object.keys(totais).length === 0) return cont.innerHTML = ''; 
             let h = ``; 
             for (const b in totais) {
+                // Cálculo da taxa média ponderada
+                let taxaPonderada = totais[b].bru > 0 ? (totais[b].bruVezesTaxa / totais[b].bru) : 0;
+
                 h += `<div class="card-banco">
                         <h4>${b}</h4>
                         <p style="font-size: 0.85em; color: #666; font-weight: normal; margin-bottom: 3px;">Bruto: ${fMoeda(totais[b].bru)}</p>
                         <p title="Valor Líquido">Líq: ${fMoeda(totais[b].liq)}</p>
+                        <p style="font-size: 0.8em; color: #e94560; font-weight: bold; margin-top: 5px; border-top: 1px solid #eee; padding-top: 3px;" title="Taxa Média Ponderada baseada no montante bruto de cada ativo">CDI Médio: ${fNum(taxaPonderada)}%</p>
                       </div>`;
             }
             cont.innerHTML = h; 
