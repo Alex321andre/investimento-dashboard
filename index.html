@@ -159,6 +159,7 @@
                 <div><h3 style="margin-bottom: 15px; color: #1a1a2e;">Patrimônio por Instituição</h3><div class="bancos-grid" id="container-resumo-bancos"></div></div>
                 <div class="card" style="margin-top:0;">
                     <h3 style="text-align: center; margin-bottom: 10px;">Distribuição da Carteira</h3>
+                    
                     <div style="text-align: center; margin-bottom: 15px;">
                         <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Liquidez Diária:</label>
                         <select id="filtro-liquidez-pizza" onchange="atualizarGraficoPizza()" style="width: auto; padding: 5px; font-size: 0.9em; border-radius: 5px; border: 1px solid #ccc; margin-left: 5px; outline: none;">
@@ -167,6 +168,7 @@
                             <option value="Não">Não</option>
                         </select>
                     </div>
+
                     <div style="height: 250px; display: flex; justify-content: center; position: relative;"><canvas id="graficoPizza"></canvas></div>
                 </div>
             </div>
@@ -344,6 +346,7 @@
                 <div class="controles-grafico" style="justify-content: center; font-size: 0.9em; padding: 10px;">
                     <div><label>Mês:</label><select id="filtro-graf-mes-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select></div>
                     <div><label>Ano:</label><select id="filtro-graf-ano-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
+                    
                     <div><label>Cat:</label><select id="filtro-graf-cat-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
                     <div><label>Desc:</label><select id="filtro-graf-desc-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
                     
@@ -357,10 +360,8 @@
                     </div>
                 </div>
                 
-                <div id="container-grafico-despesas" style="height: 400px; display: flex; justify-content: center; position: relative; margin-top: 20px;">
-                    <canvas id="graficoDespesasAnalise"></canvas>
-                </div>
-                <div id="legenda-grafico-despesas" style="margin-top: 20px; text-align: center; font-size: 1.1em; font-weight: bold; color: #1a1a2e; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #1a1a2e;"></div>
+                <div id="container-grafico-despesas" style="height: 400px; display: flex; justify-content: center; position: relative; margin-top: 10px;"><canvas id="graficoDespesasAnalise"></canvas></div>
+                <div id="legenda-grafico-despesas" style="margin-top: 20px; text-align: center; font-size: 1.1em; font-weight: bold; color: #1a1a2e; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid transparent;"></div>
             </div>
         </section>
 
@@ -1004,12 +1005,11 @@
             });
         }
 
-        // Gráfico Analítico (Visual Limpo: Sem Setas, Sem Caixas, Legenda Completa em 1 Coluna à Esquerda)
+        // Gráfico Analítico de Despesas
         function desenharGraficoDespesas() {
             const ctx = document.getElementById('graficoDespesasAnalise').getContext('2d');
             if (chartDespesasInstance) chartDespesasInstance.destroy();
             
-            // O Filtro "Tipo" foi removido. Agora pegamos apenas os outros filtros.
             const fMes = document.getElementById('filtro-graf-mes-desp').value;
             const fAno = document.getElementById('filtro-graf-ano-desp').value;
             const fAgrupar = document.getElementById('filtro-graf-agrupar').value;
@@ -1028,7 +1028,10 @@
                 return true; 
             });
             
-            let agregacao = {}; let totalGeral = 0;
+            let agregacao = {}; 
+            let totalVolumePizza = 0; 
+            let saldoLiquidoFiltro = 0; // Novo cálculo inteligente (Entrada - Saída)
+
             transacoesFiltradas.forEach(t => { 
                 let chave;
                 if (fAgrupar === 'tipo') {
@@ -1042,12 +1045,18 @@
                 const valAbs = Math.abs(t.valor);
                 if (!agregacao[chave]) agregacao[chave] = { val: 0, tipo: t.tipo === 'entrada' ? 'entrada' : 'despesa' }; 
                 agregacao[chave].val += valAbs; 
-                totalGeral += valAbs; 
+                
+                totalVolumePizza += valAbs; 
+                saldoLiquidoFiltro += (t.tipo === 'entrada') ? valAbs : -valAbs;
             });
             
-            document.getElementById('legenda-grafico-despesas').innerText = `Valor Total do Filtro: ${fMoeda(totalGeral)}`;
+            // Atualiza a legenda inferior com a cor dinâmica dependendo do saldo
+            let corSaldo = saldoLiquidoFiltro >= 0 ? '#28a745' : '#dc3545';
+            const elLegenda = document.getElementById('legenda-grafico-despesas');
+            elLegenda.innerHTML = `Saldo Líquido do Filtro: <span style="color: ${corSaldo};">${fMoeda(saldoLiquidoFiltro)}</span>`;
+            elLegenda.style.borderLeftColor = corSaldo; 
             
-            // Ordenação da Legenda: Sempre Entrada primeiro, depois as demais (alfabeticamente ou por Saída)
+            // Ordenação da Legenda: Sempre Entrada primeiro, depois as demais
             const chavesOrdenadas = Object.keys(agregacao).sort((a, b) => {
                 if (a === 'Entrada' && b === 'Saída') return -1;
                 if (a === 'Saída' && b === 'Entrada') return 1;
@@ -1055,21 +1064,20 @@
                 return a.localeCompare(b);
             });
 
-            // Ajusta a altura da div para caber todos os itens em UMA coluna sem quebrar (aprox. 30px por item)
+            // Ajusta a altura da div para caber todos os itens em UMA coluna sem quebrar
             const containerGrafico = document.getElementById('container-grafico-despesas');
             const alturaNecessaria = Math.max(400, chavesOrdenadas.length * 30);
             containerGrafico.style.height = alturaNecessaria + 'px';
 
             const labelsComInfo = chavesOrdenadas.map(l => { 
                 let val = Math.abs(agregacao[l].val);
-                let perc = totalGeral > 0 ? ((val / totalGeral) * 100).toFixed(1) : 0; 
+                let perc = totalVolumePizza > 0 ? ((val / totalVolumePizza) * 100).toFixed(1) : 0; 
                 return `${l} - ${fMoeda(val)} (${perc}%)`; 
             });
 
             const data = chavesOrdenadas.map(k => agregacao[k].val);
             
             let bgColors;
-            // Cores: Verde e Vermelho para Entradas/Saídas. Cores diversas para o resto.
             if (fAgrupar === 'tipo') {
                 bgColors = chavesOrdenadas.map(k => k === 'Entrada' ? '#28a745' : '#dc3545');
             } else {
@@ -1081,32 +1089,26 @@
             chartDespesasInstance = new Chart(ctx, { 
                 type: 'doughnut', 
                 data: { labels: labelsComInfo, datasets: [{ data: data, backgroundColor: bgColors }] }, 
-                // REMOVIDO: O pluginLinhasDiretoras não é mais chamado aqui!
                 options: { 
                     layout: { padding: 10 }, 
                     responsive: true, 
                     maintainAspectRatio: false, 
                     plugins: { 
                         legend: { 
-                            position: 'left', // Legenda fixa em lista à esquerda
+                            position: 'left',
                             labels: { font: { size: 12 }, boxWidth: 15 } 
                         }, 
                         tooltip: { 
                             callbacks: { 
-                                // O tooltip (ao passar o mouse) mostra só a descrição crua, o valor e a porcentagem
                                 label: function(context) { 
                                     let value = context.parsed;
-                                    let perc = totalGeral > 0 ? ((value / totalGeral) * 100).toFixed(1) : 0;
-                                    // Pega só o texto puro antes do " - R$..." 
+                                    let perc = totalVolumePizza > 0 ? ((value / totalVolumePizza) * 100).toFixed(1) : 0;
                                     let textoPuro = context.label.split(' - ')[0];
                                     return ` ${textoPuro}: ${fMoeda(value)} (${perc}%)`; 
                                 } 
                             } 
                         },
-                        datalabels: {
-                            // Desliga totalmente as caixas, valores e porcentagens fixas no gráfico
-                            display: false 
-                        }
+                        datalabels: { display: false }
                     } 
                 } 
             });
@@ -1134,7 +1136,7 @@
         
         function baixarCSV(tipo) { 
             if(tipo === 'investimentos') {
-                if(carteira.length===0) return alert("Sem dados de investimentos."); 
+                if(carteira.length===0) return alert("Sem dados de investments."); 
                 let csv="banco;data;valor;taxa;liquidez;vencimento\n"; 
                 carteira.forEach(i=>{ const val = i.valor.toString().replace('.', ','); const tx = i.taxa.toString().replace('.', ','); csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${i.data};${val};${tx};${i.liquidez||'Sim'};${i.vencimento||''}\n`;}); 
                 const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); 
