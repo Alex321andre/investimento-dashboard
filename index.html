@@ -6,6 +6,7 @@
     <title>InvestDash - Controle Financeiro Completo</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
@@ -341,16 +342,17 @@
             </div>
 
             <div class="card" style="margin-top: 25px;">
-                <h3 style="margin-bottom: 15px; color: #1a1a2e; border-bottom: 1px solid #ddd; padding-bottom: 5px;">📉 Composição de Despesas</h3>
+                <h3 style="margin-bottom: 15px; color: #1a1a2e; border-bottom: 1px solid #ddd; padding-bottom: 5px;">📉 Composição de Transações</h3>
                 <div class="controles-grafico" style="justify-content: center; font-size: 0.9em; padding: 10px;">
+                    <div><label>Tipo:</label><select id="filtro-graf-tipo-trans" onchange="desenharGraficoDespesas()"><option value="despesa">Saídas</option><option value="entrada">Entradas</option><option value="todos">Todos</option></select></div>
                     <div><label>Mês:</label><select id="filtro-graf-mes-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select></div>
                     <div><label>Ano:</label><select id="filtro-graf-ano-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
                     <div><label>Cat:</label><select id="filtro-graf-cat-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
                     <div><label>Desc:</label><select id="filtro-graf-desc-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
                     <div><label>Agrupar por:</label><select id="filtro-graf-agrupar" onchange="desenharGraficoDespesas()"><option value="cat">Categoria</option><option value="desc">Descrição</option></select></div>
                 </div>
-                <div style="height: 300px; display: flex; justify-content: center; position: relative;"><canvas id="graficoDespesasAnalise"></canvas></div>
-                <div id="legenda-grafico-despesas" style="margin-top: 20px; text-align: center; font-size: 1.1em; font-weight: bold; color: #dc3545; padding: 10px; background: #f8f9fa; border-radius: 5px;"></div>
+                <div style="height: 350px; display: flex; justify-content: center; position: relative;"><canvas id="graficoDespesasAnalise"></canvas></div>
+                <div id="legenda-grafico-despesas" style="margin-top: 20px; text-align: center; font-size: 1.1em; font-weight: bold; color: #1a1a2e; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #1a1a2e;"></div>
             </div>
         </section>
 
@@ -501,6 +503,9 @@
     </footer>
 
     <script>
+        // Registrar o plugin de Datalabels globalmente no Chart.js
+        Chart.register(ChartDataLabels);
+
         // =========================================================
         // 0. FORMATADORES GLOBAIS E REGRAS B3
         // =========================================================
@@ -965,7 +970,43 @@
                 return `${b} - ${fMoeda(val)} (${perc}%)`; 
             });
 
-            chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labelsComPerc, datasets: [{ data: valores, backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d', '#fd7e14', '#6610f2'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 } } }, tooltip: { callbacks: { label: function(context) { return ` ${context.label}`; } } } } } });
+            chartPizzaInstance = new Chart(ctx, { 
+                type: 'doughnut', 
+                data: { 
+                    labels: labelsComPerc, 
+                    datasets: [{ 
+                        data: valores, 
+                        backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d', '#fd7e14', '#6610f2'] 
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { position: 'right', labels: { font: { size: 11 } } }, 
+                        tooltip: { callbacks: { label: function(context) { return ` ${context.label}`; } } },
+                        datalabels: {
+                            color: '#fff',
+                            backgroundColor: 'rgba(26, 26, 46, 0.85)',
+                            borderRadius: 4,
+                            padding: 6,
+                            formatter: (value, context) => {
+                                const label = context.chart.data.labels[context.dataIndex];
+                                const match = label.match(/^(.*?)\s-\s.*?(\(.*?\))$/);
+                                if(match) {
+                                    const percStr = match[2].replace(/[()]/g, '');
+                                    if (parseFloat(percStr) >= 3) {
+                                        return `${match[1]}\n${percStr}`;
+                                    }
+                                }
+                                return null;
+                            },
+                            font: { weight: 'bold', size: 10 },
+                            textAlign: 'center'
+                        }
+                    } 
+                } 
+            });
         }
         
         function desenharGrafico() {
@@ -1008,19 +1049,40 @@
                     else if (per === 'anual' && fA) { lab.push(`${dia.dataObj.getFullYear()}`); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } 
                 } 
             }
-            chartInstance = new Chart(ctx, { type: 'line', data: { labels: lab, datasets: [ { label: 'Valor Bruto', data: bru, borderColor: '#0f3460', backgroundColor: 'rgba(15, 52, 96, 0.1)', fill: true, tension: 0.3 }, { label: 'Valor Líquido', data: liq, borderColor: '#e94560', backgroundColor: 'rgba(233, 69, 96, 0.1)', fill: true, tension: 0.3 } ]}, options: { responsive: true, interaction: { mode: 'index', intersect: false } } });
+            chartInstance = new Chart(ctx, { 
+                type: 'line', 
+                data: { labels: lab, datasets: [ { label: 'Valor Bruto', data: bru, borderColor: '#0f3460', backgroundColor: 'rgba(15, 52, 96, 0.1)', fill: true, tension: 0.3 }, { label: 'Valor Líquido', data: liq, borderColor: '#e94560', backgroundColor: 'rgba(233, 69, 96, 0.1)', fill: true, tension: 0.3 } ]}, 
+                options: { 
+                    responsive: true, 
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { datalabels: { display: false } } // Esconde as caixinhas neste gráfico de linha
+                } 
+            });
         }
 
         function desenharGraficoDespesas() {
             const ctx = document.getElementById('graficoDespesasAnalise').getContext('2d');
             if (chartDespesasInstance) chartDespesasInstance.destroy();
-            const fMes = document.getElementById('filtro-graf-mes-desp').value, fAno = document.getElementById('filtro-graf-ano-desp').value, fCat = document.getElementById('filtro-graf-cat-desp').value, fDesc = document.getElementById('filtro-graf-desc-desp').value, fAgrupar = document.getElementById('filtro-graf-agrupar').value;
+            const fTipo = document.getElementById('filtro-graf-tipo-trans').value;
+            const fMes = document.getElementById('filtro-graf-mes-desp').value;
+            const fAno = document.getElementById('filtro-graf-ano-desp').value;
+            const fCat = document.getElementById('filtro-graf-cat-desp').value;
+            const fDesc = document.getElementById('filtro-graf-desc-desp').value;
+            const fAgrupar = document.getElementById('filtro-graf-agrupar').value;
             
-            let despesasFiltradas = transacoes.filter(t => (t.tipo || 'despesa') === 'despesa');
-            despesasFiltradas = despesasFiltradas.filter(t => { const [a, m, d] = t.data.split('-'); if (fMes !== 'todos' && m !== fMes) return false; if (fAno !== 'todos' && a !== fAno) return false; if (fCat !== 'todas' && t.cat !== fCat) return false; if (fDesc !== 'todas' && t.desc !== fDesc) return false; return true; });
+            let transacoesFiltradas = transacoes.filter(t => { 
+                const tpReal = t.tipo || 'despesa';
+                if (fTipo !== 'todos' && tpReal !== fTipo) return false;
+                const [a, m, d] = t.data.split('-'); 
+                if (fMes !== 'todos' && m !== fMes) return false; 
+                if (fAno !== 'todos' && a !== fAno) return false; 
+                if (fCat !== 'todas' && t.cat !== fCat) return false; 
+                if (fDesc !== 'todas' && t.desc !== fDesc) return false; 
+                return true; 
+            });
             
             let agregacao = {}; let totalGeral = 0;
-            despesasFiltradas.forEach(t => { 
+            transacoesFiltradas.forEach(t => { 
                 const chave = fAgrupar === 'cat' ? (t.cat || 'Sem Categoria') : (t.desc || 'Sem Descrição'); 
                 const valAbs = Math.abs(t.valor);
                 if (!agregacao[chave]) agregacao[chave] = 0; 
@@ -1028,7 +1090,7 @@
                 totalGeral += valAbs; 
             });
             
-            document.getElementById('legenda-grafico-despesas').innerText = `Total das Despesas Exibidas: ${fMoeda(totalGeral)}`;
+            document.getElementById('legenda-grafico-despesas').innerText = `Total Exibido: ${fMoeda(totalGeral)}`;
             
             const labelsIniciais = Object.keys(agregacao); const data = Object.values(agregacao);
             if (labelsIniciais.length === 0) { chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
@@ -1048,7 +1110,26 @@
                     maintainAspectRatio: false, 
                     plugins: { 
                         legend: { position: 'right', labels: { font: { size: 11 } } }, 
-                        tooltip: { callbacks: { label: function(context) { return ` ${context.label}`; } } } 
+                        tooltip: { callbacks: { label: function(context) { return ` ${context.label}`; } } },
+                        datalabels: {
+                            color: '#fff',
+                            backgroundColor: 'rgba(26, 26, 46, 0.85)',
+                            borderRadius: 4,
+                            padding: 6,
+                            formatter: (value, context) => {
+                                const label = context.chart.data.labels[context.dataIndex];
+                                const match = label.match(/^(.*?)\s-\s.*?(\(.*?\))$/);
+                                if(match) {
+                                    const percStr = match[2].replace(/[()]/g, '');
+                                    if (parseFloat(percStr) >= 3) {
+                                        return `${match[1]}\n${percStr}`;
+                                    }
+                                }
+                                return null;
+                            },
+                            font: { weight: 'bold', size: 10 },
+                            textAlign: 'center'
+                        }
                     } 
                 } 
             });
