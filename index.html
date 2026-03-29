@@ -347,18 +347,28 @@
                     <div>
                         <label>Tipo:</label>
                         <select id="filtro-graf-tipo-trans" onchange="desenharGraficoDespesas()" style="background-color: #fff3cd; border-color: #ffc107; font-weight:bold;">
+                            <option value="todos">Tudo Misturado</option>
                             <option value="despesa">Somente Saídas</option>
                             <option value="entrada">Somente Entradas</option>
-                            <option value="todos">Tudo Misturado</option>
                         </select>
                     </div>
                     <div><label>Mês:</label><select id="filtro-graf-mes-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select></div>
                     <div><label>Ano:</label><select id="filtro-graf-ano-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
+                    
                     <div><label>Cat:</label><select id="filtro-graf-cat-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
                     <div><label>Desc:</label><select id="filtro-graf-desc-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
-                    <div><label>Agrupar por:</label><select id="filtro-graf-agrupar" onchange="desenharGraficoDespesas()"><option value="cat">Categoria</option><option value="desc">Descrição</option></select></div>
+                    
+                    <div>
+                        <label>Agrupar por:</label>
+                        <select id="filtro-graf-agrupar" onchange="desenharGraficoDespesas()" style="background-color: #e9f7ef; border-color: #28a745; font-weight:bold;">
+                            <option value="tipo" selected>Entradas e Saídas</option>
+                            <option value="cat">Categoria</option>
+                            <option value="desc">Descrição</option>
+                        </select>
+                    </div>
                 </div>
-                <div style="height: 450px; display: flex; justify-content: center; position: relative; margin-top: 20px;"><canvas id="graficoDespesasAnalise"></canvas></div>
+                
+                <div style="height: 350px; display: flex; justify-content: center; position: relative; margin-top: 10px;"><canvas id="graficoDespesasAnalise"></canvas></div>
                 <div id="legenda-grafico-despesas" style="margin-top: 20px; text-align: center; font-size: 1.1em; font-weight: bold; color: #1a1a2e; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #1a1a2e;"></div>
             </div>
         </section>
@@ -439,64 +449,9 @@
 
     <script>
         // =========================================================
-        // PLUGINS E SETUP DOS GRÁFICOS (CAIXINHAS E LINHAS DIRETORAS)
+        // PLUGINS E SETUP DOS GRÁFICOS
         // =========================================================
         Chart.register(ChartDataLabels);
-
-        // Plugin customizado para desenhar linhas diretoras com "cotovelo"
-        const pluginLinhasDiretoras = {
-            id: 'pluginLinhasDiretoras',
-            afterDraw(chart) {
-                if (chart.config.type !== 'doughnut' && chart.config.type !== 'pie') return;
-                
-                const ctx = chart.ctx;
-                const meta = chart.getDatasetMeta(0);
-                if(!meta || !meta.data || meta.data.length === 0) return;
-                
-                const dataset = chart.data.datasets[0];
-                const total = dataset.data.reduce((a,b) => a + b, 0);
-                if(total === 0) return;
-
-                dataset.data.forEach((value, index) => {
-                    // Esconde a linha para fatias menores que 3% para não embolar
-                    if ((value / total) < 0.03) return; 
-
-                    const arc = meta.data[index];
-                    if(arc.hidden) return; 
-
-                    const angle = (arc.startAngle + arc.endAngle) / 2;
-                    const r = arc.outerRadius;
-                    
-                    // Início da linha (borda externa do gráfico)
-                    const startX = arc.x + Math.cos(angle) * r;
-                    const startY = arc.y + Math.sin(angle) * r;
-                    
-                    // Ponto de quebra da linha (cotovelo)
-                    const elbowX = arc.x + Math.cos(angle) * (r + 15);
-                    const elbowY = arc.y + Math.sin(angle) * (r + 15);
-
-                    // Extensão reta horizontal para fora
-                    const isRight = Math.cos(angle) > 0;
-                    const endX = isRight ? elbowX + 15 : elbowX - 15;
-
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.moveTo(startX, startY);
-                    ctx.lineTo(elbowX, elbowY);
-                    ctx.lineTo(endX, elbowY);
-                    ctx.strokeStyle = dataset.backgroundColor[index];
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    
-                    // Bolinha decorativa na ponta
-                    ctx.beginPath();
-                    ctx.arc(endX, elbowY, 3, 0, 2 * Math.PI);
-                    ctx.fillStyle = dataset.backgroundColor[index];
-                    ctx.fill();
-                    ctx.restore();
-                });
-            }
-        };
 
         // =========================================================
         // 0. FORMATADORES GLOBAIS E REGRAS B3
@@ -932,7 +887,6 @@
         // 8. GRÁFICOS E FILTROS DINÂMICOS
         // =========================================================
         
-        // Gráfico da Dashboard - Mantido clássico, sem o plugin das linhas
         function atualizarGraficoPizza() {
             const filtroLiquidez = document.getElementById('filtro-liquidez-pizza').value;
             let totaisPizza = {}; let totalGeralPizza = 0;
@@ -994,7 +948,7 @@
                                 let dataset = context.dataset;
                                 let value = dataset.data[context.dataIndex];
                                 let total = dataset.data.reduce((a,b) => a + b, 0);
-                                return total > 0 && (value / total) >= 0.05; // Esconde no painel principal se for menor que 5%
+                                return total > 0 && (value / total) >= 0.05; 
                             },
                             formatter: (value, context) => {
                                 const label = context.chart.data.labels[context.dataIndex];
@@ -1059,7 +1013,6 @@
             });
         }
 
-        // Gráfico da aba Análise - Este recebe o plugin customizado e os tratamentos de erro corrigidos!
         function desenharGraficoDespesas() {
             const ctx = document.getElementById('graficoDespesasAnalise').getContext('2d');
             if (chartDespesasInstance) chartDespesasInstance.destroy();
@@ -1069,7 +1022,7 @@
             const fAno = document.getElementById('filtro-graf-ano-desp').value;
             const fAgrupar = document.getElementById('filtro-graf-agrupar').value;
             
-            // Tratamento de segurança caso o elemento ainda não tenha carregado
+            // Validações caso os elementos de filtro não estejam renderizados na tela
             const selCat = document.getElementById('filtro-graf-cat-desp');
             const selDesc = document.getElementById('filtro-graf-desc-desp');
             const fCat = selCat ? selCat.value : 'todas';
@@ -1088,63 +1041,68 @@
             
             let agregacao = {}; let totalGeral = 0;
             transacoesFiltradas.forEach(t => { 
-                const chave = fAgrupar === 'cat' ? (t.cat || 'Sem Categoria') : (t.desc || 'Sem Descrição'); 
+                let chave;
+                if (fAgrupar === 'tipo') {
+                    chave = (t.tipo === 'entrada') ? 'Entrada' : 'Saída';
+                } else if (fAgrupar === 'cat') {
+                    chave = t.cat || 'Sem Categoria';
+                } else {
+                    chave = t.desc || 'Sem Descrição';
+                }
+                
                 const valAbs = Math.abs(t.valor);
-                if (!agregacao[chave]) agregacao[chave] = 0; 
-                agregacao[chave] += valAbs; 
+                if (!agregacao[chave]) agregacao[chave] = { val: 0, tipo: t.tipo === 'entrada' ? 'entrada' : 'despesa' }; 
+                agregacao[chave].val += valAbs; 
                 totalGeral += valAbs; 
             });
             
             document.getElementById('legenda-grafico-despesas').innerText = `Valor Total do Filtro: ${fMoeda(totalGeral)}`;
             
-            const labelsIniciais = Object.keys(agregacao); const data = Object.values(agregacao);
-            if (labelsIniciais.length === 0) { chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
-            
-            const labelsComInfo = labelsIniciais.map(l => { 
-                let val = Math.abs(agregacao[l]);
-                let perc = totalGeral > 0 ? ((val / totalGeral) * 100).toFixed(1) : 0; 
-                return `${l}\n${fMoeda(val)}\n(${perc}%)`; 
+            // Ordenação rígida: Sempre colocar Entrada em primeiro lugar, seguido de Saída
+            const chavesOrdenadas = Object.keys(agregacao).sort((a, b) => {
+                if (a === 'Entrada' && b === 'Saída') return -1;
+                if (a === 'Saída' && b === 'Entrada') return 1;
+                if (agregacao[a].tipo !== agregacao[b].tipo) return agregacao[a].tipo === 'entrada' ? -1 : 1;
+                return a.localeCompare(b);
             });
 
-            const colors = ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#17a2b8', '#007bff', '#6610f2', '#e83e8c', '#6c757d', '#343a40'];
+            const labels = chavesOrdenadas;
+            const data = chavesOrdenadas.map(k => agregacao[k].val);
+            
+            let bgColors;
+            // Força verde e vermelho para Entrada/Saída
+            if (fAgrupar === 'tipo') {
+                bgColors = chavesOrdenadas.map(k => k === 'Entrada' ? '#28a745' : '#dc3545');
+            } else {
+                bgColors = ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#17a2b8', '#007bff', '#6610f2', '#e83e8c', '#6c757d', '#343a40'];
+            }
+
+            if (labels.length === 0) { chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
             
             chartDespesasInstance = new Chart(ctx, { 
                 type: 'doughnut', 
-                data: { labels: labelsComInfo, datasets: [{ data: data, backgroundColor: colors }] }, 
-                plugins: [pluginLinhasDiretoras], // <--- PLUGIN ATIVADO SOMENTE AQUI
+                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors }] }, 
                 options: { 
-                    layout: { padding: 65 }, 
+                    layout: { padding: 10 }, 
                     responsive: true, 
                     maintainAspectRatio: false, 
                     plugins: { 
-                        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12 } }, 
-                        tooltip: { callbacks: { label: function(context) { return ` ${context.label.replace(/\n/g, ' ')}`; } } },
+                        legend: { 
+                            position: 'left', // Legenda em lista à esquerda
+                            labels: { font: { size: 12 }, boxWidth: 15 } 
+                        }, 
+                        tooltip: { 
+                            callbacks: { 
+                                // Mostra a descrição, o valor e a porcentagem APENAS no tooltip do mouse
+                                label: function(context) { 
+                                    let value = context.parsed;
+                                    let perc = totalGeral > 0 ? ((value / totalGeral) * 100).toFixed(1) : 0;
+                                    return ` ${fMoeda(value)} (${perc}%)`; 
+                                } 
+                            } 
+                        },
                         datalabels: {
-                            color: '#fff',
-                            backgroundColor: (context) => context.dataset.backgroundColor[context.dataIndex],
-                            borderRadius: 4,
-                            padding: 4,
-                            anchor: 'end',
-                            // Calcula dinamicamente se o texto vai ser empurrado para a direita ou esquerda acompanhando o cotovelo
-                            align: (context) => {
-                                const index = context.dataIndex;
-                                const meta = context.chart.getDatasetMeta(0);
-                                if(!meta.data[index]) return 'end';
-                                const arc = meta.data[index];
-                                const angle = (arc.startAngle + arc.endAngle) / 2;
-                                const isRight = Math.cos(angle) > 0;
-                                return isRight ? 'right' : 'left';
-                            },
-                            offset: 20, // Distância perfeita para encaixar na linha do cotovelo
-                            font: { weight: 'bold', size: 9 },
-                            textAlign: 'center',
-                            display: function(context) {
-                                let dataset = context.dataset;
-                                let value = dataset.data[context.dataIndex];
-                                let total = dataset.data.reduce((a,b) => a + b, 0);
-                                return total > 0 && (value / total) >= 0.03; 
-                            },
-                            formatter: (value, context) => { return context.chart.data.labels[context.dataIndex]; }
+                            display: false // Desliga totalmente as caixas e textos de dentro do gráfico
                         }
                     } 
                 } 
