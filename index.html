@@ -159,7 +159,6 @@
                 <div><h3 style="margin-bottom: 15px; color: #1a1a2e;">Patrimônio por Instituição</h3><div class="bancos-grid" id="container-resumo-bancos"></div></div>
                 <div class="card" style="margin-top:0;">
                     <h3 style="text-align: center; margin-bottom: 10px;">Distribuição da Carteira</h3>
-                    
                     <div style="text-align: center; margin-bottom: 15px;">
                         <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Liquidez Diária:</label>
                         <select id="filtro-liquidez-pizza" onchange="atualizarGraficoPizza()" style="width: auto; padding: 5px; font-size: 0.9em; border-radius: 5px; border: 1px solid #ccc; margin-left: 5px; outline: none;">
@@ -168,7 +167,6 @@
                             <option value="Não">Não</option>
                         </select>
                     </div>
-
                     <div style="height: 250px; display: flex; justify-content: center; position: relative;"><canvas id="graficoPizza"></canvas></div>
                 </div>
             </div>
@@ -344,17 +342,8 @@
             <div class="card" style="margin-top: 25px;">
                 <h3 style="margin-bottom: 15px; color: #1a1a2e; border-bottom: 1px solid #ddd; padding-bottom: 5px;">📉 Composição de Transações</h3>
                 <div class="controles-grafico" style="justify-content: center; font-size: 0.9em; padding: 10px;">
-                    <div>
-                        <label>Tipo:</label>
-                        <select id="filtro-graf-tipo-trans" onchange="desenharGraficoDespesas()" style="background-color: #fff3cd; border-color: #ffc107; font-weight:bold;">
-                            <option value="todos">Tudo Misturado</option>
-                            <option value="despesa">Somente Saídas</option>
-                            <option value="entrada">Somente Entradas</option>
-                        </select>
-                    </div>
                     <div><label>Mês:</label><select id="filtro-graf-mes-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select></div>
                     <div><label>Ano:</label><select id="filtro-graf-ano-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
-                    
                     <div><label>Cat:</label><select id="filtro-graf-cat-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
                     <div><label>Desc:</label><select id="filtro-graf-desc-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
                     
@@ -368,7 +357,9 @@
                     </div>
                 </div>
                 
-                <div style="height: 350px; display: flex; justify-content: center; position: relative; margin-top: 10px;"><canvas id="graficoDespesasAnalise"></canvas></div>
+                <div id="container-grafico-despesas" style="height: 400px; display: flex; justify-content: center; position: relative; margin-top: 20px;">
+                    <canvas id="graficoDespesasAnalise"></canvas>
+                </div>
                 <div id="legenda-grafico-despesas" style="margin-top: 20px; text-align: center; font-size: 1.1em; font-weight: bold; color: #1a1a2e; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #1a1a2e;"></div>
             </div>
         </section>
@@ -449,7 +440,7 @@
 
     <script>
         // =========================================================
-        // PLUGINS E SETUP DOS GRÁFICOS
+        // SETUP DOS GRÁFICOS (Plugin Datalabels)
         // =========================================================
         Chart.register(ChartDataLabels);
 
@@ -1013,24 +1004,22 @@
             });
         }
 
+        // Gráfico Analítico (Visual Limpo: Sem Setas, Sem Caixas, Legenda Completa em 1 Coluna à Esquerda)
         function desenharGraficoDespesas() {
             const ctx = document.getElementById('graficoDespesasAnalise').getContext('2d');
             if (chartDespesasInstance) chartDespesasInstance.destroy();
             
-            const fTipo = document.getElementById('filtro-graf-tipo-trans').value;
+            // O Filtro "Tipo" foi removido. Agora pegamos apenas os outros filtros.
             const fMes = document.getElementById('filtro-graf-mes-desp').value;
             const fAno = document.getElementById('filtro-graf-ano-desp').value;
             const fAgrupar = document.getElementById('filtro-graf-agrupar').value;
             
-            // Validações caso os elementos de filtro não estejam renderizados na tela
             const selCat = document.getElementById('filtro-graf-cat-desp');
             const selDesc = document.getElementById('filtro-graf-desc-desp');
             const fCat = selCat ? selCat.value : 'todas';
             const fDesc = selDesc ? selDesc.value : 'todas';
             
             let transacoesFiltradas = transacoes.filter(t => { 
-                const tpReal = t.tipo || 'despesa';
-                if (fTipo !== 'todos' && tpReal !== fTipo) return false;
                 const [a, m, d] = t.data.split('-'); 
                 if (fMes !== 'todos' && m !== fMes) return false; 
                 if (fAno !== 'todos' && a !== fAno) return false; 
@@ -1058,7 +1047,7 @@
             
             document.getElementById('legenda-grafico-despesas').innerText = `Valor Total do Filtro: ${fMoeda(totalGeral)}`;
             
-            // Ordenação rígida: Sempre colocar Entrada em primeiro lugar, seguido de Saída
+            // Ordenação da Legenda: Sempre Entrada primeiro, depois as demais (alfabeticamente ou por Saída)
             const chavesOrdenadas = Object.keys(agregacao).sort((a, b) => {
                 if (a === 'Entrada' && b === 'Saída') return -1;
                 if (a === 'Saída' && b === 'Entrada') return 1;
@@ -1066,43 +1055,57 @@
                 return a.localeCompare(b);
             });
 
-            const labels = chavesOrdenadas;
+            // Ajusta a altura da div para caber todos os itens em UMA coluna sem quebrar (aprox. 30px por item)
+            const containerGrafico = document.getElementById('container-grafico-despesas');
+            const alturaNecessaria = Math.max(400, chavesOrdenadas.length * 30);
+            containerGrafico.style.height = alturaNecessaria + 'px';
+
+            const labelsComInfo = chavesOrdenadas.map(l => { 
+                let val = Math.abs(agregacao[l].val);
+                let perc = totalGeral > 0 ? ((val / totalGeral) * 100).toFixed(1) : 0; 
+                return `${l} - ${fMoeda(val)} (${perc}%)`; 
+            });
+
             const data = chavesOrdenadas.map(k => agregacao[k].val);
             
             let bgColors;
-            // Força verde e vermelho para Entrada/Saída
+            // Cores: Verde e Vermelho para Entradas/Saídas. Cores diversas para o resto.
             if (fAgrupar === 'tipo') {
                 bgColors = chavesOrdenadas.map(k => k === 'Entrada' ? '#28a745' : '#dc3545');
             } else {
                 bgColors = ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#17a2b8', '#007bff', '#6610f2', '#e83e8c', '#6c757d', '#343a40'];
             }
 
-            if (labels.length === 0) { chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
+            if (labelsComInfo.length === 0) { chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
             
             chartDespesasInstance = new Chart(ctx, { 
                 type: 'doughnut', 
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors }] }, 
+                data: { labels: labelsComInfo, datasets: [{ data: data, backgroundColor: bgColors }] }, 
+                // REMOVIDO: O pluginLinhasDiretoras não é mais chamado aqui!
                 options: { 
                     layout: { padding: 10 }, 
                     responsive: true, 
                     maintainAspectRatio: false, 
                     plugins: { 
                         legend: { 
-                            position: 'left', // Legenda em lista à esquerda
+                            position: 'left', // Legenda fixa em lista à esquerda
                             labels: { font: { size: 12 }, boxWidth: 15 } 
                         }, 
                         tooltip: { 
                             callbacks: { 
-                                // Mostra a descrição, o valor e a porcentagem APENAS no tooltip do mouse
+                                // O tooltip (ao passar o mouse) mostra só a descrição crua, o valor e a porcentagem
                                 label: function(context) { 
                                     let value = context.parsed;
                                     let perc = totalGeral > 0 ? ((value / totalGeral) * 100).toFixed(1) : 0;
-                                    return ` ${fMoeda(value)} (${perc}%)`; 
+                                    // Pega só o texto puro antes do " - R$..." 
+                                    let textoPuro = context.label.split(' - ')[0];
+                                    return ` ${textoPuro}: ${fMoeda(value)} (${perc}%)`; 
                                 } 
                             } 
                         },
                         datalabels: {
-                            display: false // Desliga totalmente as caixas e textos de dentro do gráfico
+                            // Desliga totalmente as caixas, valores e porcentagens fixas no gráfico
+                            display: false 
                         }
                     } 
                 } 
