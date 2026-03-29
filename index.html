@@ -878,22 +878,27 @@
             const tOrd = [...transacoes].sort((a,b) => new Date(b.data) - new Date(a.data)); let uGrp = "";
 
             tOrd.forEach(t => {
-                const [ano, mes, dia] = t.data.split('-'); const tpReal = t.tipo || 'despesa'; const mult = tpReal === 'entrada' ? 1 : -1;
-                if(parseInt(mes) === mAt && parseInt(ano) === aAt) { tMesDash += (t.valor * mult); }
+                const tpReal = t.tipo || 'despesa'; const mult = tpReal === 'entrada' ? 1 : -1;
+                const valAbsoluto = Math.abs(t.valor); // Garante que na tela não apareça algo como "- -8.00"
+                const [ano, mes, dia] = t.data.split('-'); 
+                
+                if(parseInt(mes) === mAt && parseInt(ano) === aAt) { tMesDash += (valAbsoluto * mult); }
+                
                 let mostrar = true;
                 if (fData !== "") { if (t.data !== fData) mostrar = false; } else { if (fMes !== 'todos' && mes !== fMes) mostrar = false; if (fAno !== 'todos' && ano !== fAno) mostrar = false; }
+                
                 if (mostrar) {
-                    tFilt += (t.valor * mult);
+                    tFilt += (valAbsoluto * mult);
                     if (fData === "" && (fMes === 'todos' || fAno === 'todos')) { const grpAtual = `${mes}/${ano}`; if (grpAtual !== uGrp) { corpo.innerHTML += `<tr style="background-color:#f1f3f5;"><td colspan="5" style="text-align:center; font-weight:bold;">🗓️ ${mes}/${ano}</td></tr>`; uGrp = grpAtual; } }
                     const cVal = tpReal === 'entrada' ? '#28a745' : '#dc3545'; const sin = tpReal === 'entrada' ? '+' : '-'; const bdg = tpReal === 'entrada' ? 'badge-entrada' : 'badge-saida';
-                    corpo.innerHTML += `<tr><td>${t.desc}</td><td><span class="${bdg}">${t.cat||'Sem Categoria'}</span></td><td>${dia}/${mes}/${ano}</td><td style="color:${cVal}; font-weight:bold;">${sin} ${fMoeda(t.valor)}</td><td style="white-space:nowrap;"><button class="btn-editar" onclick="abrirEdicaoTransacao(${t.id})">Editar</button><button class="btn-excluir" onclick="deletarItem(${t.id}, 'trans')">Excluir</button></td></tr>`;
+                    corpo.innerHTML += `<tr><td>${t.desc}</td><td><span class="${bdg}">${t.cat||'Sem Categoria'}</span></td><td>${dia}/${mes}/${ano}</td><td style="color:${cVal}; font-weight:bold;">${sin} ${fMoeda(valAbsoluto)}</td><td style="white-space:nowrap;"><button class="btn-editar" onclick="abrirEdicaoTransacao(${t.id})">Editar</button><button class="btn-excluir" onclick="deletarItem(${t.id}, 'trans')">Excluir</button></td></tr>`;
                 }
             });
             const dFx = document.getElementById('dash-fluxo'); dFx.innerText = fMoeda(tMesDash); dFx.style.color = tMesDash >= 0 ? '#28a745' : '#dc3545';
             const dFlt = document.getElementById('total-trans-filtrado'); dFlt.innerText = fMoeda(tFilt); dFlt.style.color = tFilt >= 0 ? '#28a745' : '#dc3545';
         }
         function filtrarTabelaTransacoes() { const inputs = document.querySelectorAll('#tabela-transacoes thead input'); const rows = document.querySelectorAll('#corpo-tabela-transacoes tr'); rows.forEach(row => { if(row.cells.length < 5) return; let mostrarLinha = true; inputs.forEach((input, index) => { const textoFiltro = input.value.toLowerCase(); if (textoFiltro !== '') { const celula = row.cells[index]; if (celula) { if (!celula.textContent.toLowerCase().includes(textoFiltro)) { mostrarLinha = false; } } } }); row.style.display = mostrarLinha ? '' : 'none'; }); }
-        function abrirEdicaoTransacao(id) { const t = transacoes.find(i => i.id === id); if(t) { document.getElementById('edit-trans-id').value = t.id; document.getElementById('edit-trans-tipo').value = t.tipo || 'despesa'; document.getElementById('edit-trans-data').value = t.data; document.getElementById('edit-trans-valor').value = t.valor; const selDesc = document.getElementById('edit-trans-desc'); if(!descricoesAtuais.includes(t.desc)) selDesc.innerHTML += `<option value="${t.desc}">${t.desc}</option>`; selDesc.value = t.desc; const selCat = document.getElementById('edit-trans-cat'); if(!categoriasAtuais.includes(t.cat)) selCat.innerHTML += `<option value="${t.cat}">${t.cat}</option>`; selCat.value = t.cat; document.getElementById('modal-editar-trans').style.display = 'flex'; } }
+        function abrirEdicaoTransacao(id) { const t = transacoes.find(i => i.id === id); if(t) { document.getElementById('edit-trans-id').value = t.id; document.getElementById('edit-trans-tipo').value = t.tipo || 'despesa'; document.getElementById('edit-trans-data').value = t.data; document.getElementById('edit-trans-valor').value = Math.abs(t.valor); const selDesc = document.getElementById('edit-trans-desc'); if(!descricoesAtuais.includes(t.desc)) selDesc.innerHTML += `<option value="${t.desc}">${t.desc}</option>`; selDesc.value = t.desc; const selCat = document.getElementById('edit-trans-cat'); if(!categoriasAtuais.includes(t.cat)) selCat.innerHTML += `<option value="${t.cat}">${t.cat}</option>`; selCat.value = t.cat; document.getElementById('modal-editar-trans').style.display = 'flex'; } }
         function fecharEdicaoTransacao() { document.getElementById('modal-editar-trans').style.display = 'none'; }
         function salvarEdicaoTransacao() { const id = parseInt(document.getElementById('edit-trans-id').value); const idx = transacoes.findIndex(i => i.id === id); if(idx !== -1) { transacoes[idx].tipo = document.getElementById('edit-trans-tipo').value; transacoes[idx].desc = document.getElementById('edit-trans-desc').value; transacoes[idx].cat = document.getElementById('edit-trans-cat').value; transacoes[idx].data = document.getElementById('edit-trans-data').value; transacoes[idx].valor = parseFloat(document.getElementById('edit-trans-valor').value); salvarNoBanco(); fecharEdicaoTransacao(); } }
 
@@ -1008,12 +1013,12 @@
             let despesasFiltradas = transacoes.filter(t => (t.tipo || 'despesa') === 'despesa');
             despesasFiltradas = despesasFiltradas.filter(t => { const [a, m, d] = t.data.split('-'); if (fMes !== 'todos' && m !== fMes) return false; if (fAno !== 'todos' && a !== fAno) return false; if (fCat !== 'todas' && t.cat !== fCat) return false; if (fDesc !== 'todas' && t.desc !== fDesc) return false; return true; });
             let agregacao = {}; let totalGeral = 0;
-            despesasFiltradas.forEach(t => { const chave = fAgrupar === 'cat' ? (t.cat || 'Sem Categoria') : (t.desc || 'Sem Descrição'); if (!agregacao[chave]) agregacao[chave] = 0; agregacao[chave] += t.valor; totalGeral += t.valor; });
+            despesasFiltradas.forEach(t => { const chave = fAgrupar === 'cat' ? (t.cat || 'Sem Categoria') : (t.desc || 'Sem Descrição'); if (!agregacao[chave]) agregacao[chave] = 0; agregacao[chave] += t.valor; totalGeral += Math.abs(t.valor); });
             document.getElementById('legenda-grafico-despesas').innerText = `Total das Despesas Exibidas: ${fMoeda(totalGeral)}`;
             const labels = Object.keys(agregacao); const data = Object.values(agregacao);
             if (labels.length === 0) { chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
             const colors = ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#17a2b8', '#007bff', '#6610f2', '#e83e8c', '#6c757d', '#343a40'];
-            chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' }, tooltip: { callbacks: { label: function(context) { let label = context.label || ''; let value = context.parsed || 0; let perc = totalGeral > 0 ? ((value / totalGeral) * 100).toFixed(1) : 0; return `${label}: ${fMoeda(value)} (${perc}%)`; } } } } } });
+            chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' }, tooltip: { callbacks: { label: function(context) { let label = context.label || ''; let value = context.parsed || 0; let perc = totalGeral > 0 ? ((Math.abs(value) / totalGeral) * 100).toFixed(1) : 0; return `${label}: ${fMoeda(Math.abs(value))} (${perc}%)`; } } } } } });
         }
 
         // =========================================================
@@ -1082,11 +1087,18 @@
                         const liq = c[4] ? c[4].trim() : "Sim"; const ven = c[5] ? c[5].trim() : "";
                         if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, data:d, valor:v, taxa:t, liquidez:liq, vencimento:ven}); q++; } 
                     } else if (tipo === 'transacoes' && c.length >= 4) {
-                        const tp = c[0].trim().toLowerCase() === 'entrada' ? 'entrada' : 'despesa';
+                        let tpRaw = c[0].trim().toLowerCase();
                         const desc = c[1].trim(); const cat = c[2].trim(); const d = c[3].trim();
                         if (c.length >= 5) {
-                            const vFinal = parseFloat(c[4].replace(',','.'));
+                            let vFinal = parseFloat(c[4].replace(',','.'));
                             if(desc && d && !isNaN(vFinal)) {
+                                let tp = 'despesa';
+                                if (tpRaw === 'entrada' || tpRaw === 'receita') tp = 'entrada';
+                                else if (tpRaw === 'despesa' || tpRaw === 'saída' || tpRaw === 'saida') tp = 'despesa';
+                                else tp = vFinal >= 0 ? 'entrada' : 'despesa';
+                                
+                                vFinal = Math.abs(vFinal); // Força sempre a salvar como absoluto no banco
+                                
                                 if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
                                 if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
                                 transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
@@ -1115,10 +1127,18 @@
                     const liq = c[4] ? c[4].trim() : "Sim"; const ven = c[5] ? c[5].trim() : "";
                     if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: Date.now() + i, banco: b, data: d, valor: v, taxa: t, liquidez: liq, vencimento: ven}); q++; }
                 } else if (tipo === 'transacoes' && c.length >= 5) {
-                    const tp = c[0].trim().toLowerCase() === 'entrada' ? 'entrada' : 'despesa';
+                    let tpRaw = c[0].trim().toLowerCase();
                     const desc = c[1].trim(); const cat = c[2].trim(); const d = c[3].trim();
-                    const vFinal = parseFloat(c[4].replace(',','.'));
+                    let vFinal = parseFloat(c[4].replace(',','.'));
+                    
                     if(desc && d && !isNaN(vFinal)) {
+                        let tp = 'despesa';
+                        if (tpRaw === 'entrada' || tpRaw === 'receita') tp = 'entrada';
+                        else if (tpRaw === 'despesa' || tpRaw === 'saída' || tpRaw === 'saida') tp = 'despesa';
+                        else tp = vFinal >= 0 ? 'entrada' : 'despesa'; // fallback baseado no sinal se vier palavra desconhecida
+
+                        vFinal = Math.abs(vFinal); // Força sempre a salvar como absoluto no banco
+
                         if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
                         if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
                         transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
