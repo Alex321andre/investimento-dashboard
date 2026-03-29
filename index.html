@@ -356,29 +356,55 @@
 
         <section id="tela-dados" class="tela">
             <h2>Importar e Exportar Dados</h2>
-            <p style="color: #666; margin-bottom: 20px;">Exporte o relatório da sua carteira ou importe um histórico antigo.</p>
+            <p style="color: #666; margin-bottom: 20px;">Gerencie seus registros de Investimentos e Transações separadamente em lote.</p>
             
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                <div class="card" style="border-top: 4px solid #1a1a2e; margin-top: 0;">
-                    <h3>📥 Importar Arquivo CSV</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Arquivo contendo: banco; data; valor; taxa; liquidez; vencimento.</p>
-                    <input type="file" id="input-csv" accept=".csv" style="width: 100%; margin-bottom: 10px;">
-                    <button type="button" class="btn-acao secundario" onclick="importarCSV()">Carregar Arquivo CSV</button>
+            <h3 style="color: #0f3460; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 5px; margin-top: 10px;">💼 Dados de Investimentos</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
+                    <h3 style="font-size: 1.1em;">📥 Importar Arquivo CSV</h3>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: banco; data; valor; taxa; liquidez; vencimento.</p>
+                    <input type="file" id="input-csv-inv" accept=".csv" style="width: 100%; margin-bottom: 10px;">
+                    <button type="button" class="btn-acao secundario" onclick="importarCSV('investimentos')">Carregar CSV Investimentos</button>
                 </div>
 
-                <div class="card" style="border-top: 4px solid #28a745; margin-top: 0;">
-                    <h3>📋 Importar via Texto</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Cole os dados no formato: <strong>banco;data;valor;taxa;liquidez;vencimento</strong></p>
+                <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
+                    <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato: <strong>banco;data;valor;taxa;liquidez;vencimento</strong></p>
                     <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Ex: C6;2024-10-21;301.00;103.0;Sim;2026-10-21</p>
-                    <textarea id="input-csv-texto" rows="5" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
-                    <button type="button" class="btn-acao secundario" style="background-color: #28a745; border-color: #28a745;" onclick="importarCSVTexto()">Importar Texto Colado</button>
+                    <textarea id="input-csv-texto-inv" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
+                    <button type="button" class="btn-acao secundario" style="background-color: #0f3460;" onclick="importarCSVTexto('investimentos')">Importar Texto Colado</button>
+                </div>
+
+                <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
+                    <h3 style="font-size: 1.1em;">📤 Exportar Relatórios</h3>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Gere um arquivo ou envie seus ativos por e-mail.</p>
+                    <button type="button" class="btn-acao" onclick="prepararEmail('investimentos')" style="margin-bottom: 10px; font-size:0.95em;">✉️ Enviar por E-mail</button>
+                    <button type="button" class="btn-acao secundario" onclick="baixarCSV('investimentos')" style="font-size:0.95em;">📥 Baixar Planilha CSV</button>
+                </div>
+            </div>
+
+            <h3 style="color: #e94560; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 5px;">💸 Dados de Transações (Caixa)</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
+                    <h3 style="font-size: 1.1em;">📥 Importar Arquivo CSV</h3>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: tipo; descrição; categoria; data; valor.</p>
+                    <input type="file" id="input-csv-trans" accept=".csv" style="width: 100%; margin-bottom: 10px;">
+                    <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSV('transacoes')">Carregar CSV Transações</button>
                 </div>
 
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
-                    <h3>📤 Exportar Relatórios</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Gere um arquivo ou envie os dados da carteira por e-mail.</p>
-                    <button type="button" class="btn-acao" onclick="prepararEmail()" style="margin-bottom: 10px;">✉️ Enviar por E-mail</button>
-                    <button type="button" class="btn-acao secundario" onclick="baixarCSV()">📥 Baixar Planilha CSV</button>
+                    <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato: <strong>tipo;descrição;categoria;data;valor</strong></p>
+                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Ex: despesa;Supermercado;Alimentação;2024-10-21;150.50</p>
+                    <textarea id="input-csv-texto-trans" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
+                    <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSVTexto('transacoes')">Importar Texto Colado</button>
+                </div>
+
+                <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
+                    <h3 style="font-size: 1.1em;">📤 Exportar Relatórios</h3>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Gere um arquivo ou envie seu fluxo de caixa por e-mail.</p>
+                    <button type="button" class="btn-acao" style="background-color: #1a1a2e; margin-bottom: 10px; font-size:0.95em;" onclick="prepararEmail('transacoes')">✉️ Enviar por E-mail</button>
+                    <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560; font-size:0.95em;" onclick="baixarCSV('transacoes')">📥 Baixar Planilha CSV</button>
                 </div>
             </div>
             
@@ -500,7 +526,6 @@
             return parseFloat(str).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
         }
 
-        // ALGORITMO DE CÁLCULO DA PÁSCOA E FERIADOS (Meeus/Jones/Butcher)
         function obterDataPascoa(ano) {
             const f = Math.floor, G = ano % 19, C = f(ano / 100);
             const H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30;
@@ -515,26 +540,18 @@
             if (diaSemana === 0 || diaSemana === 6) return false;
 
             const dataString = `${String(dataObj.getDate()).padStart(2, '0')}/${String(dataObj.getMonth() + 1).padStart(2, '0')}`;
-            
             const feriadosFixos = ['01/01', '21/04', '01/05', '07/09', '12/10', '02/11', '15/11', '25/12'];
             if (feriadosFixos.includes(dataString)) return false;
 
             const ano = dataObj.getFullYear();
             const pascoa = obterDataPascoa(ano);
-            
-            const addDias = (data, dias) => {
-                let res = new Date(data);
-                res.setDate(res.getDate() + dias);
-                return res;
-            };
-
+            const addDias = (data, dias) => { let res = new Date(data); res.setDate(res.getDate() + dias); return res; };
             const sextaSanta = addDias(pascoa, -2);
             const carnavalSeg = addDias(pascoa, -48);
             const carnavalTer = addDias(pascoa, -47);
             const corpusChristi = addDias(pascoa, 60);
 
             const formataDDMM = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-            
             const feriadosMoveis = [formataDDMM(sextaSanta), formataDDMM(carnavalSeg), formataDDMM(carnavalTer), formataDDMM(corpusChristi)];
             if (feriadosMoveis.includes(dataString)) return false;
 
@@ -560,8 +577,7 @@
         let categoriasAtuais = ["Alimentação", "Assinaturas/Serviços", "Cuidados Pessoais", "Doações", "Educação", "Impostos", "Lazer", "Moradia", "Outros", "Pets", "Presentes", "Rendimentos", "Salário", "Saúde", "Taxas", "Transporte", "Vestuário", "Viagem"];
         let descricoesAtuais = ["Academia", "Aluguel", "Cartão de Crédito", "Condomínio", "Conta de Água", "Conta de Luz", "Farmácia", "Freelance", "Gasolina", "Ifood/Delivery", "Internet/TV", "Mensalidade", "Mesada", "Padaria", "Salário", "Supermercado", "Uber/App de Transporte"];
         let chartInstance = null; let chartPizzaInstance = null; let chartDespesasInstance = null; let usuarioAtual = null; let totalLiquidoGlobal = 0;
-        
-        let projetarCDI = false; // Controle de projeção universal
+        let projetarCDI = false;
 
         // =========================================================
         // 2. LOGIN E AUTENTICAÇÃO
@@ -571,10 +587,8 @@
             if (user) {
                 usuarioAtual = user; document.getElementById('user-display-email').innerText = `Logado: ${user.email}`; cab.style.display = 'block';
                 const m = (new Date().getMonth() + 1).toString().padStart(2, '0'); const a = new Date().getFullYear().toString();
-                
                 document.getElementById('filtro-mes-trans').value = m; document.getElementById('filtro-ano-trans').value = a;
                 document.getElementById('filtro-graf-mes-desp').value = m; document.getElementById('filtro-graf-ano-desp').value = a;
-
                 navegar('tela-dashboard'); carregarDadosDoBanco(); carregarCDI();
             } else {
                 usuarioAtual = null; carteira = []; transacoes = []; listaMetas = []; cab.style.display = 'none';
@@ -633,8 +647,6 @@
         // =========================================================
         // 4. LÓGICA CORE, PROJEÇÃO E RENDERIZAÇÃO
         // =========================================================
-        
-        // Ativa/Desativa a projeção simultaneamente em todos os botões e atualiza a interface
         function toggleProjecao() {
             projetarCDI = !projetarCDI;
             const botoes = document.querySelectorAll('.btn-projetar');
@@ -649,16 +661,10 @@
                     btn.style.borderColor = '#0f3460';
                 }
             });
-            
             processarCarteira();
-            
-            // Garante que o gráfico de linha atualize também caso esteja na tela de gráficos
-            if(document.getElementById('tela-grafico').classList.contains('ativa')) {
-                desenharGrafico();
-            }
+            if(document.getElementById('tela-grafico').classList.contains('ativa')) { desenharGrafico(); }
         }
 
-        // Obtém o CDI (podendo estender artificialmente até a data atual se a projeção estiver ligada)
         function obterCDIEfetivo() {
             let cdiEfetivo = [...serieCDI];
             if (projetarCDI && serieCDI.length > 0) {
@@ -667,10 +673,8 @@
                 let dataCursor = new Date(parseInt(a), parseInt(m) - 1, parseInt(d));
                 const hoje = new Date();
                 hoje.setHours(0,0,0,0);
-                
                 while(dataCursor < hoje) {
                     dataCursor.setDate(dataCursor.getDate() + 1);
-                    
                     if (ehDiaUtilBancario(dataCursor)) {
                         cdiEfetivo.push({
                             data: `${String(dataCursor.getDate()).padStart(2,'0')}/${String(dataCursor.getMonth()+1).padStart(2,'0')}/${dataCursor.getFullYear()}`,
@@ -688,20 +692,15 @@
                 const formata = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
                 const res = await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${formata(dIni)}&dataFinal=${formata(hoje)}`);
                 serieCDI = await res.json();
-                
                 let textoStatus = "✅ API e Nuvem OK!";
                 if(serieCDI.length > 0) {
-                    const dtIni = serieCDI[0].data;
-                    const ultimoRegistro = serieCDI[serieCDI.length - 1];
-                    const dtFim = ultimoRegistro.data;
+                    const dtIni = serieCDI[0].data; const ultimoRegistro = serieCDI[serieCDI.length - 1]; const dtFim = ultimoRegistro.data;
                     textoStatus += ` (CDI de ${dtIni} até ${dtFim})`;
-
                     let taxaDiaria = parseFloat(ultimoRegistro.valor) / 100;
                     let fatorDia = truncaFatorB3(1 + taxaDiaria);
                     textoStatus += `<br><span style="font-size: 0.85em; font-weight: normal; color: #666;">Fator multiplicador do último dia útil oficial (100% CDI): <strong>${fatorDia}</strong></span>`;
                 }
                 document.getElementById('status-api').innerHTML = textoStatus;
-                
                 processarCarteira();
             } catch (e) { document.getElementById('status-api').innerText = " Erro na API do BCB."; }
         }
@@ -709,7 +708,6 @@
         function processarCarteira() {
             const corpoTabela = document.getElementById('corpo-tabela'); corpoTabela.innerHTML = '';
             let valInv = 0, valBru = 0; totalLiquidoGlobal = 0; let totaisBancos = {};
-            
             const cdiEfetivo = obterCDIEfetivo();
 
             if (cdiEfetivo.length === 0) {
@@ -722,45 +720,29 @@
             carteira.forEach(inv => {
                 const isResgatado = !!inv.dataResgate;
                 const [ano, mes, dia] = inv.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
-                
                 let dataFim = projetarCDI ? new Date() : new Date(); 
-                if(isResgatado) {
-                    const [rA, rM, rD] = inv.dataResgate.split('-');
-                    dataFim = new Date(parseInt(rA), parseInt(rM) - 1, parseInt(rD));
-                }
-
+                if(isResgatado) { const [rA, rM, rD] = inv.dataResgate.split('-'); dataFim = new Date(parseInt(rA), parseInt(rM) - 1, parseInt(rD)); }
                 const nomeBanco = inv.banco || "Não Informado";
                 if (!totaisBancos[nomeBanco]) totaisBancos[nomeBanco] = { inv: 0, bru: 0, liq: 0, bruVezesTaxa: 0 };
-                
-                let valOriginal = parseFloat(inv.valor); 
-                let percentualCDI = parseFloat(inv.taxa) / 100;
-                let fatorAcumulado = 1;
+                let valOriginal = parseFloat(inv.valor); let percentualCDI = parseFloat(inv.taxa) / 100; let fatorAcumulado = 1;
                 
                 for (let i = 0; i < cdiEfetivo.length; i++) {
                     const [dBCB, mBCB, aBCB] = cdiEfetivo[i].data.split('/'); const dataBCB = new Date(parseInt(aBCB), parseInt(mBCB) - 1, parseInt(dBCB));
                     if (dataBCB >= dataInv && dataBCB <= dataFim) {
                         let taxaDiaria = parseFloat(cdiEfetivo[i].valor) / 100;
-                        let fatorDia = truncaFatorB3(1 + (taxaDiaria * percentualCDI));
-                        fatorAcumulado *= fatorDia;
+                        fatorAcumulado *= truncaFatorB3(1 + (taxaDiaria * percentualCDI));
                     }
                 }
                 
-                let vAtual = valOriginal * fatorAcumulado;
-                vAtual = Math.round(vAtual * 100) / 100;
-                
+                let vAtual = Math.round((valOriginal * fatorAcumulado) * 100) / 100;
                 const dias = Math.ceil(Math.abs(dataFim - dataInv) / (1000 * 60 * 60 * 24));
                 let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5;
                 const rBruto = vAtual - valOriginal; const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
-
                 inv.liqCalculado = vLiq;
 
                 if(!isResgatado) {
-                    valInv += valOriginal;
-                    valBru += vAtual; 
-                    totalLiquidoGlobal += vLiq; 
-                    totaisBancos[nomeBanco].inv += valOriginal;
-                    totaisBancos[nomeBanco].bru += vAtual;
-                    totaisBancos[nomeBanco].liq += vLiq;
+                    valInv += valOriginal; valBru += vAtual; totalLiquidoGlobal += vLiq; 
+                    totaisBancos[nomeBanco].inv += valOriginal; totaisBancos[nomeBanco].bru += vAtual; totaisBancos[nomeBanco].liq += vLiq;
                     totaisBancos[nomeBanco].bruVezesTaxa += (vAtual * parseFloat(inv.taxa));
                 }
 
@@ -770,7 +752,6 @@
                     : `<button class="btn-acao secundario" style="padding: 6px 10px; font-size: 0.85em; margin-right: 5px; width: auto;" onclick="abrirResgate(${inv.id})" title="Sacar investimento">💰 Resgatar</button>
                        <button class="btn-editar" onclick="abrirEdicao(${inv.id})">Editar</button>
                        <button class="btn-excluir" onclick="deletarItem(${inv.id}, 'inv')">Excluir</button>`;
-
                 const liquidezDisplay = (inv.liquidez === 'Não') ? '<span style="color:#dc3545; font-weight:bold;">Não</span>' : '<span style="color:#28a745; font-weight:bold;">Sim</span>';
                 const vencimentoDisplay = inv.vencimento ? inv.vencimento.split('-').reverse().join('/') : '-';
 
@@ -797,9 +778,7 @@
                 let metaLiqAtual = 0; let metaInvAtual = 0;
                 meta.aportes.forEach(aporte => {
                     const [ano, mes, dia] = aporte.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
-                    let valOriginal = parseFloat(aporte.valor); 
-                    let percentualCDI = parseFloat(aporte.taxa) / 100;
-                    let fatorAcumulado = 1;
+                    let valOriginal = parseFloat(aporte.valor); let percentualCDI = parseFloat(aporte.taxa) / 100; let fatorAcumulado = 1;
                     valInv += valOriginal; metaInvAtual += valOriginal; totaisBancos[nomeBancoMeta].inv += valOriginal;
                     
                     for (let i = 0; i < cdiEfetivo.length; i++) { 
@@ -822,9 +801,7 @@
                 meta.liqAtual = metaLiqAtual; meta.invAtual = metaInvAtual;
             });
 
-            if (carteira.length === 0 && listaMetas.length === 0) {
-                corpoTabela.innerHTML = '<tr><td colspan="11" style="text-align:center;">Nenhuma aplicação ou caixinha cadastrada.</td></tr>';
-            }
+            if (carteira.length === 0 && listaMetas.length === 0) { corpoTabela.innerHTML = '<tr><td colspan="11" style="text-align:center;">Nenhuma aplicação ou caixinha cadastrada.</td></tr>'; }
 
             document.getElementById('dash-valor-investido').innerText = fMoeda(valInv);
             document.getElementById('dash-valor-bruto').innerText = fMoeda(valBru);
@@ -834,7 +811,6 @@
             document.getElementById('dash-rentabilidade').style.color = rent >= 0 ? 'green' : 'red';
 
             renderizarCardsBancos(totaisBancos); atualizarFiltroGrafico(); atualizarGraficoPizza(); renderizarMetas();
-            
             calcularTotaisInvestimentos();
         }
 
@@ -843,133 +819,51 @@
         
         function adicionarInvestimento(e) { 
             e.preventDefault(); 
-            carteira.push({ 
-                id: Date.now(), 
-                banco: document.getElementById('input-banco').value.trim(), 
-                data: document.getElementById('input-data').value, 
-                valor: document.getElementById('input-valor').value, 
-                taxa: document.getElementById('input-taxa').value,
-                liquidez: document.getElementById('input-liquidez').value,
-                vencimento: document.getElementById('input-vencimento').value
-            }); 
-            document.getElementById('form-investimento').reset(); 
-            toggleFormInvestimento(); 
-            salvarNoBanco(); 
+            carteira.push({ id: Date.now(), banco: document.getElementById('input-banco').value.trim(), data: document.getElementById('input-data').value, valor: document.getElementById('input-valor').value, taxa: document.getElementById('input-taxa').value, liquidez: document.getElementById('input-liquidez').value, vencimento: document.getElementById('input-vencimento').value }); 
+            document.getElementById('form-investimento').reset(); toggleFormInvestimento(); salvarNoBanco(); 
         }
 
         function abrirEdicao(id) { 
             const inv = carteira.find(i => i.id === id); 
-            if(inv) { 
-                document.getElementById('edit-id').value = inv.id; 
-                document.getElementById('edit-banco').value = inv.banco || ""; 
-                document.getElementById('edit-data').value = inv.data; 
-                document.getElementById('edit-valor').value = inv.valor; 
-                document.getElementById('edit-taxa').value = inv.taxa; 
-                document.getElementById('edit-liquidez').value = inv.liquidez || "Sim";
-                document.getElementById('edit-vencimento').value = inv.vencimento || "";
-                document.getElementById('modal-editar').style.display = 'flex'; 
-            } 
+            if(inv) { document.getElementById('edit-id').value = inv.id; document.getElementById('edit-banco').value = inv.banco || ""; document.getElementById('edit-data').value = inv.data; document.getElementById('edit-valor').value = inv.valor; document.getElementById('edit-taxa').value = inv.taxa; document.getElementById('edit-liquidez').value = inv.liquidez || "Sim"; document.getElementById('edit-vencimento').value = inv.vencimento || ""; document.getElementById('modal-editar').style.display = 'flex'; } 
         }
-
         function fecharEdicao() { document.getElementById('modal-editar').style.display = 'none'; }
-        
         function salvarEdicao() { 
-            const id = parseInt(document.getElementById('edit-id').value); 
-            const idx = carteira.findIndex(i => i.id === id); 
-            if(idx !== -1) { 
-                carteira[idx].banco = document.getElementById('edit-banco').value; 
-                carteira[idx].data = document.getElementById('edit-data').value; 
-                carteira[idx].valor = parseFloat(document.getElementById('edit-valor').value); 
-                carteira[idx].taxa = parseFloat(document.getElementById('edit-taxa').value); 
-                carteira[idx].liquidez = document.getElementById('edit-liquidez').value;
-                carteira[idx].vencimento = document.getElementById('edit-vencimento').value;
-                salvarNoBanco(); 
-                fecharEdicao(); 
-            } 
+            const id = parseInt(document.getElementById('edit-id').value); const idx = carteira.findIndex(i => i.id === id); 
+            if(idx !== -1) { carteira[idx].banco = document.getElementById('edit-banco').value; carteira[idx].data = document.getElementById('edit-data').value; carteira[idx].valor = parseFloat(document.getElementById('edit-valor').value); carteira[idx].taxa = parseFloat(document.getElementById('edit-taxa').value); carteira[idx].liquidez = document.getElementById('edit-liquidez').value; carteira[idx].vencimento = document.getElementById('edit-vencimento').value; salvarNoBanco(); fecharEdicao(); } 
         }
-        
         function abrirResgate(id) { document.getElementById('resgate-id').value = id; document.getElementById('resgate-data').value = new Date().toISOString().split('T')[0]; document.getElementById('modal-resgatar').style.display = 'flex'; }
         function fecharResgate() { document.getElementById('modal-resgatar').style.display = 'none'; }
-        function confirmarResgate() {
-            const id = parseInt(document.getElementById('resgate-id').value); const dataR = document.getElementById('resgate-data').value;
-            if(!dataR) return alert("Preencha a data do resgate.");
-            const idx = carteira.findIndex(i => i.id === id);
-            if(idx !== -1) {
-                if(new Date(dataR) < new Date(carteira[idx].data)) return alert("A data de resgate não pode ser anterior à data de aplicação.");
-                carteira[idx].dataResgate = dataR; salvarNoBanco(); fecharResgate();
-            }
-        }
+        function confirmarResgate() { const id = parseInt(document.getElementById('resgate-id').value); const dataR = document.getElementById('resgate-data').value; if(!dataR) return alert("Preencha a data do resgate."); const idx = carteira.findIndex(i => i.id === id); if(idx !== -1) { if(new Date(dataR) < new Date(carteira[idx].data)) return alert("A data de resgate não pode ser anterior à data de aplicação."); carteira[idx].dataResgate = dataR; salvarNoBanco(); fecharResgate(); } }
 
         function filtrarTabelaInvestimentos() {
             const inputs = document.querySelectorAll('#tabela-resultados thead input');
             const rows = document.querySelectorAll('#corpo-tabela tr');
-
             rows.forEach(row => {
                 if (!row.hasAttribute('data-val-inicial')) return; 
-
                 let mostrarLinha = true;
                 inputs.forEach((input, index) => {
                     const textoFiltro = input.value.toLowerCase();
-                    if (textoFiltro !== '') {
-                        const celula = row.cells[index];
-                        if (celula) {
-                            const textoCelula = celula.textContent.toLowerCase(); 
-                            if (!textoCelula.includes(textoFiltro)) {
-                                mostrarLinha = false;
-                            }
-                        }
-                    }
+                    if (textoFiltro !== '') { const celula = row.cells[index]; if (celula) { if (!celula.textContent.toLowerCase().includes(textoFiltro)) { mostrarLinha = false; } } }
                 });
                 row.style.display = mostrarLinha ? '' : 'none';
             });
-
             calcularTotaisInvestimentos();
         }
 
         function calcularTotaisInvestimentos() {
             const rows = document.querySelectorAll('#corpo-tabela tr');
-            let sumInicial = 0, sumBruto = 0, sumLiquido = 0;
-            let sumBrutoVezesTaxa = 0, sumBrutoVezesIR = 0;
-            let countVisible = 0;
-
+            let sumInicial = 0, sumBruto = 0, sumLiquido = 0, sumBrutoVezesTaxa = 0, sumBrutoVezesIR = 0, countVisible = 0;
             rows.forEach(row => {
                 if (row.style.display !== 'none' && row.hasAttribute('data-val-inicial')) {
-                    const vIni = parseFloat(row.getAttribute('data-val-inicial')) || 0;
-                    const vBru = parseFloat(row.getAttribute('data-val-bruto')) || 0;
-                    const vLiq = parseFloat(row.getAttribute('data-val-liquido')) || 0;
-                    const taxa = parseFloat(row.getAttribute('data-taxa')) || 0;
-                    const ir = parseFloat(row.getAttribute('data-ir')) || 0;
-
-                    sumInicial += vIni;
-                    sumBruto += vBru;
-                    sumLiquido += vLiq;
-                    sumBrutoVezesTaxa += (vBru * taxa);
-                    sumBrutoVezesIR += (vBru * ir);
-                    countVisible++;
+                    const vIni = parseFloat(row.getAttribute('data-val-inicial')) || 0; const vBru = parseFloat(row.getAttribute('data-val-bruto')) || 0; const vLiq = parseFloat(row.getAttribute('data-val-liquido')) || 0; const taxa = parseFloat(row.getAttribute('data-taxa')) || 0; const ir = parseFloat(row.getAttribute('data-ir')) || 0;
+                    sumInicial += vIni; sumBruto += vBru; sumLiquido += vLiq; sumBrutoVezesTaxa += (vBru * taxa); sumBrutoVezesIR += (vBru * ir); countVisible++;
                 }
             });
-
             const tfoot = document.getElementById('tfoot-resultados');
-            if (countVisible === 0) {
-                tfoot.innerHTML = '';
-                return;
-            }
-
-            const taxaMedia = sumBruto > 0 ? (sumBrutoVezesTaxa / sumBruto) : 0;
-            const irMedio = sumBruto > 0 ? (sumBrutoVezesIR / sumBruto) : 0;
-
-            tfoot.innerHTML = `
-                <tr style="background-color: #0f3460; color: white; font-weight: bold; border-top: 3px solid #e94560;">
-                    <td colspan="4" style="text-align: right; padding: 15px 10px;">📊 TOTAIS (Filtro Ativo):</td>
-                    <td style="padding: 15px 10px;">${fMoeda(sumInicial)}</td>
-                    <td style="padding: 15px 10px;" title="Taxa Média Ponderada">${fTaxa(taxaMedia)}%</td>
-                    <td style="padding: 15px 10px; text-align: center;">-</td>
-                    <td style="padding: 15px 10px;" title="IR Médio Ponderado">${fNum(irMedio)}%</td>
-                    <td style="padding: 15px 10px;">${fMoeda(sumBruto)}</td>
-                    <td style="padding: 15px 10px; color: #a8d5ff;">${fMoeda(sumLiquido)}</td>
-                    <td></td>
-                </tr>
-            `;
+            if (countVisible === 0) { tfoot.innerHTML = ''; return; }
+            const taxaMedia = sumBruto > 0 ? (sumBrutoVezesTaxa / sumBruto) : 0; const irMedio = sumBruto > 0 ? (sumBrutoVezesIR / sumBruto) : 0;
+            tfoot.innerHTML = `<tr style="background-color: #0f3460; color: white; font-weight: bold; border-top: 3px solid #e94560;"><td colspan="4" style="text-align: right; padding: 15px 10px;">📊 TOTAIS (Filtro Ativo):</td><td style="padding: 15px 10px;">${fMoeda(sumInicial)}</td><td style="padding: 15px 10px;" title="Taxa Média Ponderada">${fTaxa(taxaMedia)}%</td><td style="padding: 15px 10px; text-align: center;">-</td><td style="padding: 15px 10px;" title="IR Médio Ponderado">${fNum(irMedio)}%</td><td style="padding: 15px 10px;">${fMoeda(sumBruto)}</td><td style="padding: 15px 10px; color: #a8d5ff;">${fMoeda(sumLiquido)}</td><td></td></tr>`;
         }
 
         // =========================================================
@@ -998,31 +892,7 @@
             const dFx = document.getElementById('dash-fluxo'); dFx.innerText = fMoeda(tMesDash); dFx.style.color = tMesDash >= 0 ? '#28a745' : '#dc3545';
             const dFlt = document.getElementById('total-trans-filtrado'); dFlt.innerText = fMoeda(tFilt); dFlt.style.color = tFilt >= 0 ? '#28a745' : '#dc3545';
         }
-
-        function filtrarTabelaTransacoes() {
-            const inputs = document.querySelectorAll('#tabela-transacoes thead input');
-            const rows = document.querySelectorAll('#corpo-tabela-transacoes tr');
-
-            rows.forEach(row => {
-                if(row.cells.length < 5) return; 
-
-                let mostrarLinha = true;
-                inputs.forEach((input, index) => {
-                    const textoFiltro = input.value.toLowerCase();
-                    if (textoFiltro !== '') {
-                        const celula = row.cells[index];
-                        if (celula) {
-                            const textoCelula = celula.textContent.toLowerCase(); 
-                            if (!textoCelula.includes(textoFiltro)) {
-                                mostrarLinha = false;
-                            }
-                        }
-                    }
-                });
-                row.style.display = mostrarLinha ? '' : 'none';
-            });
-        }
-
+        function filtrarTabelaTransacoes() { const inputs = document.querySelectorAll('#tabela-transacoes thead input'); const rows = document.querySelectorAll('#corpo-tabela-transacoes tr'); rows.forEach(row => { if(row.cells.length < 5) return; let mostrarLinha = true; inputs.forEach((input, index) => { const textoFiltro = input.value.toLowerCase(); if (textoFiltro !== '') { const celula = row.cells[index]; if (celula) { if (!celula.textContent.toLowerCase().includes(textoFiltro)) { mostrarLinha = false; } } } }); row.style.display = mostrarLinha ? '' : 'none'; }); }
         function abrirEdicaoTransacao(id) { const t = transacoes.find(i => i.id === id); if(t) { document.getElementById('edit-trans-id').value = t.id; document.getElementById('edit-trans-tipo').value = t.tipo || 'despesa'; document.getElementById('edit-trans-data').value = t.data; document.getElementById('edit-trans-valor').value = t.valor; const selDesc = document.getElementById('edit-trans-desc'); if(!descricoesAtuais.includes(t.desc)) selDesc.innerHTML += `<option value="${t.desc}">${t.desc}</option>`; selDesc.value = t.desc; const selCat = document.getElementById('edit-trans-cat'); if(!categoriasAtuais.includes(t.cat)) selCat.innerHTML += `<option value="${t.cat}">${t.cat}</option>`; selCat.value = t.cat; document.getElementById('modal-editar-trans').style.display = 'flex'; } }
         function fecharEdicaoTransacao() { document.getElementById('modal-editar-trans').style.display = 'none'; }
         function salvarEdicaoTransacao() { const id = parseInt(document.getElementById('edit-trans-id').value); const idx = transacoes.findIndex(i => i.id === id); if(idx !== -1) { transacoes[idx].tipo = document.getElementById('edit-trans-tipo').value; transacoes[idx].desc = document.getElementById('edit-trans-desc').value; transacoes[idx].cat = document.getElementById('edit-trans-cat').value; transacoes[idx].data = document.getElementById('edit-trans-data').value; transacoes[idx].valor = parseFloat(document.getElementById('edit-trans-valor').value); salvarNoBanco(); fecharEdicaoTransacao(); } }
@@ -1038,7 +908,6 @@
             listaMetas.forEach(m => {
                 let p = (m.liqAtual / m.alvo) * 100; if(p > 100) p = 100;
                 let htmlAportes = `<table style="width:100%; font-size:0.9em; margin-top:15px; border-top: 1px solid #eee; padding-top: 10px;"><tr style="text-align:left; color:#666; border-bottom:1px solid #ddd;"><th>Data</th><th>Investido</th><th>Taxa</th><th>Líquido Atual</th><th></th></tr>`;
-                
                 if(m.aportes && m.aportes.length > 0) { m.aportes.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(ap => { const [ano, mes, dia] = ap.data.split('-'); htmlAportes += `<tr><td>${dia}/${mes}/${ano}</td><td>${fMoeda(ap.valor)}</td><td>${fTaxa(ap.taxa)}%</td><td style="color:blue; font-weight:bold;">${fMoeda(ap.liqCalculado||0)}</td><td style="text-align:right;"><button style="background:none;border:none;cursor:pointer;font-size:1.1em;margin-right:8px;" onclick="abrirAporte(${m.id}, ${ap.id})" title="Editar Aplicação">✏️</button><button style="background:none;border:none;cursor:pointer;font-size:1.1em;" onclick="deletarAporte(${m.id}, ${ap.id})" title="Excluir Aplicação">❌</button></td></tr>`; }); } htmlAportes += `</table>`;
                 cont.innerHTML += `<div class="meta-card"><div class="meta-info" style="margin-bottom: 10px;"><span style="font-size:1.2em;">🎯 <strong style="color:#1a1a2e;">${m.nome}</strong></span><div><button class="btn-editar" onclick="abrirEdicaoMeta(${m.id})">Editar Alvo</button><button class="btn-excluir" onclick="deletarItem(${m.id}, 'meta')">Excluir Caixinha</button></div></div><div class="meta-info"><span style="color:#666;">Total Aplicado: ${fMoeda(m.invAtual||0)} | Total Atual: <strong style="color:blue;">${fMoeda(m.liqAtual||0)}</strong></span><span style="color:#1a1a2e;">Alvo: ${fMoeda(m.alvo)} (${fNum(p)}%)</span></div><div class="barra-fundo" style="margin-top:5px; height:10px;"><div class="barra-progresso" style="width: ${p}%; ${p===100?'background-color:#28a745;':''}"></div></div>${htmlAportes}<button class="btn-acao secundario" style="margin-top:15px; font-size:0.9em; padding:10px;" onclick="abrirAporte(${m.id}, null)">+ Nova Aplicação nesta Caixinha</button></div>`;
             });
@@ -1060,73 +929,33 @@
         // =========================================================
         // 8. GRÁFICOS E FILTROS DINÂMICOS
         // =========================================================
-
         function atualizarGraficoPizza() {
             const filtroLiquidez = document.getElementById('filtro-liquidez-pizza').value;
-            let totaisPizza = {};
-            let totalGeralPizza = 0;
+            let totaisPizza = {}; let totalGeralPizza = 0;
 
             carteira.forEach(inv => {
                 if(inv.dataResgate) return; 
                 const liq = inv.liquidez || 'Sim'; 
                 if(filtroLiquidez !== 'todos' && liq !== filtroLiquidez) return;
-                
                 const nomeBanco = inv.banco || "Não Informado";
                 if(!totaisPizza[nomeBanco]) totaisPizza[nomeBanco] = 0;
-                totaisPizza[nomeBanco] += (inv.liqCalculado || 0);
-                totalGeralPizza += (inv.liqCalculado || 0);
+                totaisPizza[nomeBanco] += (inv.liqCalculado || 0); totalGeralPizza += (inv.liqCalculado || 0);
             });
 
             listaMetas.forEach(meta => {
                 if(filtroLiquidez !== 'todos' && filtroLiquidez !== 'Sim') return; 
-                
                 const nomeBancoMeta = "Caixinhas (Metas)";
                 if(!totaisPizza[nomeBancoMeta]) totaisPizza[nomeBancoMeta] = 0;
-                totaisPizza[nomeBancoMeta] += (meta.liqAtual || 0);
-                totalGeralPizza += (meta.liqAtual || 0);
+                totaisPizza[nomeBancoMeta] += (meta.liqAtual || 0); totalGeralPizza += (meta.liqAtual || 0);
             });
 
             const ctx = document.getElementById('graficoPizza').getContext('2d'); 
             if (chartPizzaInstance) chartPizzaInstance.destroy(); 
-            
-            const bancos = Object.keys(totaisPizza);
-            const valores = Object.values(totaisPizza);
-            
-            if (bancos.length === 0) { 
-                chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); 
-                return; 
-            }
+            const bancos = Object.keys(totaisPizza); const valores = Object.values(totaisPizza);
+            if (bancos.length === 0) { chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
 
-            const labelsComPerc = bancos.map(b => {
-                let perc = totalGeralPizza > 0 ? ((totaisPizza[b] / totalGeralPizza) * 100).toFixed(1) : 0;
-                return `${b} (${perc}%)`;
-            });
-
-            chartPizzaInstance = new Chart(ctx, { 
-                type: 'doughnut', 
-                data: { 
-                    labels: labelsComPerc, 
-                    datasets: [{ 
-                        data: valores, 
-                        backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d', '#fd7e14', '#6610f2'] 
-                    }] 
-                }, 
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { 
-                        legend: { position: 'right', labels: { font: { size: 11 } } },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let value = context.parsed || 0;
-                                    return ` ${fMoeda(value)}`;
-                                }
-                            }
-                        }
-                    } 
-                } 
-            });
+            const labelsComPerc = bancos.map(b => { let perc = totalGeralPizza > 0 ? ((totaisPizza[b] / totalGeralPizza) * 100).toFixed(1) : 0; return `${b} (${perc}%)`; });
+            chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labelsComPerc, datasets: [{ data: valores, backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d', '#fd7e14', '#6610f2'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 } } }, tooltip: { callbacks: { label: function(context) { let value = context.parsed || 0; return ` ${fMoeda(value)}`; } } } } } });
         }
         
         function desenharGrafico() {
@@ -1141,7 +970,6 @@
             let cartProc = bSel !== 'todos' ? mixLinhaTempo.filter(i => (i.banco || "Não Informado") === bSel) : mixLinhaTempo; 
             const ord = [...cartProc].sort((a, b) => new Date(a.data) - new Date(b.data)); 
             
-            // Aqui o gráfico utiliza o CDI Efetivo (que já inclui a projeção se estiver ativa)
             const cdiEfetivo = obterCDIEfetivo();
             const cdiF = cdiEfetivo.map(i => { const [d,m,y] = i.data.split('/'); return { dataObj: new Date(y, m-1, d), valor: parseFloat(i.valor)/100 }; }); 
             let lab = [], bru = [], liq = [], ativ = [], idx = 0;
@@ -1156,7 +984,6 @@
                 if (ativ.length > 0) { 
                     let b = 0, l = 0; 
                     ativ = ativ.filter(inv => !inv.dataResg || dia.dataObj <= inv.dataResg);
-
                     ativ.forEach(inv => { 
                         inv.valAtu *= truncaFatorB3(1 + (dia.valor * inv.mult)); 
                         b += inv.valAtu; 
@@ -1190,7 +1017,7 @@
         }
 
         // =========================================================
-        // 9. NAVEGAÇÃO E EXPORTAÇÃO/IMPORTAÇÃO
+        // 9. NAVEGAÇÃO E EXPORTAÇÃO/IMPORTAÇÃO DUPLA
         // =========================================================
         function navegar(idTela) { document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); document.getElementById(idTela).classList.add('ativa'); if(idTela === 'tela-grafico') { desenharGrafico(); desenharGraficoDespesas(); } }
         
@@ -1200,13 +1027,7 @@
             let h = ``; 
             for (const b in totais) {
                 let taxaPonderada = totais[b].bru > 0 ? (totais[b].bruVezesTaxa / totais[b].bru) : 0;
-
-                h += `<div class="card-banco">
-                        <h4>${b}</h4>
-                        <p style="font-size: 0.85em; color: #666; font-weight: normal; margin-bottom: 3px;">Bruto: ${fMoeda(totais[b].bru)}</p>
-                        <p title="Valor Líquido">Líq: ${fMoeda(totais[b].liq)}</p>
-                        <p style="font-size: 0.8em; color: #e94560; font-weight: bold; margin-top: 5px; border-top: 1px solid #eee; padding-top: 3px;" title="Taxa Média Ponderada baseada no montante bruto de cada ativo">CDI Médio: ${fTaxa(taxaPonderada)}%</p>
-                      </div>`;
+                h += `<div class="card-banco"><h4>${b}</h4><p style="font-size: 0.85em; color: #666; font-weight: normal; margin-bottom: 3px;">Bruto: ${fMoeda(totais[b].bru)}</p><p title="Valor Líquido">Líq: ${fMoeda(totais[b].liq)}</p><p style="font-size: 0.8em; color: #e94560; font-weight: bold; margin-top: 5px; border-top: 1px solid #eee; padding-top: 3px;" title="Taxa Média Ponderada baseada no montante bruto de cada ativo">CDI Médio: ${fTaxa(taxaPonderada)}%</p></div>`;
             }
             cont.innerHTML = h; 
         }
@@ -1214,11 +1035,38 @@
         function atualizarFiltroGrafico() { const sel = document.getElementById('select-filtro-banco'); const vAt = sel.value; const unicos = [...new Set(carteira.map(i => i.banco || "Não Informado"))]; if(listaMetas.length > 0 && !unicos.includes("Caixinhas (Metas)")) unicos.push("Caixinhas (Metas)"); unicos.sort(); let opt = `<option value="todos">Todos</option>`; unicos.forEach(b => opt += `<option value="${b}">${b}</option>`); sel.innerHTML = opt; sel.value = unicos.includes(vAt) ? vAt : "todos"; }
         function deletarItem(id, tipo = 'inv') { if (confirm("Excluir registro?")) { if(tipo === 'inv') carteira = carteira.filter(i => i.id !== id); if(tipo === 'trans') transacoes = transacoes.filter(i => i.id !== id); if(tipo === 'meta') listaMetas = listaMetas.filter(i => i.id !== id); salvarNoBanco(); if(document.getElementById('tela-grafico').classList.contains('ativa')) { desenharGrafico(); desenharGraficoDespesas(); } } }
         function limparTudo() { if (confirm("Certeza ABSOLUTA? Esta ação apagará permanentemente todo o seu histórico e não pode ser desfeita.")) { carteira = []; transacoes = []; listaMetas = []; salvarNoBanco(); } }
-        function baixarCSV() { if(carteira.length===0)return alert("Sem dados."); let csv="banco;data;valor;taxa;liquidez;vencimento\n"; carteira.forEach(i=>{ const val = i.valor.toString().replace('.', ','); const tx = i.taxa.toString().replace('.', ','); csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${i.data};${val};${tx};${i.liquidez||'Sim'};${i.vencimento||''}\n`;}); const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); }
-        function prepararEmail() { if(carteira.length===0)return alert("Sem dados!"); let msg="Relatório - InvestDash\n\n"; document.querySelectorAll('#corpo-tabela tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=10) msg+=`${tds[0].innerText} | ${tds[1].innerText} | Inicial: ${tds[4].innerText} | Liq: ${tds[9].innerText}\n`; }); window.location.href=`mailto:?subject=Relatorio&body=${encodeURIComponent(msg)}`; }
         
-        function importarCSV() { 
-            const f = document.getElementById('input-csv').files[0]; 
+        function baixarCSV(tipo) { 
+            if(tipo === 'investimentos') {
+                if(carteira.length===0) return alert("Sem dados de investimentos."); 
+                let csv="banco;data;valor;taxa;liquidez;vencimento\n"; 
+                carteira.forEach(i=>{ const val = i.valor.toString().replace('.', ','); const tx = i.taxa.toString().replace('.', ','); csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${i.data};${val};${tx};${i.liquidez||'Sim'};${i.vencimento||''}\n`;}); 
+                const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); 
+            } else if (tipo === 'transacoes') {
+                if(transacoes.length===0) return alert("Sem dados de transações."); 
+                let csv="tipo;descricao;categoria;data;valor\n"; 
+                transacoes.forEach(t=>{ const val = t.valor.toString().replace('.', ','); csv+=`${t.tipo};${t.desc.replace(/;/g,'')};${t.cat.replace(/;/g,'')};${t.data};${val}\n`;}); 
+                const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="transacoes.csv"; link.click(); 
+            }
+        }
+        
+        function prepararEmail(tipo) { 
+            if (tipo === 'investimentos') {
+                if(carteira.length===0) return alert("Sem dados!"); 
+                let msg="Relatório de Investimentos - InvestDash\n\n"; 
+                document.querySelectorAll('#corpo-tabela tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=10 && tr.style.display!=='none') msg+=`${tds[0].innerText} | ${tds[1].innerText} | Inicial: ${tds[4].innerText} | Liq: ${tds[9].innerText}\n`; }); 
+                window.location.href=`mailto:?subject=Relatorio de Investimentos&body=${encodeURIComponent(msg)}`; 
+            } else if (tipo === 'transacoes') {
+                if(transacoes.length===0) return alert("Sem dados!"); 
+                let msg="Relatório de Transações - InvestDash\n\n"; 
+                document.querySelectorAll('#corpo-tabela-transacoes tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=4 && tr.style.display!=='none') msg+=`${tds[0].innerText} | ${tds[1].innerText} | Data: ${tds[2].innerText} | Valor: ${tds[3].innerText}\n`; }); 
+                window.location.href=`mailto:?subject=Relatorio de Transacoes&body=${encodeURIComponent(msg)}`; 
+            }
+        }
+        
+        function importarCSV(tipo) { 
+            const inputId = tipo === 'investimentos' ? 'input-csv-inv' : 'input-csv-trans';
+            const f = document.getElementById(inputId).files[0]; 
             if(!f) return alert("Selecione o arquivo."); 
             const r = new FileReader(); 
             r.onload = function(e){ 
@@ -1228,36 +1076,57 @@
                     let linhaLimpa = l[i].replace(/"/g, ''); 
                     const sep = linhaLimpa.includes(';') ? ';' : ','; 
                     const c = linhaLimpa.split(sep); 
-                    if(c.length >= 4){ 
+                    
+                    if(tipo === 'investimentos' && c.length >= 4) { 
                         const b = c[0].trim(); const d = c[1].trim(); const v = parseFloat(c[2].replace(',','.')); const t = parseFloat(c[3].replace(',','.')); 
-                        const liq = c[4] ? c[4].trim() : "Sim";
-                        const ven = c[5] ? c[5].trim() : "";
+                        const liq = c[4] ? c[4].trim() : "Sim"; const ven = c[5] ? c[5].trim() : "";
                         if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, data:d, valor:v, taxa:t, liquidez:liq, vencimento:ven}); q++; } 
-                    } 
+                    } else if (tipo === 'transacoes' && c.length >= 4) {
+                        const tp = c[0].trim().toLowerCase() === 'entrada' ? 'entrada' : 'despesa';
+                        const desc = c[1].trim(); const cat = c[2].trim(); const d = c[3].trim();
+                        if (c.length >= 5) {
+                            const vFinal = parseFloat(c[4].replace(',','.'));
+                            if(desc && d && !isNaN(vFinal)) {
+                                if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
+                                if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
+                                transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                            }
+                        }
+                    }
                 } 
-                if(q > 0) { salvarNoBanco(); alert(`${q} registros importados com sucesso!`); navegar('tela-investimentos'); } 
+                if(q > 0) { salvarNoBanco(); alert(`${q} registros importados com sucesso!`); navegar(tipo === 'investimentos' ? 'tela-investimentos' : 'tela-transacoes'); } 
             }; r.readAsText(f); 
         }
 
-        function importarCSVTexto() {
-            const texto = document.getElementById('input-csv-texto').value.trim();
+        function importarCSVTexto(tipo) {
+            const inputId = tipo === 'investimentos' ? 'input-csv-texto-inv' : 'input-csv-texto-trans';
+            const texto = document.getElementById(inputId).value.trim();
             if(!texto) return alert("Cole os dados no campo de texto primeiro.");
             const l = texto.split('\n'); let q = 0; let inicio = 0;
-            if(l[0].toLowerCase().includes('banco')) inicio = 1;
+            if(l[0].toLowerCase().includes(tipo === 'investimentos' ? 'banco' : 'tipo')) inicio = 1;
             for(let i = inicio; i < l.length; i++){
                 if(l[i].trim() === '') continue; 
                 let linhaLimpa = l[i].replace(/"/g, '');
                 const sep = linhaLimpa.includes(';') ? ';' : ',';
                 const c = linhaLimpa.split(sep);
-                if(c.length >= 4){
+                
+                if(tipo === 'investimentos' && c.length >= 4){
                     const b = c[0].trim(); const d = c[1].trim(); const v = parseFloat(c[2].replace(',','.')); const t = parseFloat(c[3].replace(',','.'));
-                    const liq = c[4] ? c[4].trim() : "Sim";
-                    const ven = c[5] ? c[5].trim() : "";
+                    const liq = c[4] ? c[4].trim() : "Sim"; const ven = c[5] ? c[5].trim() : "";
                     if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: Date.now() + i, banco: b, data: d, valor: v, taxa: t, liquidez: liq, vencimento: ven}); q++; }
+                } else if (tipo === 'transacoes' && c.length >= 5) {
+                    const tp = c[0].trim().toLowerCase() === 'entrada' ? 'entrada' : 'despesa';
+                    const desc = c[1].trim(); const cat = c[2].trim(); const d = c[3].trim();
+                    const vFinal = parseFloat(c[4].replace(',','.'));
+                    if(desc && d && !isNaN(vFinal)) {
+                        if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
+                        if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
+                        transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                    }
                 }
             }
-            if(q > 0) { document.getElementById('input-csv-texto').value = ''; salvarNoBanco(); alert(`${q} registros importados com sucesso!`); navegar('tela-investimentos'); } 
-            else { alert("Nenhum dado válido encontrado. Verifique se o formato está correto (Ex: C6;2024-10-21;301.00;103.0;Sim;2026-10-21)"); }
+            if(q > 0) { document.getElementById(inputId).value = ''; salvarNoBanco(); alert(`${q} registros importados com sucesso!`); navegar(tipo === 'investimentos' ? 'tela-investimentos' : 'tela-transacoes'); } 
+            else { alert("Nenhum dado válido encontrado. Verifique se o formato está correto."); }
         }
     </script>
 </body>
