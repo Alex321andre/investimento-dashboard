@@ -24,11 +24,12 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 10px; }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
         .dashboard-grid .card { margin-top: 0; text-align: center; border-top: 4px solid #1a1a2e; }
         .dashboard-grid .card.destaque { border-top: 4px solid #e94560; background-color: #f8f9fa; }
+        .dashboard-grid .card.destaque-bruto { border-top: 4px solid #0f3460; background-color: #f8f9fa; }
         .dashboard-grid .card.fluxo { border-top: 4px solid #17a2b8; }
-        .dashboard-grid .card h3 { font-size: 1.8em; margin-top: 10px; color: #1a1a2e; }
+        .dashboard-grid .card h3 { font-size: 1.6em; margin-top: 10px; color: #1a1a2e; }
         
         .bancos-container { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;}
         @media (max-width: 768px) { .bancos-container { grid-template-columns: 1fr; } }
@@ -54,7 +55,6 @@
         .btn-acao.header-btn { background-color: #17a2b8; color: white; border-radius: 5px; padding: 10px 20px; font-size: 1em; border: none; cursor: pointer; transition: 0.3s; }
         .btn-acao.header-btn:hover { background-color: #138496; }
         
-        /* Modificações de tamanho para a tabela caber inteira na tela */
         .tabela-container { overflow-x: auto; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 15px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8em; }
         th, td { padding: 8px 4px; text-align: left; border-bottom: 1px solid #ddd; }
@@ -139,9 +139,16 @@
         </section>
 
         <section id="tela-dashboard" class="tela">
-            <h2>Resumo Geral da Carteira</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <h2>Resumo Geral da Carteira</h2>
+                <button id="btn-projetar" class="btn-acao secundario" style="margin: 0; width: auto; padding: 10px 15px; font-size: 0.9em; border-radius: 20px;" onclick="toggleProjecao()" title="Sincroniza os dias úteis faltantes com base na última taxa disponível do Banco Central.">
+                    🔮 Projetar Rendimento até Hoje
+                </button>
+            </div>
+
             <div class="dashboard-grid">
                 <div class="card"><p>Total Aplicado (Ativos)</p><h3 id="dash-valor-investido">R$ 0,00</h3></div>
+                <div class="card destaque-bruto"><p>Valor Bruto Atual</p><h3 id="dash-valor-bruto">R$ 0,00</h3></div>
                 <div class="card destaque"><p>Valor Líquido Atual</p><h3 id="dash-valor-liquido">R$ 0,00</h3></div>
                 <div class="card"><p>Rentabilidade Líquida</p><h3 id="dash-rentabilidade" style="color: green;">0,00%</h3></div>
                 <div class="card fluxo"><p>Fluxo do Mês (Caixa)</p><h3 id="dash-fluxo">R$ 0,00</h3></div>
@@ -484,6 +491,65 @@
             return parseFloat(str).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
         }
 
+        // ALGORITMO DE CÁLCULO DA PÁSCOA (Meeus/Jones/Butcher)
+        function obterDataPascoa(ano) {
+            const f = Math.floor, G = ano % 19, C = f(ano / 100);
+            const H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30;
+            const I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11));
+            const J = (ano + f(ano / 4) + I + 2 - C + f(C / 4)) % 7;
+            const L = I - J, mes = 3 + f((L + 40) / 44), dia = L + 28 - 31 * f(mes / 4);
+            return new Date(ano, mes - 1, dia);
+        }
+
+        // VERIFICADOR DE DIA ÚTIL BANCÁRIO BRASILEIRO (Finais de Semana + Feriados)
+        function ehDiaUtilBancario(dataObj) {
+            const diaSemana = dataObj.getDay();
+            if (diaSemana === 0 || diaSemana === 6) return false; // Sábado ou Domingo
+
+            const dataString = `${String(dataObj.getDate()).padStart(2, '0')}/${String(dataObj.getMonth() + 1).padStart(2, '0')}`;
+            
+            // Feriados Fixos Nacionais
+            const feriadosFixos = [
+                '01/01', // Confraternização Universal
+                '21/04', // Tiradentes
+                '01/05', // Dia do Trabalho
+                '07/09', // Independência do Brasil
+                '12/10', // Nossa Sra. Aparecida
+                '02/11', // Finados
+                '15/11', // Proclamação da República
+                '25/12'  // Natal
+            ];
+            if (feriadosFixos.includes(dataString)) return false;
+
+            // Feriados Móveis
+            const ano = dataObj.getFullYear();
+            const pascoa = obterDataPascoa(ano);
+            
+            const addDias = (data, dias) => {
+                let res = new Date(data);
+                res.setDate(res.getDate() + dias);
+                return res;
+            };
+
+            const sextaSanta = addDias(pascoa, -2);
+            const carnavalSeg = addDias(pascoa, -48);
+            const carnavalTer = addDias(pascoa, -47);
+            const corpusChristi = addDias(pascoa, 60);
+
+            const formataDDMM = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+            
+            const feriadosMoveis = [
+                formataDDMM(sextaSanta),
+                formataDDMM(carnavalSeg),
+                formataDDMM(carnavalTer),
+                formataDDMM(corpusChristi)
+            ];
+
+            if (feriadosMoveis.includes(dataString)) return false;
+
+            return true;
+        }
+
         // =========================================================
         // 1. CONFIGURAÇÃO FIREBASE
         // =========================================================
@@ -503,6 +569,8 @@
         let categoriasAtuais = ["Alimentação", "Assinaturas/Serviços", "Cuidados Pessoais", "Doações", "Educação", "Impostos", "Lazer", "Moradia", "Outros", "Pets", "Presentes", "Rendimentos", "Salário", "Saúde", "Taxas", "Transporte", "Vestuário", "Viagem"];
         let descricoesAtuais = ["Academia", "Aluguel", "Cartão de Crédito", "Condomínio", "Conta de Água", "Conta de Luz", "Farmácia", "Freelance", "Gasolina", "Ifood/Delivery", "Internet/TV", "Mensalidade", "Mesada", "Padaria", "Salário", "Supermercado", "Uber/App de Transporte"];
         let chartInstance = null; let chartPizzaInstance = null; let chartDespesasInstance = null; let usuarioAtual = null; let totalLiquidoGlobal = 0;
+        
+        let projetarCDI = false; // Controle do botão de projeção
 
         // =========================================================
         // 2. LOGIN E AUTENTICAÇÃO
@@ -572,8 +640,46 @@
         function deletarItemGerenciador(idx) { if(confirm("Apagar este item?")) { const tipo = document.getElementById('tipo-gerenciador-ativo').value; const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais; lista.splice(idx, 1); salvarNoBanco(); abrirModalGerenciador(tipo); } }
 
         // =========================================================
-        // 4. LÓGICA CORE E RENDERIZAÇÃO
+        // 4. LÓGICA CORE, PROJEÇÃO E RENDERIZAÇÃO
         // =========================================================
+        function toggleProjecao() {
+            projetarCDI = !projetarCDI;
+            const btn = document.getElementById('btn-projetar');
+            if(projetarCDI) {
+                btn.innerHTML = '⏪ Desfazer Projeção e ver Dados Oficiais';
+                btn.style.backgroundColor = '#dc3545';
+                btn.style.borderColor = '#dc3545';
+            } else {
+                btn.innerHTML = '🔮 Projetar Rendimento até Hoje';
+                btn.style.backgroundColor = '#0f3460';
+                btn.style.borderColor = '#0f3460';
+            }
+            processarCarteira();
+        }
+
+        function obterCDIEfetivo() {
+            let cdiEfetivo = [...serieCDI];
+            if (projetarCDI && serieCDI.length > 0) {
+                const ultimoDado = serieCDI[serieCDI.length - 1];
+                const [d, m, a] = ultimoDado.data.split('/');
+                let dataCursor = new Date(parseInt(a), parseInt(m) - 1, parseInt(d));
+                const hoje = new Date();
+                hoje.setHours(0,0,0,0);
+                
+                while(dataCursor < hoje) {
+                    dataCursor.setDate(dataCursor.getDate() + 1);
+                    
+                    if (ehDiaUtilBancario(dataCursor)) {
+                        cdiEfetivo.push({
+                            data: `${String(dataCursor.getDate()).padStart(2,'0')}/${String(dataCursor.getMonth()+1).padStart(2,'0')}/${dataCursor.getFullYear()}`,
+                            valor: ultimoDado.valor // Replica o último valor conhecido
+                        });
+                    }
+                }
+            }
+            return cdiEfetivo;
+        }
+
         async function carregarCDI() {
             try {
                 const hoje = new Date(); const dIni = new Date(); dIni.setFullYear(hoje.getFullYear() - 9);
@@ -590,7 +696,7 @@
 
                     let taxaDiaria = parseFloat(ultimoRegistro.valor) / 100;
                     let fatorDia = truncaFatorB3(1 + taxaDiaria);
-                    textoStatus += `<br><span style="font-size: 0.85em; font-weight: normal; color: #666;">Fator multiplicador do último dia útil (100% CDI): <strong>${fatorDia}</strong></span>`;
+                    textoStatus += `<br><span style="font-size: 0.85em; font-weight: normal; color: #666;">Fator multiplicador do último dia útil oficial (100% CDI): <strong>${fatorDia}</strong></span>`;
                 }
                 document.getElementById('status-api').innerHTML = textoStatus;
                 
@@ -601,8 +707,10 @@
         function processarCarteira() {
             const corpoTabela = document.getElementById('corpo-tabela'); corpoTabela.innerHTML = '';
             let valInv = 0, valBru = 0; totalLiquidoGlobal = 0; let totaisBancos = {};
+            
+            const cdiEfetivo = obterCDIEfetivo();
 
-            if (serieCDI.length === 0) {
+            if (cdiEfetivo.length === 0) {
                 corpoTabela.innerHTML = '<tr><td colspan="11" style="text-align:center;">Aguardando API...</td></tr>';
                 calcularTotaisInvestimentos();
                 return;
@@ -613,7 +721,7 @@
                 const isResgatado = !!inv.dataResgate;
                 const [ano, mes, dia] = inv.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
                 
-                let dataFim = new Date();
+                let dataFim = projetarCDI ? new Date() : new Date(); // Se não for projeção, pode usar date normal (o CDI base já limitará)
                 if(isResgatado) {
                     const [rA, rM, rD] = inv.dataResgate.split('-');
                     dataFim = new Date(parseInt(rA), parseInt(rM) - 1, parseInt(rD));
@@ -626,10 +734,10 @@
                 let percentualCDI = parseFloat(inv.taxa) / 100;
                 let fatorAcumulado = 1;
                 
-                for (let i = 0; i < serieCDI.length; i++) {
-                    const [dBCB, mBCB, aBCB] = serieCDI[i].data.split('/'); const dataBCB = new Date(parseInt(aBCB), parseInt(mBCB) - 1, parseInt(dBCB));
+                for (let i = 0; i < cdiEfetivo.length; i++) {
+                    const [dBCB, mBCB, aBCB] = cdiEfetivo[i].data.split('/'); const dataBCB = new Date(parseInt(aBCB), parseInt(mBCB) - 1, parseInt(dBCB));
                     if (dataBCB >= dataInv && dataBCB <= dataFim) {
-                        let taxaDiaria = parseFloat(serieCDI[i].valor) / 100;
+                        let taxaDiaria = parseFloat(cdiEfetivo[i].valor) / 100;
                         let fatorDia = truncaFatorB3(1 + (taxaDiaria * percentualCDI));
                         fatorAcumulado *= fatorDia;
                     }
@@ -694,10 +802,11 @@
                     let fatorAcumulado = 1;
                     valInv += valOriginal; metaInvAtual += valOriginal; totaisBancos[nomeBancoMeta].inv += valOriginal;
                     
-                    for (let i = 0; i < serieCDI.length; i++) { 
-                        const [dBCB, mBCB, aBCB] = serieCDI[i].data.split('/'); const dataBCB = new Date(parseInt(aBCB), parseInt(mBCB) - 1, parseInt(dBCB)); 
-                        if (dataBCB >= dataInv) {
-                            let taxaDiaria = parseFloat(serieCDI[i].valor) / 100;
+                    for (let i = 0; i < cdiEfetivo.length; i++) { 
+                        const [dBCB, mBCB, aBCB] = cdiEfetivo[i].data.split('/'); const dataBCB = new Date(parseInt(aBCB), parseInt(mBCB) - 1, parseInt(dBCB)); 
+                        let limiteData = projetarCDI ? new Date() : new Date();
+                        if (dataBCB >= dataInv && dataBCB <= limiteData) {
+                            let taxaDiaria = parseFloat(cdiEfetivo[i].valor) / 100;
                             fatorAcumulado *= truncaFatorB3(1 + (taxaDiaria * percentualCDI));
                         } 
                     }
@@ -718,6 +827,7 @@
             }
 
             document.getElementById('dash-valor-investido').innerText = fMoeda(valInv);
+            document.getElementById('dash-valor-bruto').innerText = fMoeda(valBru);
             document.getElementById('dash-valor-liquido').innerText = fMoeda(totalLiquidoGlobal);
             let rent = valInv > 0 ? ((totalLiquidoGlobal - valInv) / valInv) * 100 : 0;
             document.getElementById('dash-rentabilidade').innerText = `${rent >= 0 ? '+' : ''}${fNum(rent)}%`;
@@ -957,16 +1067,14 @@
         // 8. GRÁFICOS E FILTROS DINÂMICOS
         // =========================================================
 
-        // Nova Função que filtra, recalcula percentuais e desenha o Gráfico de Pizza
         function atualizarGraficoPizza() {
             const filtroLiquidez = document.getElementById('filtro-liquidez-pizza').value;
             let totaisPizza = {};
             let totalGeralPizza = 0;
 
-            // Percorre a carteira aplicando o filtro de liquidez
             carteira.forEach(inv => {
-                if(inv.dataResgate) return; // ignora os resgatados
-                const liq = inv.liquidez || 'Sim'; // o padrão é Sim
+                if(inv.dataResgate) return; 
+                const liq = inv.liquidez || 'Sim'; 
                 if(filtroLiquidez !== 'todos' && liq !== filtroLiquidez) return;
                 
                 const nomeBanco = inv.banco || "Não Informado";
@@ -975,7 +1083,6 @@
                 totalGeralPizza += (inv.liqCalculado || 0);
             });
 
-            // Percorre as Metas (Caixinhas são consideradas Liquidez = Sim por padrão)
             listaMetas.forEach(meta => {
                 if(filtroLiquidez !== 'todos' && filtroLiquidez !== 'Sim') return; 
                 
@@ -996,7 +1103,6 @@
                 return; 
             }
 
-            // Calcula e embute o percentual diretamente no nome de cada fatia para mostrar na legenda
             const labelsComPerc = bancos.map(b => {
                 let perc = totalGeralPizza > 0 ? ((totaisPizza[b] / totalGeralPizza) * 100).toFixed(1) : 0;
                 return `${b} (${perc}%)`;
@@ -1040,7 +1146,8 @@
             
             let cartProc = bSel !== 'todos' ? mixLinhaTempo.filter(i => (i.banco || "Não Informado") === bSel) : mixLinhaTempo; 
             const ord = [...cartProc].sort((a, b) => new Date(a.data) - new Date(b.data)); 
-            const cdiF = serieCDI.map(i => { const [d,m,y] = i.data.split('/'); return { dataObj: new Date(y, m-1, d), valor: parseFloat(i.valor)/100 }; }); 
+            const cdiEfetivo = obterCDIEfetivo();
+            const cdiF = cdiEfetivo.map(i => { const [d,m,y] = i.data.split('/'); return { dataObj: new Date(y, m-1, d), valor: parseFloat(i.valor)/100 }; }); 
             let lab = [], bru = [], liq = [], ativ = [], idx = 0;
             
             for (let i = 0; i < cdiF.length; i++) { 
