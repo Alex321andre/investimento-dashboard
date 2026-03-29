@@ -879,7 +879,7 @@
 
             tOrd.forEach(t => {
                 const tpReal = t.tipo || 'despesa'; const mult = tpReal === 'entrada' ? 1 : -1;
-                const valAbsoluto = Math.abs(t.valor); // Garante que na tela não apareça algo como "- -8.00"
+                const valAbsoluto = Math.abs(t.valor); 
                 const [ano, mes, dia] = t.data.split('-'); 
                 
                 if(parseInt(mes) === mAt && parseInt(ano) === aAt) { tMesDash += (valAbsoluto * mult); }
@@ -959,8 +959,13 @@
             const bancos = Object.keys(totaisPizza); const valores = Object.values(totaisPizza);
             if (bancos.length === 0) { chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
 
-            const labelsComPerc = bancos.map(b => { let perc = totalGeralPizza > 0 ? ((totaisPizza[b] / totalGeralPizza) * 100).toFixed(1) : 0; return `${b} (${perc}%)`; });
-            chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labelsComPerc, datasets: [{ data: valores, backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d', '#fd7e14', '#6610f2'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 } } }, tooltip: { callbacks: { label: function(context) { let value = context.parsed || 0; return ` ${fMoeda(value)}`; } } } } } });
+            const labelsComPerc = bancos.map(b => { 
+                let val = totaisPizza[b];
+                let perc = totalGeralPizza > 0 ? ((val / totalGeralPizza) * 100).toFixed(1) : 0; 
+                return `${b} - ${fMoeda(val)} (${perc}%)`; 
+            });
+
+            chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labelsComPerc, datasets: [{ data: valores, backgroundColor: ['#0f3460', '#e94560', '#ffc107', '#28a745', '#17a2b8', '#6c757d', '#fd7e14', '#6610f2'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 } } }, tooltip: { callbacks: { label: function(context) { return ` ${context.label}`; } } } } } });
         }
         
         function desenharGrafico() {
@@ -1010,15 +1015,43 @@
             const ctx = document.getElementById('graficoDespesasAnalise').getContext('2d');
             if (chartDespesasInstance) chartDespesasInstance.destroy();
             const fMes = document.getElementById('filtro-graf-mes-desp').value, fAno = document.getElementById('filtro-graf-ano-desp').value, fCat = document.getElementById('filtro-graf-cat-desp').value, fDesc = document.getElementById('filtro-graf-desc-desp').value, fAgrupar = document.getElementById('filtro-graf-agrupar').value;
+            
             let despesasFiltradas = transacoes.filter(t => (t.tipo || 'despesa') === 'despesa');
             despesasFiltradas = despesasFiltradas.filter(t => { const [a, m, d] = t.data.split('-'); if (fMes !== 'todos' && m !== fMes) return false; if (fAno !== 'todos' && a !== fAno) return false; if (fCat !== 'todas' && t.cat !== fCat) return false; if (fDesc !== 'todas' && t.desc !== fDesc) return false; return true; });
+            
             let agregacao = {}; let totalGeral = 0;
-            despesasFiltradas.forEach(t => { const chave = fAgrupar === 'cat' ? (t.cat || 'Sem Categoria') : (t.desc || 'Sem Descrição'); if (!agregacao[chave]) agregacao[chave] = 0; agregacao[chave] += t.valor; totalGeral += Math.abs(t.valor); });
+            despesasFiltradas.forEach(t => { 
+                const chave = fAgrupar === 'cat' ? (t.cat || 'Sem Categoria') : (t.desc || 'Sem Descrição'); 
+                const valAbs = Math.abs(t.valor);
+                if (!agregacao[chave]) agregacao[chave] = 0; 
+                agregacao[chave] += valAbs; 
+                totalGeral += valAbs; 
+            });
+            
             document.getElementById('legenda-grafico-despesas').innerText = `Total das Despesas Exibidas: ${fMoeda(totalGeral)}`;
-            const labels = Object.keys(agregacao); const data = Object.values(agregacao);
-            if (labels.length === 0) { chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
+            
+            const labelsIniciais = Object.keys(agregacao); const data = Object.values(agregacao);
+            if (labelsIniciais.length === 0) { chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
+            
+            const labelsComInfo = labelsIniciais.map(l => { 
+                let val = Math.abs(agregacao[l]);
+                let perc = totalGeral > 0 ? ((val / totalGeral) * 100).toFixed(1) : 0; 
+                return `${l} - ${fMoeda(val)} (${perc}%)`; 
+            });
+
             const colors = ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#17a2b8', '#007bff', '#6610f2', '#e83e8c', '#6c757d', '#343a40'];
-            chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' }, tooltip: { callbacks: { label: function(context) { let label = context.label || ''; let value = context.parsed || 0; let perc = totalGeral > 0 ? ((Math.abs(value) / totalGeral) * 100).toFixed(1) : 0; return `${label}: ${fMoeda(Math.abs(value))} (${perc}%)`; } } } } } });
+            chartDespesasInstance = new Chart(ctx, { 
+                type: 'doughnut', 
+                data: { labels: labelsComInfo, datasets: [{ data: data, backgroundColor: colors }] }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { position: 'right', labels: { font: { size: 11 } } }, 
+                        tooltip: { callbacks: { label: function(context) { return ` ${context.label}`; } } } 
+                    } 
+                } 
+            });
         }
 
         // =========================================================
