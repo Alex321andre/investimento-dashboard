@@ -387,15 +387,15 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📥 Importar Arquivo CSV</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: tipo; descrição; categoria; data; valor.</p>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: <strong>descrição;categoria;data;valor</strong></p>
                     <input type="file" id="input-csv-trans" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSV('transacoes')">Carregar CSV Transações</button>
                 </div>
 
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato: <strong>tipo;descrição;categoria;data;valor</strong></p>
-                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Ex: despesa;Supermercado;Alimentação;2024-10-21;150.50</p>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato 4 colunas: <strong>descrição;categoria;data;valor</strong></p>
+                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Dica: Use <strong>(-)</strong> para saídas e <strong>(+)</strong> para entradas!<br>Ex: Mercado;Alimentação;2024-10-21;<strong>-150.50</strong></p>
                     <textarea id="input-csv-texto-trans" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSVTexto('transacoes')">Importar Texto Colado</button>
                 </div>
@@ -1049,8 +1049,12 @@
                 const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); 
             } else if (tipo === 'transacoes') {
                 if(transacoes.length===0) return alert("Sem dados de transações."); 
-                let csv="tipo;descricao;categoria;data;valor\n"; 
-                transacoes.forEach(t=>{ const val = t.valor.toString().replace('.', ','); csv+=`${t.tipo};${t.desc.replace(/;/g,'')};${t.cat.replace(/;/g,'')};${t.data};${val}\n`;}); 
+                let csv="descricao;categoria;data;valor\n"; 
+                transacoes.forEach(t=>{ 
+                    const sinal = t.tipo === 'entrada' ? '+' : '-';
+                    const val = t.valor.toString().replace('.', ','); 
+                    csv+=`${t.desc.replace(/;/g,'')};${t.cat.replace(/;/g,'')};${t.data};${sinal}${val}\n`;
+                }); 
                 const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="transacoes.csv"; link.click(); 
             }
         }
@@ -1087,18 +1091,21 @@
                         const liq = c[4] ? c[4].trim() : "Sim"; const ven = c[5] ? c[5].trim() : "";
                         if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, data:d, valor:v, taxa:t, liquidez:liq, vencimento:ven}); q++; } 
                     } else if (tipo === 'transacoes' && c.length >= 4) {
-                        let tpRaw = c[0].trim().toLowerCase();
-                        const desc = c[1].trim(); const cat = c[2].trim(); const d = c[3].trim();
-                        if (c.length >= 5) {
-                            let vFinal = parseFloat(c[4].replace(',','.'));
-                            if(desc && d && !isNaN(vFinal)) {
-                                let tp = 'despesa';
-                                if (tpRaw === 'entrada' || tpRaw === 'receita') tp = 'entrada';
-                                else if (tpRaw === 'despesa' || tpRaw === 'saída' || tpRaw === 'saida') tp = 'despesa';
-                                else tp = vFinal >= 0 ? 'entrada' : 'despesa';
-                                
-                                vFinal = Math.abs(vFinal); // Força sempre a salvar como absoluto no banco
-                                
+                        let offset = 0;
+                        let p1 = c[0].trim().toLowerCase();
+                        if(p1 === 'entrada' || p1 === 'saída' || p1 === 'saida' || p1 === 'despesa' || p1 === 'receita' || p1 === 'ajuste') offset = 1;
+                        
+                        const desc = c[0 + offset] ? c[0 + offset].trim() : ""; 
+                        const cat = c[1 + offset] ? c[1 + offset].trim() : ""; 
+                        const d = c[2 + offset] ? c[2 + offset].trim() : "";
+                        let strVal = c[3 + offset];
+
+                        if (strVal) {
+                            let vOriginal = parseFloat(strVal.replace(',','.'));
+                            if(desc && d && !isNaN(vOriginal)) {
+                                let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
+                                let vFinal = Math.abs(vOriginal); 
+
                                 if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
                                 if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
                                 transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
@@ -1115,7 +1122,7 @@
             const texto = document.getElementById(inputId).value.trim();
             if(!texto) return alert("Cole os dados no campo de texto primeiro.");
             const l = texto.split('\n'); let q = 0; let inicio = 0;
-            if(l[0].toLowerCase().includes(tipo === 'investimentos' ? 'banco' : 'tipo')) inicio = 1;
+            if(l[0].toLowerCase().includes(tipo === 'investimentos' ? 'banco' : 'descri')) inicio = 1;
             for(let i = inicio; i < l.length; i++){
                 if(l[i].trim() === '') continue; 
                 let linhaLimpa = l[i].replace(/"/g, '');
@@ -1126,22 +1133,26 @@
                     const b = c[0].trim(); const d = c[1].trim(); const v = parseFloat(c[2].replace(',','.')); const t = parseFloat(c[3].replace(',','.'));
                     const liq = c[4] ? c[4].trim() : "Sim"; const ven = c[5] ? c[5].trim() : "";
                     if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: Date.now() + i, banco: b, data: d, valor: v, taxa: t, liquidez: liq, vencimento: ven}); q++; }
-                } else if (tipo === 'transacoes' && c.length >= 5) {
-                    let tpRaw = c[0].trim().toLowerCase();
-                    const desc = c[1].trim(); const cat = c[2].trim(); const d = c[3].trim();
-                    let vFinal = parseFloat(c[4].replace(',','.'));
+                } else if (tipo === 'transacoes' && c.length >= 4) {
+                    let offset = 0;
+                    let p1 = c[0].trim().toLowerCase();
+                    if(p1 === 'entrada' || p1 === 'saída' || p1 === 'saida' || p1 === 'despesa' || p1 === 'receita' || p1 === 'ajuste') offset = 1;
                     
-                    if(desc && d && !isNaN(vFinal)) {
-                        let tp = 'despesa';
-                        if (tpRaw === 'entrada' || tpRaw === 'receita') tp = 'entrada';
-                        else if (tpRaw === 'despesa' || tpRaw === 'saída' || tpRaw === 'saida') tp = 'despesa';
-                        else tp = vFinal >= 0 ? 'entrada' : 'despesa'; // fallback baseado no sinal se vier palavra desconhecida
+                    const desc = c[0 + offset] ? c[0 + offset].trim() : ""; 
+                    const cat = c[1 + offset] ? c[1 + offset].trim() : ""; 
+                    const d = c[2 + offset] ? c[2 + offset].trim() : "";
+                    let strVal = c[3 + offset];
 
-                        vFinal = Math.abs(vFinal); // Força sempre a salvar como absoluto no banco
+                    if (strVal) {
+                        let vOriginal = parseFloat(strVal.replace(',','.'));
+                        if(desc && d && !isNaN(vOriginal)) {
+                            let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
+                            let vFinal = Math.abs(vOriginal); 
 
-                        if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
-                        if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
-                        transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                            if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
+                            if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
+                            transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                        }
                     }
                 }
             }
