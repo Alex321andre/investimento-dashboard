@@ -159,7 +159,6 @@
                 <div><h3 style="margin-bottom: 15px; color: #1a1a2e;">Patrimônio por Instituição</h3><div class="bancos-grid" id="container-resumo-bancos"></div></div>
                 <div class="card" style="margin-top:0;">
                     <h3 style="text-align: center; margin-bottom: 10px;">Distribuição da Carteira</h3>
-                    
                     <div style="text-align: center; margin-bottom: 15px;">
                         <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Liquidez Diária:</label>
                         <select id="filtro-liquidez-pizza" onchange="atualizarGraficoPizza()" style="width: auto; padding: 5px; font-size: 0.9em; border-radius: 5px; border: 1px solid #ccc; margin-left: 5px; outline: none;">
@@ -168,8 +167,7 @@
                             <option value="Não">Não</option>
                         </select>
                     </div>
-
-                    <div style="height: 250px; display: flex; justify-content: center;"><canvas id="graficoPizza"></canvas></div>
+                    <div style="height: 350px; display: flex; justify-content: center; position: relative;"><canvas id="graficoPizza"></canvas></div>
                 </div>
             </div>
             
@@ -184,7 +182,6 @@
                     <button class="btn-acao header-btn" style="margin: 0; width: auto;" onclick="toggleFormInvestimento()">+ Novo Investimento</button>
                 </div>
             </div>
-
             <form id="form-investimento" style="display:none; animation: fadeIn 0.3s ease-in-out;" onsubmit="adicionarInvestimento(event)">
                 <h3 style="margin-bottom: 15px; color: #1a1a2e; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Registrar Aplicação</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
@@ -197,7 +194,6 @@
                     <button type="submit" style="margin-top: 0;">Salvar Investimento</button>
                 </div>
             </form>
-
             <div class="tabela-container">
                 <table id="tabela-resultados">
                     <thead>
@@ -226,10 +222,8 @@
                 <h2>Controle de Caixa (Entradas e Saídas)</h2>
                 <button class="btn-acao header-btn" style="margin: 0; width: auto;" onclick="toggleFormTransacao()">+ Nova Transação</button>
             </div>
-            
             <form id="form-transacao" onsubmit="adicionarTransacao(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.3s ease-in-out; margin-bottom: 20px;">
                 <div style="grid-column: 1 / -1;"><h3 style="font-size: 1.1em; color: #1a1a2e; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Registrar Movimentação</h3></div>
-                
                 <div><label>Tipo:</label><select id="trans-tipo"><option value="despesa">Saída (Despesa)</option><option value="entrada">Entrada (Receita)</option></select></div>
                 <div><label>Descrição:</label><div style="display: flex; gap: 5px;"><select id="trans-desc" style="flex: 1;" required></select><button type="button" class="btn-acao secundario" style="width: auto; padding: 10px; margin: 0;" onclick="abrirModalGerenciador('descricoes')" title="Gerenciar Descrições">⚙️</button></div></div>
                 <div><label>Categoria:</label><div style="display: flex; gap: 5px;"><select id="trans-cat" style="flex: 1;" required></select><button type="button" class="btn-acao secundario" style="width: auto; padding: 10px; margin: 0;" onclick="abrirModalGerenciador('categorias')" title="Gerenciar Categorias">⚙️</button></div></div>
@@ -237,18 +231,15 @@
                 <div><label>Valor (R$):</label><input type="number" id="trans-valor" step="0.01" required></div>
                 <button type="submit" style="margin-top:0;">Salvar Transação</button>
             </form>
-
             <div class="controles-grafico" style="margin-top: 20px; justify-content: flex-start;">
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Mês:</label><select id="filtro-mes-trans" onchange="renderizarTransacoes()"><option value="todos">Todos</option><option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Ano:</label><select id="filtro-ano-trans" onchange="renderizarTransacoes()"><option value="todos">Todos</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Data Exata:</label><input type="date" id="filtro-data-trans" onchange="renderizarTransacoes()"></div>
-                
                 <div class="box-total-despesas">
                     <span style="font-size: 0.85em; color: #666; font-weight: bold;">Saldo Visível (Filtro):</span><br>
                     <strong id="total-trans-filtrado" style="font-size: 1.3em;">R$ 0,00</strong>
                 </div>
             </div>
-
             <div class="tabela-container" style="margin-top: 0;">
                 <table id="tabela-transacoes">
                     <thead>
@@ -274,7 +265,6 @@
                 </div>
             </div>
             <p style="margin-top: 5px; margin-bottom: 15px; color: #666;">Crie uma caixinha e vá depositando seus aportes nela. Tudo rende CDI e vai para o seu Dashboard!</p>
-            
             <form id="form-meta" onsubmit="adicionarMeta(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.3s ease-in-out; margin-bottom: 20px;">
                 <div style="grid-column: 1 / -1;"><h3 style="font-size: 1.1em; color: #1a1a2e; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Nova Caixinha e Primeira Aplicação</h3></div>
                 <div><label>Nome (Ex: Viagem):</label><input type="text" id="meta-nome" required></div>
@@ -344,14 +334,19 @@
             <div class="card" style="margin-top: 25px;">
                 <h3 style="margin-bottom: 15px; color: #1a1a2e; border-bottom: 1px solid #ddd; padding-bottom: 5px;">📉 Composição de Transações</h3>
                 <div class="controles-grafico" style="justify-content: center; font-size: 0.9em; padding: 10px;">
-                    <div><label>Tipo:</label><select id="filtro-graf-tipo-trans" onchange="desenharGraficoDespesas()"><option value="despesa">Saídas</option><option value="entrada">Entradas</option><option value="todos">Todos</option></select></div>
+                    <div>
+                        <label>Tipo:</label>
+                        <select id="filtro-graf-tipo-trans" onchange="desenharGraficoDespesas()" style="background-color: #fff3cd; border-color: #ffc107; font-weight:bold;">
+                            <option value="despesa">Somente Saídas</option>
+                            <option value="entrada">Somente Entradas</option>
+                            <option value="todos">Tudo Misturado</option>
+                        </select>
+                    </div>
                     <div><label>Mês:</label><select id="filtro-graf-mes-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select></div>
                     <div><label>Ano:</label><select id="filtro-graf-ano-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
-                    <div><label>Cat:</label><select id="filtro-graf-cat-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
-                    <div><label>Desc:</label><select id="filtro-graf-desc-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
                     <div><label>Agrupar por:</label><select id="filtro-graf-agrupar" onchange="desenharGraficoDespesas()"><option value="cat">Categoria</option><option value="desc">Descrição</option></select></div>
                 </div>
-                <div style="height: 350px; display: flex; justify-content: center; position: relative;"><canvas id="graficoDespesasAnalise"></canvas></div>
+                <div style="height: 400px; display: flex; justify-content: center; position: relative; margin-top: 20px;"><canvas id="graficoDespesasAnalise"></canvas></div>
                 <div id="legenda-grafico-despesas" style="margin-top: 20px; text-align: center; font-size: 1.1em; font-weight: bold; color: #1a1a2e; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #1a1a2e;"></div>
             </div>
         </section>
@@ -359,7 +354,6 @@
         <section id="tela-dados" class="tela">
             <h2>Importar e Exportar Dados</h2>
             <p style="color: #666; margin-bottom: 20px;">Gerencie seus registros de Investimentos e Transações separadamente em lote.</p>
-            
             <h3 style="color: #0f3460; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 5px; margin-top: 10px;">💼 Dados de Investimentos</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
                 <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
@@ -368,7 +362,6 @@
                     <input type="file" id="input-csv-inv" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" onclick="importarCSV('investimentos')">Carregar CSV Investimentos</button>
                 </div>
-
                 <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
                     <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato: <strong>banco;data;valor;taxa;liquidez;vencimento</strong></p>
@@ -376,7 +369,6 @@
                     <textarea id="input-csv-texto-inv" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
                     <button type="button" class="btn-acao secundario" style="background-color: #0f3460;" onclick="importarCSVTexto('investimentos')">Importar Texto Colado</button>
                 </div>
-
                 <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📤 Exportar Relatórios</h3>
                     <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Gere um arquivo ou envie seus ativos por e-mail.</p>
@@ -384,7 +376,6 @@
                     <button type="button" class="btn-acao secundario" onclick="baixarCSV('investimentos')" style="font-size:0.95em;">📥 Baixar Planilha CSV</button>
                 </div>
             </div>
-
             <h3 style="color: #e94560; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 5px;">💸 Dados de Transações (Caixa)</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
@@ -393,7 +384,6 @@
                     <input type="file" id="input-csv-trans" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSV('transacoes')">Carregar CSV Transações</button>
                 </div>
-
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
                     <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato 4 colunas: <strong>descrição;categoria;data;valor</strong></p>
@@ -401,7 +391,6 @@
                     <textarea id="input-csv-texto-trans" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSVTexto('transacoes')">Importar Texto Colado</button>
                 </div>
-
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📤 Exportar Relatórios</h3>
                     <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Gere um arquivo ou envie seu fluxo de caixa por e-mail.</p>
@@ -409,91 +398,18 @@
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560; font-size:0.95em;" onclick="baixarCSV('transacoes')">📥 Baixar Planilha CSV</button>
                 </div>
             </div>
-            
             <div style="margin-top: 40px; text-align: center; border-top: 1px solid #ccc; padding-top: 30px;">
                 <button class="btn-limpar" style="width: auto; padding: 10px 30px;" onclick="limparTudo()">🗑️ Limpar Todos os Dados da Conta</button>
                 <p style="font-size: 0.8em; color: #666; margin-top: 10px;">Atenção: Esta ação apagará permanentemente todos os investimentos, caixinhas e transações.</p>
             </div>
         </section>
 
-        <div id="modal-resgatar" class="modal-overlay">
-            <div class="box-modal">
-                <h2 style="margin-bottom: 15px; text-align: center; color: #1a1a2e;">💰 Resgatar Investimento</h2>
-                <p style="font-size: 0.9em; color: #666; margin-bottom: 15px; text-align: center;">O investimento será encerrado e o valor final ficará salvo no seu histórico.</p>
-                <input type="hidden" id="resgate-id">
-                <div class="grupo-input"><label>Data do Resgate:</label><input type="date" id="resgate-data" required></div>
-                <button type="button" class="btn-acao" style="background-color: #28a745;" onclick="confirmarResgate()">Confirmar Resgate</button>
-                <button type="button" class="btn-acao terciario" onclick="fecharResgate()">Cancelar</button>
-            </div>
-        </div>
-
-        <div id="modal-gerenciador" class="modal-overlay">
-            <div class="box-modal">
-                <h2 id="titulo-modal-gerenciador" style="margin-bottom: 15px; text-align: center;">Gerenciar</h2>
-                <input type="hidden" id="tipo-gerenciador-ativo">
-                <ul class="lista-gerenciador" id="lista-gerenciador-ui"></ul>
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <input type="text" id="novo-item-nome" placeholder="Novo item..." style="flex: 1;">
-                    <button class="btn-acao" style="width: auto; margin: 0;" onclick="adicionarItemGerenciador()">Criar</button>
-                </div>
-                <button type="button" class="btn-acao terciario" style="margin-top: 15px;" onclick="fecharModalGerenciador()">Fechar</button>
-            </div>
-        </div>
-
-        <div id="modal-editar" class="modal-overlay">
-            <div class="box-modal">
-                <h2 style="margin-bottom: 15px; text-align: center;">Editar Investimento</h2>
-                <input type="hidden" id="edit-id">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="grupo-input" style="grid-column: 1 / -1;"><label>Banco:</label><input type="text" id="edit-banco" required></div>
-                    <div class="grupo-input"><label>Data:</label><input type="date" id="edit-data" required></div>
-                    <div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-valor" step="0.01" required></div>
-                    <div class="grupo-input"><label>Taxa (% CDI):</label><input type="number" id="edit-taxa" step="0.1" required></div>
-                    <div class="grupo-input"><label>Liquidez Diária:</label><select id="edit-liquidez"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
-                    <div class="grupo-input" style="grid-column: 1 / -1;"><label>Data de Vencimento / Resgate:</label><input type="date" id="edit-vencimento"></div>
-                </div>
-                <button type="button" class="btn-acao" onclick="salvarEdicao()">💾 Salvar</button>
-                <button type="button" class="btn-acao terciario" onclick="fecharEdicao()">Cancelar</button>
-            </div>
-        </div>
-
-        <div id="modal-editar-trans" class="modal-overlay">
-            <div class="box-modal">
-                <h2 style="margin-bottom: 15px; text-align: center;">Editar Transação</h2>
-                <input type="hidden" id="edit-trans-id">
-                <div class="grupo-input"><label>Tipo:</label><select id="edit-trans-tipo"><option value="despesa">Saída</option><option value="entrada">Entrada</option></select></div>
-                <div class="grupo-input"><label>Descrição:</label><select id="edit-trans-desc" required></select></div>
-                <div class="grupo-input"><label>Categoria:</label><select id="edit-trans-cat" required></select></div>
-                <div class="grupo-input"><label>Data:</label><input type="date" id="edit-trans-data" required></div>
-                <div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-trans-valor" step="0.01" required></div>
-                <button type="button" class="btn-acao" onclick="salvarEdicaoTransacao()">💾 Salvar</button>
-                <button type="button" class="btn-acao terciario" onclick="fecharEdicaoTransacao()">Cancelar</button>
-            </div>
-        </div>
-
-        <div id="modal-editar-meta" class="modal-overlay">
-            <div class="box-modal">
-                <h2 style="margin-bottom: 15px; text-align: center;">Editar Alvo da Caixinha</h2>
-                <input type="hidden" id="edit-meta-id">
-                <div class="grupo-input"><label>Nome / Objetivo:</label><input type="text" id="edit-meta-nome" required></div>
-                <div class="grupo-input"><label>Valor Alvo (R$):</label><input type="number" id="edit-meta-alvo" step="0.01" required></div>
-                <button type="button" class="btn-acao" onclick="salvarEdicaoMeta()">💾 Salvar</button>
-                <button type="button" class="btn-acao terciario" onclick="fecharEdicaoMeta()">Cancelar</button>
-            </div>
-        </div>
-
-        <div id="modal-aporte-meta" class="modal-overlay">
-            <div class="box-modal">
-                <h2 id="titulo-modal-aporte" style="margin-bottom: 15px; text-align: center;">Nova Aplicação</h2>
-                <input type="hidden" id="aporte-meta-id">
-                <input type="hidden" id="aporte-id">
-                <div class="grupo-input"><label>Data da Aplicação:</label><input type="date" id="aporte-data" required></div>
-                <div class="grupo-input"><label>Valor Aplicado (R$):</label><input type="number" id="aporte-valor" step="0.01" required></div>
-                <div class="grupo-input"><label>Taxa (% do CDI):</label><input type="number" id="aporte-taxa" step="0.1" required></div>
-                <button type="button" class="btn-acao" onclick="salvarAporte()">💾 Salvar</button>
-                <button type="button" class="btn-acao terciario" onclick="fecharAporte()">Cancelar</button>
-            </div>
-        </div>
+        <div id="modal-resgatar" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center; color: #1a1a2e;">💰 Resgatar Investimento</h2><p style="font-size: 0.9em; color: #666; margin-bottom: 15px; text-align: center;">O investimento será encerrado e o valor final ficará salvo no seu histórico.</p><input type="hidden" id="resgate-id"><div class="grupo-input"><label>Data do Resgate:</label><input type="date" id="resgate-data" required></div><button type="button" class="btn-acao" style="background-color: #28a745;" onclick="confirmarResgate()">Confirmar Resgate</button><button type="button" class="btn-acao terciario" onclick="fecharResgate()">Cancelar</button></div></div>
+        <div id="modal-gerenciador" class="modal-overlay"><div class="box-modal"><h2 id="titulo-modal-gerenciador" style="margin-bottom: 15px; text-align: center;">Gerenciar</h2><input type="hidden" id="tipo-gerenciador-ativo"><ul class="lista-gerenciador" id="lista-gerenciador-ui"></ul><div style="display: flex; gap: 10px; margin-top: 15px;"><input type="text" id="novo-item-nome" placeholder="Novo item..." style="flex: 1;"><button class="btn-acao" style="width: auto; margin: 0;" onclick="adicionarItemGerenciador()">Criar</button></div><button type="button" class="btn-acao terciario" style="margin-top: 15px;" onclick="fecharModalGerenciador()">Fechar</button></div></div>
+        <div id="modal-editar" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Investimento</h2><input type="hidden" id="edit-id"><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="grupo-input" style="grid-column: 1 / -1;"><label>Banco:</label><input type="text" id="edit-banco" required></div><div class="grupo-input"><label>Data:</label><input type="date" id="edit-data" required></div><div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-valor" step="0.01" required></div><div class="grupo-input"><label>Taxa (% CDI):</label><input type="number" id="edit-taxa" step="0.1" required></div><div class="grupo-input"><label>Liquidez Diária:</label><select id="edit-liquidez"><option value="Sim">Sim</option><option value="Não">Não</option></select></div><div class="grupo-input" style="grid-column: 1 / -1;"><label>Data de Vencimento / Resgate:</label><input type="date" id="edit-vencimento"></div></div><button type="button" class="btn-acao" onclick="salvarEdicao()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicao()">Cancelar</button></div></div>
+        <div id="modal-editar-trans" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Transação</h2><input type="hidden" id="edit-trans-id"><div class="grupo-input"><label>Tipo:</label><select id="edit-trans-tipo"><option value="despesa">Saída</option><option value="entrada">Entrada</option></select></div><div class="grupo-input"><label>Descrição:</label><select id="edit-trans-desc" required></select></div><div class="grupo-input"><label>Categoria:</label><select id="edit-trans-cat" required></select></div><div class="grupo-input"><label>Data:</label><input type="date" id="edit-trans-data" required></div><div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-trans-valor" step="0.01" required></div><button type="button" class="btn-acao" onclick="salvarEdicaoTransacao()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicaoTransacao()">Cancelar</button></div></div>
+        <div id="modal-editar-meta" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Alvo da Caixinha</h2><input type="hidden" id="edit-meta-id"><div class="grupo-input"><label>Nome / Objetivo:</label><input type="text" id="edit-meta-nome" required></div><div class="grupo-input"><label>Valor Alvo (R$):</label><input type="number" id="edit-meta-alvo" step="0.01" required></div><button type="button" class="btn-acao" onclick="salvarEdicaoMeta()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicaoMeta()">Cancelar</button></div></div>
+        <div id="modal-aporte-meta" class="modal-overlay"><div class="box-modal"><h2 id="titulo-modal-aporte" style="margin-bottom: 15px; text-align: center;">Nova Aplicação</h2><input type="hidden" id="aporte-meta-id"><input type="hidden" id="aporte-id"><div class="grupo-input"><label>Data da Aplicação:</label><input type="date" id="aporte-data" required></div><div class="grupo-input"><label>Valor Aplicado (R$):</label><input type="number" id="aporte-valor" step="0.01" required></div><div class="grupo-input"><label>Taxa (% do CDI):</label><input type="number" id="aporte-taxa" step="0.1" required></div><button type="button" class="btn-acao" onclick="salvarAporte()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharAporte()">Cancelar</button></div></div>
 
     </main>
 
@@ -503,8 +419,59 @@
     </footer>
 
     <script>
-        // Registrar o plugin de Datalabels globalmente no Chart.js
+        // =========================================================
+        // PLUGINS E SETUP DOS GRÁFICOS (CAIXINHAS E LINHAS DIRETORAS)
+        // =========================================================
         Chart.register(ChartDataLabels);
+
+        const pluginLinhasDiretoras = {
+            id: 'pluginLinhasDiretoras',
+            afterDraw(chart) {
+                // Desenha as setas apenas nos gráficos de Pizza/Rosca
+                if (chart.config.type !== 'doughnut' && chart.config.type !== 'pie') return;
+                
+                const ctx = chart.ctx;
+                const meta = chart.getDatasetMeta(0);
+                if(!meta || !meta.data || meta.data.length === 0) return;
+                
+                const dataset = chart.data.datasets[0];
+                const total = dataset.data.reduce((a,b) => a + b, 0);
+                if(total === 0) return;
+
+                dataset.data.forEach((value, index) => {
+                    // Não desenha linha para fatias muito pequenas (< 3%) para não poluir
+                    if ((value / total) < 0.03) return; 
+
+                    const arc = meta.data[index];
+                    if(arc.hidden) return; 
+
+                    // Calcula o centro da fatia e puxa para fora
+                    const angle = (arc.startAngle + arc.endAngle) / 2;
+                    const r = arc.outerRadius;
+                    
+                    const startX = arc.x + Math.cos(angle) * (r - 5);
+                    const startY = arc.y + Math.sin(angle) * (r - 5);
+                    const endX = arc.x + Math.cos(angle) * (r + 20); // 20 pixels para fora
+                    const endY = arc.y + Math.sin(angle) * (r + 20);
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(endX, endY);
+                    ctx.strokeStyle = dataset.backgroundColor[index];
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Desenha uma pequena bolinha colorida na ponta da linha
+                    ctx.beginPath();
+                    ctx.arc(endX, endY, 3, 0, 2 * Math.PI);
+                    ctx.fillStyle = dataset.backgroundColor[index];
+                    ctx.fill();
+                    ctx.restore();
+                });
+            }
+        };
+        Chart.register(pluginLinhasDiretoras);
 
         // =========================================================
         // 0. FORMATADORES GLOBAIS E REGRAS B3
@@ -937,7 +904,7 @@
         function calcularComparacao() { const v = parseFloat(document.getElementById('comp-valor').value)||0, dias = parseInt(document.getElementById('comp-dias').value)||1, tCdb = parseFloat(document.getElementById('comp-cdb').value)/100, tLci = parseFloat(document.getElementById('comp-lci').value)/100, cdiAno = parseFloat(document.getElementById('comp-cdi').value)/100; const rCDB = cdiAno * tCdb, rLCI = cdiAno * tLci; let ir = 15; if (dias<=180) ir=22.5; else if(dias<=360) ir=20; else if(dias<=720) ir=17.5; const bCDB = v * (rCDB * (dias/365)), lCDB = bCDB - (bCDB * (ir/100)), lLCI = v * (rLCI * (dias/365)); document.getElementById('comp-res-cdb').innerText = fMoeda(v+lCDB); document.getElementById('comp-res-lci').innerText = fMoeda(v+lLCI); const txt = document.getElementById('comp-vencedor'); if(lCDB>lLCI){txt.innerText="🏆 O CDB é a melhor opção!";txt.style.color="#1a1a2e";}else if(lLCI>lCDB){txt.innerText="🏆 A LCI/LCA é a melhor opção!";txt.style.color="#28a745";}else{txt.innerText="⚖️ Ambos rendem igual.";txt.style.color="#666";} document.getElementById('resultado-comparador').style.display = 'block'; }
 
         // =========================================================
-        // 8. GRÁFICOS E FILTROS DINÂMICOS
+        // 8. GRÁFICOS E FILTROS DINÂMICOS (COM SETAS E LABELS FORA)
         // =========================================================
         function atualizarGraficoPizza() {
             const filtroLiquidez = document.getElementById('filtro-liquidez-pizza').value;
@@ -967,7 +934,8 @@
             const labelsComPerc = bancos.map(b => { 
                 let val = totaisPizza[b];
                 let perc = totalGeralPizza > 0 ? ((val / totalGeralPizza) * 100).toFixed(1) : 0; 
-                return `${b} - ${fMoeda(val)} (${perc}%)`; 
+                // A formatação do texto para 3 linhas na caixinha
+                return `${b}\n${fMoeda(val)}\n(${perc}%)`; 
             });
 
             chartPizzaInstance = new Chart(ctx, { 
@@ -980,29 +948,29 @@
                     }] 
                 }, 
                 options: { 
+                    layout: { padding: 65 }, // Previne que os textos fora do gráfico sejam cortados pela tela
                     responsive: true, 
                     maintainAspectRatio: false, 
                     plugins: { 
-                        legend: { position: 'right', labels: { font: { size: 11 } } }, 
-                        tooltip: { callbacks: { label: function(context) { return ` ${context.label}`; } } },
+                        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12 } }, 
+                        tooltip: { callbacks: { label: function(context) { return ` ${context.label.replace(/\n/g, ' ')}`; } } },
                         datalabels: {
                             color: '#fff',
-                            backgroundColor: 'rgba(26, 26, 46, 0.85)',
+                            backgroundColor: (context) => context.dataset.backgroundColor[context.dataIndex],
                             borderRadius: 4,
-                            padding: 6,
-                            formatter: (value, context) => {
-                                const label = context.chart.data.labels[context.dataIndex];
-                                const match = label.match(/^(.*?)\s-\s.*?(\(.*?\))$/);
-                                if(match) {
-                                    const percStr = match[2].replace(/[()]/g, '');
-                                    if (parseFloat(percStr) >= 3) {
-                                        return `${match[1]}\n${percStr}`;
-                                    }
-                                }
-                                return null;
+                            padding: 4,
+                            anchor: 'end',
+                            align: 'end',
+                            offset: 25, // Empurra o texto para fora, exatamente onde a linha termina
+                            font: { weight: 'bold', size: 9 },
+                            textAlign: 'center',
+                            display: function(context) {
+                                let dataset = context.dataset;
+                                let value = dataset.data[context.dataIndex];
+                                let total = dataset.data.reduce((a,b) => a + b, 0);
+                                return total > 0 && (value / total) >= 0.03; // Esconde textos de fatias muito pequenas
                             },
-                            font: { weight: 'bold', size: 10 },
-                            textAlign: 'center'
+                            formatter: (value, context) => { return context.chart.data.labels[context.dataIndex]; }
                         }
                     } 
                 } 
@@ -1055,7 +1023,7 @@
                 options: { 
                     responsive: true, 
                     interaction: { mode: 'index', intersect: false },
-                    plugins: { datalabels: { display: false } } // Esconde as caixinhas neste gráfico de linha
+                    plugins: { datalabels: { display: false } } // Desliga datalabels neste gráfico
                 } 
             });
         }
@@ -1090,7 +1058,7 @@
                 totalGeral += valAbs; 
             });
             
-            document.getElementById('legenda-grafico-despesas').innerText = `Total Exibido: ${fMoeda(totalGeral)}`;
+            document.getElementById('legenda-grafico-despesas').innerText = `Valor Total do Filtro: ${fMoeda(totalGeral)}`;
             
             const labelsIniciais = Object.keys(agregacao); const data = Object.values(agregacao);
             if (labelsIniciais.length === 0) { chartDespesasInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
@@ -1098,7 +1066,8 @@
             const labelsComInfo = labelsIniciais.map(l => { 
                 let val = Math.abs(agregacao[l]);
                 let perc = totalGeral > 0 ? ((val / totalGeral) * 100).toFixed(1) : 0; 
-                return `${l} - ${fMoeda(val)} (${perc}%)`; 
+                // A formatação do texto para 3 linhas na caixinha
+                return `${l}\n${fMoeda(val)}\n(${perc}%)`; 
             });
 
             const colors = ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#17a2b8', '#007bff', '#6610f2', '#e83e8c', '#6c757d', '#343a40'];
@@ -1106,29 +1075,29 @@
                 type: 'doughnut', 
                 data: { labels: labelsComInfo, datasets: [{ data: data, backgroundColor: colors }] }, 
                 options: { 
+                    layout: { padding: 65 }, // Previne que os textos fora do gráfico sejam cortados
                     responsive: true, 
                     maintainAspectRatio: false, 
                     plugins: { 
-                        legend: { position: 'right', labels: { font: { size: 11 } } }, 
-                        tooltip: { callbacks: { label: function(context) { return ` ${context.label}`; } } },
+                        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12 } }, 
+                        tooltip: { callbacks: { label: function(context) { return ` ${context.label.replace(/\n/g, ' ')}`; } } },
                         datalabels: {
                             color: '#fff',
-                            backgroundColor: 'rgba(26, 26, 46, 0.85)',
+                            backgroundColor: (context) => context.dataset.backgroundColor[context.dataIndex],
                             borderRadius: 4,
-                            padding: 6,
-                            formatter: (value, context) => {
-                                const label = context.chart.data.labels[context.dataIndex];
-                                const match = label.match(/^(.*?)\s-\s.*?(\(.*?\))$/);
-                                if(match) {
-                                    const percStr = match[2].replace(/[()]/g, '');
-                                    if (parseFloat(percStr) >= 3) {
-                                        return `${match[1]}\n${percStr}`;
-                                    }
-                                }
-                                return null;
+                            padding: 4,
+                            anchor: 'end',
+                            align: 'end',
+                            offset: 25, // Empurra o texto para fora, onde a seta termina
+                            font: { weight: 'bold', size: 9 },
+                            textAlign: 'center',
+                            display: function(context) {
+                                let dataset = context.dataset;
+                                let value = dataset.data[context.dataIndex];
+                                let total = dataset.data.reduce((a,b) => a + b, 0);
+                                return total > 0 && (value / total) >= 0.03; // Esconde se < 3%
                             },
-                            font: { weight: 'bold', size: 10 },
-                            textAlign: 'center'
+                            formatter: (value, context) => { return context.chart.data.labels[context.dataIndex]; }
                         }
                     } 
                 } 
