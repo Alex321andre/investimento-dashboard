@@ -139,9 +139,9 @@
         </section>
 
         <section id="tela-dashboard" class="tela">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <h2>Resumo Geral da Carteira</h2>
-                <button id="btn-projetar" class="btn-acao secundario" style="margin: 0; width: auto; padding: 10px 15px; font-size: 0.9em; border-radius: 20px;" onclick="toggleProjecao()" title="Sincroniza os dias úteis faltantes com base na última taxa disponível do Banco Central.">
+                <button class="btn-acao secundario btn-projetar" style="margin: 0; width: auto; padding: 10px 15px; font-size: 0.9em; border-radius: 20px;" onclick="toggleProjecao()" title="Sincroniza os dias úteis faltantes com base na última taxa disponível do Banco Central.">
                     🔮 Projetar Rendimento até Hoje
                 </button>
             </div>
@@ -178,7 +178,10 @@
         <section id="tela-investimentos" class="tela">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <h2>Meus Investimentos (CDB/LC/LCA)</h2>
-                <button class="btn-acao header-btn" style="margin: 0; width: auto;" onclick="toggleFormInvestimento()">+ Novo Investimento</button>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-acao secundario btn-projetar" style="margin: 0; width: auto; padding: 10px 15px; font-size: 0.9em; border-radius: 20px;" onclick="toggleProjecao()">🔮 Projetar Rendimento até Hoje</button>
+                    <button class="btn-acao header-btn" style="margin: 0; width: auto;" onclick="toggleFormInvestimento()">+ Novo Investimento</button>
+                </div>
             </div>
 
             <form id="form-investimento" style="display:none; animation: fadeIn 0.3s ease-in-out;" onsubmit="adicionarInvestimento(event)">
@@ -264,7 +267,10 @@
         <section id="tela-metas" class="tela">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <h2>Caixinhas & Metas Financeiras</h2>
-                <button class="btn-acao header-btn" style="margin: 0; width: auto;" onclick="toggleFormMeta()">+ Nova Caixinha</button>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-acao secundario btn-projetar" style="margin: 0; width: auto; padding: 10px 15px; font-size: 0.9em; border-radius: 20px;" onclick="toggleProjecao()">🔮 Projetar Rendimento até Hoje</button>
+                    <button class="btn-acao header-btn" style="margin: 0; width: auto;" onclick="toggleFormMeta()">+ Nova Caixinha</button>
+                </div>
             </div>
             <p style="margin-top: 5px; margin-bottom: 15px; color: #666;">Crie uma caixinha e vá depositando seus aportes nela. Tudo rende CDI e vai para o seu Dashboard!</p>
             
@@ -318,7 +324,10 @@
         </section>
 
         <section id="tela-grafico" class="tela">
-            <h2>Painel de Gráficos</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h2>Painel de Gráficos</h2>
+                <button class="btn-acao secundario btn-projetar" style="margin: 0; width: auto; padding: 10px 15px; font-size: 0.9em; border-radius: 20px;" onclick="toggleProjecao()">🔮 Projetar Rendimento até Hoje</button>
+            </div>
             
             <div class="card" style="margin-top: 15px;">
                 <h3 style="margin-bottom: 15px; color: #1a1a2e; border-bottom: 1px solid #ddd; padding-bottom: 5px;">📈 Evolução Patrimonial</h3>
@@ -491,7 +500,7 @@
             return parseFloat(str).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
         }
 
-        // ALGORITMO DE CÁLCULO DA PÁSCOA (Meeus/Jones/Butcher)
+        // ALGORITMO DE CÁLCULO DA PÁSCOA E FERIADOS (Meeus/Jones/Butcher)
         function obterDataPascoa(ano) {
             const f = Math.floor, G = ano % 19, C = f(ano / 100);
             const H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30;
@@ -501,27 +510,15 @@
             return new Date(ano, mes - 1, dia);
         }
 
-        // VERIFICADOR DE DIA ÚTIL BANCÁRIO BRASILEIRO (Finais de Semana + Feriados)
         function ehDiaUtilBancario(dataObj) {
             const diaSemana = dataObj.getDay();
-            if (diaSemana === 0 || diaSemana === 6) return false; // Sábado ou Domingo
+            if (diaSemana === 0 || diaSemana === 6) return false;
 
             const dataString = `${String(dataObj.getDate()).padStart(2, '0')}/${String(dataObj.getMonth() + 1).padStart(2, '0')}`;
             
-            // Feriados Fixos Nacionais
-            const feriadosFixos = [
-                '01/01', // Confraternização Universal
-                '21/04', // Tiradentes
-                '01/05', // Dia do Trabalho
-                '07/09', // Independência do Brasil
-                '12/10', // Nossa Sra. Aparecida
-                '02/11', // Finados
-                '15/11', // Proclamação da República
-                '25/12'  // Natal
-            ];
+            const feriadosFixos = ['01/01', '21/04', '01/05', '07/09', '12/10', '02/11', '15/11', '25/12'];
             if (feriadosFixos.includes(dataString)) return false;
 
-            // Feriados Móveis
             const ano = dataObj.getFullYear();
             const pascoa = obterDataPascoa(ano);
             
@@ -538,20 +535,14 @@
 
             const formataDDMM = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
             
-            const feriadosMoveis = [
-                formataDDMM(sextaSanta),
-                formataDDMM(carnavalSeg),
-                formataDDMM(carnavalTer),
-                formataDDMM(corpusChristi)
-            ];
-
+            const feriadosMoveis = [formataDDMM(sextaSanta), formataDDMM(carnavalSeg), formataDDMM(carnavalTer), formataDDMM(corpusChristi)];
             if (feriadosMoveis.includes(dataString)) return false;
 
             return true;
         }
 
         // =========================================================
-        // 1. CONFIGURAÇÃO FIREBASE
+        // 1. CONFIGURAÇÃO FIREBASE E VARIÁVEIS GLOBAIS
         // =========================================================
         const firebaseConfig = {
             apiKey: "AIzaSyBhiK51VWfa7juHSkYJSKY9wuRViT-3SKk",
@@ -570,7 +561,7 @@
         let descricoesAtuais = ["Academia", "Aluguel", "Cartão de Crédito", "Condomínio", "Conta de Água", "Conta de Luz", "Farmácia", "Freelance", "Gasolina", "Ifood/Delivery", "Internet/TV", "Mensalidade", "Mesada", "Padaria", "Salário", "Supermercado", "Uber/App de Transporte"];
         let chartInstance = null; let chartPizzaInstance = null; let chartDespesasInstance = null; let usuarioAtual = null; let totalLiquidoGlobal = 0;
         
-        let projetarCDI = false; // Controle do botão de projeção
+        let projetarCDI = false; // Controle de projeção universal
 
         // =========================================================
         // 2. LOGIN E AUTENTICAÇÃO
@@ -642,21 +633,32 @@
         // =========================================================
         // 4. LÓGICA CORE, PROJEÇÃO E RENDERIZAÇÃO
         // =========================================================
+        
+        // Ativa/Desativa a projeção simultaneamente em todos os botões e atualiza a interface
         function toggleProjecao() {
             projetarCDI = !projetarCDI;
-            const btn = document.getElementById('btn-projetar');
-            if(projetarCDI) {
-                btn.innerHTML = '⏪ Desfazer Projeção e ver Dados Oficiais';
-                btn.style.backgroundColor = '#dc3545';
-                btn.style.borderColor = '#dc3545';
-            } else {
-                btn.innerHTML = '🔮 Projetar Rendimento até Hoje';
-                btn.style.backgroundColor = '#0f3460';
-                btn.style.borderColor = '#0f3460';
-            }
+            const botoes = document.querySelectorAll('.btn-projetar');
+            botoes.forEach(btn => {
+                if(projetarCDI) {
+                    btn.innerHTML = '⏪ Desfazer Projeção e ver Dados Oficiais';
+                    btn.style.backgroundColor = '#dc3545';
+                    btn.style.borderColor = '#dc3545';
+                } else {
+                    btn.innerHTML = '🔮 Projetar Rendimento até Hoje';
+                    btn.style.backgroundColor = '#0f3460';
+                    btn.style.borderColor = '#0f3460';
+                }
+            });
+            
             processarCarteira();
+            
+            // Garante que o gráfico de linha atualize também caso esteja na tela de gráficos
+            if(document.getElementById('tela-grafico').classList.contains('ativa')) {
+                desenharGrafico();
+            }
         }
 
+        // Obtém o CDI (podendo estender artificialmente até a data atual se a projeção estiver ligada)
         function obterCDIEfetivo() {
             let cdiEfetivo = [...serieCDI];
             if (projetarCDI && serieCDI.length > 0) {
@@ -672,7 +674,7 @@
                     if (ehDiaUtilBancario(dataCursor)) {
                         cdiEfetivo.push({
                             data: `${String(dataCursor.getDate()).padStart(2,'0')}/${String(dataCursor.getMonth()+1).padStart(2,'0')}/${dataCursor.getFullYear()}`,
-                            valor: ultimoDado.valor // Replica o último valor conhecido
+                            valor: ultimoDado.valor 
                         });
                     }
                 }
@@ -721,7 +723,7 @@
                 const isResgatado = !!inv.dataResgate;
                 const [ano, mes, dia] = inv.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
                 
-                let dataFim = projetarCDI ? new Date() : new Date(); // Se não for projeção, pode usar date normal (o CDI base já limitará)
+                let dataFim = projetarCDI ? new Date() : new Date(); 
                 if(isResgatado) {
                     const [rA, rM, rD] = inv.dataResgate.split('-');
                     dataFim = new Date(parseInt(rA), parseInt(rM) - 1, parseInt(rD));
@@ -750,7 +752,6 @@
                 let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5;
                 const rBruto = vAtual - valOriginal; const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
 
-                // SALVA O LÍQUIDO NO OBJETO PARA USO NO GRÁFICO DE PIZZA POSTERIORMENTE
                 inv.liqCalculado = vLiq;
 
                 if(!isResgatado) {
@@ -773,7 +774,6 @@
                 const liquidezDisplay = (inv.liquidez === 'Não') ? '<span style="color:#dc3545; font-weight:bold;">Não</span>' : '<span style="color:#28a745; font-weight:bold;">Sim</span>';
                 const vencimentoDisplay = inv.vencimento ? inv.vencimento.split('-').reverse().join('/') : '-';
 
-                // Usando atributos data-* para os totais dinâmicos calcularem de forma exata depois
                 corpoTabela.innerHTML += `<tr data-val-inicial="${valOriginal}" data-taxa="${parseFloat(inv.taxa)}" data-ir="${ir}" data-val-bruto="${vAtual}" data-val-liquido="${vLiq}" ${isResgatado ? 'style="background-color: #e9ecef; opacity: 0.8;"' : ''}>
                     <td><b>${nomeBanco}</b>${strStatus}</td>
                     <td>${dia}/${mes}/${ano}</td>
@@ -835,7 +835,6 @@
 
             renderizarCardsBancos(totaisBancos); atualizarFiltroGrafico(); atualizarGraficoPizza(); renderizarMetas();
             
-            // Calcula e renderiza a barra de total da tabela na hora que carrega a página
             calcularTotaisInvestimentos();
         }
 
@@ -906,7 +905,7 @@
             const rows = document.querySelectorAll('#corpo-tabela tr');
 
             rows.forEach(row => {
-                if (!row.hasAttribute('data-val-inicial')) return; // ignora linhas de alerta
+                if (!row.hasAttribute('data-val-inicial')) return; 
 
                 let mostrarLinha = true;
                 inputs.forEach((input, index) => {
@@ -924,11 +923,9 @@
                 row.style.display = mostrarLinha ? '' : 'none';
             });
 
-            // Recalcula os totais usando a nova visualização filtrada
             calcularTotaisInvestimentos();
         }
 
-        // Cálculo Dinâmico de Totais da Tabela de Investimentos
         function calcularTotaisInvestimentos() {
             const rows = document.querySelectorAll('#corpo-tabela tr');
             let sumInicial = 0, sumBruto = 0, sumLiquido = 0;
@@ -936,7 +933,6 @@
             let countVisible = 0;
 
             rows.forEach(row => {
-                // Se a linha estiver visível e contiver dados válidos, some na conta global
                 if (row.style.display !== 'none' && row.hasAttribute('data-val-inicial')) {
                     const vIni = parseFloat(row.getAttribute('data-val-inicial')) || 0;
                     const vBru = parseFloat(row.getAttribute('data-val-bruto')) || 0;
@@ -959,7 +955,6 @@
                 return;
             }
 
-            // Cálculos de Média Ponderada
             const taxaMedia = sumBruto > 0 ? (sumBrutoVezesTaxa / sumBruto) : 0;
             const irMedio = sumBruto > 0 ? (sumBrutoVezesIR / sumBruto) : 0;
 
@@ -1009,7 +1004,6 @@
             const rows = document.querySelectorAll('#corpo-tabela-transacoes tr');
 
             rows.forEach(row => {
-                // Ignora linhas de agrupamento (mes/ano) que têm menos células
                 if(row.cells.length < 5) return; 
 
                 let mostrarLinha = true;
@@ -1146,6 +1140,8 @@
             
             let cartProc = bSel !== 'todos' ? mixLinhaTempo.filter(i => (i.banco || "Não Informado") === bSel) : mixLinhaTempo; 
             const ord = [...cartProc].sort((a, b) => new Date(a.data) - new Date(b.data)); 
+            
+            // Aqui o gráfico utiliza o CDI Efetivo (que já inclui a projeção se estiver ativa)
             const cdiEfetivo = obterCDIEfetivo();
             const cdiF = cdiEfetivo.map(i => { const [d,m,y] = i.data.split('/'); return { dataObj: new Date(y, m-1, d), valor: parseFloat(i.valor)/100 }; }); 
             let lab = [], bru = [], liq = [], ativ = [], idx = 0;
