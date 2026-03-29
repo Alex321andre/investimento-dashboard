@@ -159,6 +159,7 @@
                 <div><h3 style="margin-bottom: 15px; color: #1a1a2e;">Patrimônio por Instituição</h3><div class="bancos-grid" id="container-resumo-bancos"></div></div>
                 <div class="card" style="margin-top:0;">
                     <h3 style="text-align: center; margin-bottom: 10px;">Distribuição da Carteira</h3>
+                    
                     <div style="text-align: center; margin-bottom: 15px;">
                         <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Liquidez Diária:</label>
                         <select id="filtro-liquidez-pizza" onchange="atualizarGraficoPizza()" style="width: auto; padding: 5px; font-size: 0.9em; border-radius: 5px; border: 1px solid #ccc; margin-left: 5px; outline: none;">
@@ -167,7 +168,8 @@
                             <option value="Não">Não</option>
                         </select>
                     </div>
-                    <div style="height: 350px; display: flex; justify-content: center; position: relative;"><canvas id="graficoPizza"></canvas></div>
+
+                    <div style="height: 250px; display: flex; justify-content: center; position: relative;"><canvas id="graficoPizza"></canvas></div>
                 </div>
             </div>
             
@@ -182,6 +184,7 @@
                     <button class="btn-acao header-btn" style="margin: 0; width: auto;" onclick="toggleFormInvestimento()">+ Novo Investimento</button>
                 </div>
             </div>
+
             <form id="form-investimento" style="display:none; animation: fadeIn 0.3s ease-in-out;" onsubmit="adicionarInvestimento(event)">
                 <h3 style="margin-bottom: 15px; color: #1a1a2e; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Registrar Aplicação</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
@@ -194,6 +197,7 @@
                     <button type="submit" style="margin-top: 0;">Salvar Investimento</button>
                 </div>
             </form>
+
             <div class="tabela-container">
                 <table id="tabela-resultados">
                     <thead>
@@ -222,8 +226,10 @@
                 <h2>Controle de Caixa (Entradas e Saídas)</h2>
                 <button class="btn-acao header-btn" style="margin: 0; width: auto;" onclick="toggleFormTransacao()">+ Nova Transação</button>
             </div>
+            
             <form id="form-transacao" onsubmit="adicionarTransacao(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.3s ease-in-out; margin-bottom: 20px;">
                 <div style="grid-column: 1 / -1;"><h3 style="font-size: 1.1em; color: #1a1a2e; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Registrar Movimentação</h3></div>
+                
                 <div><label>Tipo:</label><select id="trans-tipo"><option value="despesa">Saída (Despesa)</option><option value="entrada">Entrada (Receita)</option></select></div>
                 <div><label>Descrição:</label><div style="display: flex; gap: 5px;"><select id="trans-desc" style="flex: 1;" required></select><button type="button" class="btn-acao secundario" style="width: auto; padding: 10px; margin: 0;" onclick="abrirModalGerenciador('descricoes')" title="Gerenciar Descrições">⚙️</button></div></div>
                 <div><label>Categoria:</label><div style="display: flex; gap: 5px;"><select id="trans-cat" style="flex: 1;" required></select><button type="button" class="btn-acao secundario" style="width: auto; padding: 10px; margin: 0;" onclick="abrirModalGerenciador('categorias')" title="Gerenciar Categorias">⚙️</button></div></div>
@@ -231,15 +237,18 @@
                 <div><label>Valor (R$):</label><input type="number" id="trans-valor" step="0.01" required></div>
                 <button type="submit" style="margin-top:0;">Salvar Transação</button>
             </form>
+
             <div class="controles-grafico" style="margin-top: 20px; justify-content: flex-start;">
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Mês:</label><select id="filtro-mes-trans" onchange="renderizarTransacoes()"><option value="todos">Todos</option><option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Ano:</label><select id="filtro-ano-trans" onchange="renderizarTransacoes()"><option value="todos">Todos</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Data Exata:</label><input type="date" id="filtro-data-trans" onchange="renderizarTransacoes()"></div>
+                
                 <div class="box-total-despesas">
                     <span style="font-size: 0.85em; color: #666; font-weight: bold;">Saldo Visível (Filtro):</span><br>
                     <strong id="total-trans-filtrado" style="font-size: 1.3em;">R$ 0,00</strong>
                 </div>
             </div>
+
             <div class="tabela-container" style="margin-top: 0;">
                 <table id="tabela-transacoes">
                     <thead>
@@ -265,6 +274,7 @@
                 </div>
             </div>
             <p style="margin-top: 5px; margin-bottom: 15px; color: #666;">Crie uma caixinha e vá depositando seus aportes nela. Tudo rende CDI e vai para o seu Dashboard!</p>
+            
             <form id="form-meta" onsubmit="adicionarMeta(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.3s ease-in-out; margin-bottom: 20px;">
                 <div style="grid-column: 1 / -1;"><h3 style="font-size: 1.1em; color: #1a1a2e; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Nova Caixinha e Primeira Aplicação</h3></div>
                 <div><label>Nome (Ex: Viagem):</label><input type="text" id="meta-nome" required></div>
@@ -354,6 +364,7 @@
         <section id="tela-dados" class="tela">
             <h2>Importar e Exportar Dados</h2>
             <p style="color: #666; margin-bottom: 20px;">Gerencie seus registros de Investimentos e Transações separadamente em lote.</p>
+            
             <h3 style="color: #0f3460; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 5px; margin-top: 10px;">💼 Dados de Investimentos</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
                 <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
@@ -362,6 +373,7 @@
                     <input type="file" id="input-csv-inv" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" onclick="importarCSV('investimentos')">Carregar CSV Investimentos</button>
                 </div>
+
                 <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
                     <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato: <strong>banco;data;valor;taxa;liquidez;vencimento</strong></p>
@@ -369,6 +381,7 @@
                     <textarea id="input-csv-texto-inv" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
                     <button type="button" class="btn-acao secundario" style="background-color: #0f3460;" onclick="importarCSVTexto('investimentos')">Importar Texto Colado</button>
                 </div>
+
                 <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📤 Exportar Relatórios</h3>
                     <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Gere um arquivo ou envie seus ativos por e-mail.</p>
@@ -376,6 +389,7 @@
                     <button type="button" class="btn-acao secundario" onclick="baixarCSV('investimentos')" style="font-size:0.95em;">📥 Baixar Planilha CSV</button>
                 </div>
             </div>
+
             <h3 style="color: #e94560; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 5px;">💸 Dados de Transações (Caixa)</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
@@ -384,6 +398,7 @@
                     <input type="file" id="input-csv-trans" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSV('transacoes')">Carregar CSV Transações</button>
                 </div>
+
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
                     <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato 4 colunas: <strong>descrição;categoria;data;valor</strong></p>
@@ -391,6 +406,7 @@
                     <textarea id="input-csv-texto-trans" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSVTexto('transacoes')">Importar Texto Colado</button>
                 </div>
+
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📤 Exportar Relatórios</h3>
                     <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Gere um arquivo ou envie seu fluxo de caixa por e-mail.</p>
@@ -398,6 +414,7 @@
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560; font-size:0.95em;" onclick="baixarCSV('transacoes')">📥 Baixar Planilha CSV</button>
                 </div>
             </div>
+            
             <div style="margin-top: 40px; text-align: center; border-top: 1px solid #ccc; padding-top: 30px;">
                 <button class="btn-limpar" style="width: auto; padding: 10px 30px;" onclick="limparTudo()">🗑️ Limpar Todos os Dados da Conta</button>
                 <p style="font-size: 0.8em; color: #666; margin-top: 10px;">Atenção: Esta ação apagará permanentemente todos os investimentos, caixinhas e transações.</p>
@@ -424,10 +441,10 @@
         // =========================================================
         Chart.register(ChartDataLabels);
 
+        // Transformei as "linhas diretoras" num plugin fechado que passamos só pro gráfico que queremos
         const pluginLinhasDiretoras = {
             id: 'pluginLinhasDiretoras',
             afterDraw(chart) {
-                // Desenha as setas apenas nos gráficos de Pizza/Rosca
                 if (chart.config.type !== 'doughnut' && chart.config.type !== 'pie') return;
                 
                 const ctx = chart.ctx;
@@ -471,7 +488,6 @@
                 });
             }
         };
-        Chart.register(pluginLinhasDiretoras);
 
         // =========================================================
         // 0. FORMATADORES GLOBAIS E REGRAS B3
@@ -904,8 +920,10 @@
         function calcularComparacao() { const v = parseFloat(document.getElementById('comp-valor').value)||0, dias = parseInt(document.getElementById('comp-dias').value)||1, tCdb = parseFloat(document.getElementById('comp-cdb').value)/100, tLci = parseFloat(document.getElementById('comp-lci').value)/100, cdiAno = parseFloat(document.getElementById('comp-cdi').value)/100; const rCDB = cdiAno * tCdb, rLCI = cdiAno * tLci; let ir = 15; if (dias<=180) ir=22.5; else if(dias<=360) ir=20; else if(dias<=720) ir=17.5; const bCDB = v * (rCDB * (dias/365)), lCDB = bCDB - (bCDB * (ir/100)), lLCI = v * (rLCI * (dias/365)); document.getElementById('comp-res-cdb').innerText = fMoeda(v+lCDB); document.getElementById('comp-res-lci').innerText = fMoeda(v+lLCI); const txt = document.getElementById('comp-vencedor'); if(lCDB>lLCI){txt.innerText="🏆 O CDB é a melhor opção!";txt.style.color="#1a1a2e";}else if(lLCI>lCDB){txt.innerText="🏆 A LCI/LCA é a melhor opção!";txt.style.color="#28a745";}else{txt.innerText="⚖️ Ambos rendem igual.";txt.style.color="#666";} document.getElementById('resultado-comparador').style.display = 'block'; }
 
         // =========================================================
-        // 8. GRÁFICOS E FILTROS DINÂMICOS (COM SETAS E LABELS FORA)
+        // 8. GRÁFICOS E FILTROS DINÂMICOS (SEPARADOS)
         // =========================================================
+        
+        // Gráfico do Dashboard - Clássico (rótulos internos, sem plugin de linhas)
         function atualizarGraficoPizza() {
             const filtroLiquidez = document.getElementById('filtro-liquidez-pizza').value;
             let totaisPizza = {}; let totalGeralPizza = 0;
@@ -934,8 +952,7 @@
             const labelsComPerc = bancos.map(b => { 
                 let val = totaisPizza[b];
                 let perc = totalGeralPizza > 0 ? ((val / totalGeralPizza) * 100).toFixed(1) : 0; 
-                // A formatação do texto para 3 linhas na caixinha
-                return `${b}\n${fMoeda(val)}\n(${perc}%)`; 
+                return `${b} - ${fMoeda(val)} (${perc}%)`; 
             });
 
             chartPizzaInstance = new Chart(ctx, { 
@@ -948,29 +965,35 @@
                     }] 
                 }, 
                 options: { 
-                    layout: { padding: 65 }, // Previne que os textos fora do gráfico sejam cortados pela tela
+                    layout: { padding: 10 }, // Layout normal para este gráfico
                     responsive: true, 
                     maintainAspectRatio: false, 
                     plugins: { 
-                        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12 } }, 
+                        legend: { position: 'right', labels: { font: { size: 11 } } }, 
                         tooltip: { callbacks: { label: function(context) { return ` ${context.label.replace(/\n/g, ' ')}`; } } },
                         datalabels: {
                             color: '#fff',
-                            backgroundColor: (context) => context.dataset.backgroundColor[context.dataIndex],
+                            backgroundColor: 'rgba(26, 26, 46, 0.85)',
                             borderRadius: 4,
                             padding: 4,
-                            anchor: 'end',
-                            align: 'end',
-                            offset: 25, // Empurra o texto para fora, exatamente onde a linha termina
-                            font: { weight: 'bold', size: 9 },
+                            anchor: 'center', // Texto no centro da fatia
+                            align: 'center',
+                            offset: 0,
+                            font: { weight: 'bold', size: 10 },
                             textAlign: 'center',
                             display: function(context) {
                                 let dataset = context.dataset;
                                 let value = dataset.data[context.dataIndex];
                                 let total = dataset.data.reduce((a,b) => a + b, 0);
-                                return total > 0 && (value / total) >= 0.03; // Esconde textos de fatias muito pequenas
+                                return total > 0 && (value / total) >= 0.05; // Mostra apenas se fatia for >= 5%
                             },
-                            formatter: (value, context) => { return context.chart.data.labels[context.dataIndex]; }
+                            formatter: (value, context) => {
+                                const label = context.chart.data.labels[context.dataIndex];
+                                // Separa Nome e Porcentagem
+                                const match = label.match(/^(.*?)\s-\s.*?(\(.*?\))$/);
+                                if(match) { return `${match[1]}\n${match[2].replace(/[()]/g, '')}`; }
+                                return null;
+                            }
                         }
                     } 
                 } 
@@ -1028,6 +1051,7 @@
             });
         }
 
+        // Gráfico de Despesas da aba "Gráficos" - Esse recebe as linhas diretoras!
         function desenharGraficoDespesas() {
             const ctx = document.getElementById('graficoDespesasAnalise').getContext('2d');
             if (chartDespesasInstance) chartDespesasInstance.destroy();
@@ -1066,7 +1090,6 @@
             const labelsComInfo = labelsIniciais.map(l => { 
                 let val = Math.abs(agregacao[l]);
                 let perc = totalGeral > 0 ? ((val / totalGeral) * 100).toFixed(1) : 0; 
-                // A formatação do texto para 3 linhas na caixinha
                 return `${l}\n${fMoeda(val)}\n(${perc}%)`; 
             });
 
@@ -1074,6 +1097,7 @@
             chartDespesasInstance = new Chart(ctx, { 
                 type: 'doughnut', 
                 data: { labels: labelsComInfo, datasets: [{ data: data, backgroundColor: colors }] }, 
+                plugins: [pluginLinhasDiretoras], // <---- O Plugin das setas só é injetado aqui!
                 options: { 
                     layout: { padding: 65 }, // Previne que os textos fora do gráfico sejam cortados
                     responsive: true, 
