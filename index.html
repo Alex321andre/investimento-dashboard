@@ -159,6 +159,7 @@
                 <div><h3 style="margin-bottom: 15px; color: #1a1a2e;">Patrimônio por Instituição</h3><div class="bancos-grid" id="container-resumo-bancos"></div></div>
                 <div class="card" style="margin-top:0;">
                     <h3 style="text-align: center; margin-bottom: 10px;">Distribuição da Carteira</h3>
+                    
                     <div style="text-align: center; margin-bottom: 15px;">
                         <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Liquidez Diária:</label>
                         <select id="filtro-liquidez-pizza" onchange="atualizarGraficoPizza()" style="width: auto; padding: 5px; font-size: 0.9em; border-radius: 5px; border: 1px solid #ccc; margin-left: 5px; outline: none;">
@@ -167,6 +168,7 @@
                             <option value="Não">Não</option>
                         </select>
                     </div>
+
                     <div style="height: 250px; display: flex; justify-content: center; position: relative;"><canvas id="graficoPizza"></canvas></div>
                 </div>
             </div>
@@ -238,7 +240,7 @@
 
             <div class="controles-grafico" style="margin-top: 20px; justify-content: flex-start;">
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Mês:</label><select id="filtro-mes-trans" onchange="renderizarTransacoes()"><option value="todos">Todos</option><option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
-                <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Ano:</label><select id="filtro-ano-trans" onchange="renderizarTransacoes()"><option value="todos">Todos</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
+                <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Ano:</label><select id="filtro-ano-trans" onchange="renderizarTransacoes()"><option value="todos">Todos</option></select></div>
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Data Exata:</label><input type="date" id="filtro-data-trans" onchange="renderizarTransacoes()"></div>
                 
                 <div class="box-total-despesas">
@@ -343,7 +345,7 @@
                 <h3 style="margin-bottom: 15px; color: #1a1a2e; border-bottom: 1px solid #ddd; padding-bottom: 5px;">📉 Composição de Transações</h3>
                 <div class="controles-grafico" style="justify-content: center; font-size: 0.9em; padding: 10px;">
                     <div><label>Mês:</label><select id="filtro-graf-mes-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option></select></div>
-                    <div><label>Ano:</label><select id="filtro-graf-ano-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select></div>
+                    <div><label>Ano:</label><select id="filtro-graf-ano-desp" onchange="desenharGraficoDespesas()"><option value="todos">Todos</option></select></div>
                     
                     <div><label>Cat:</label><select id="filtro-graf-cat-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
                     <div><label>Desc:</label><select id="filtro-graf-desc-desp" onchange="desenharGraficoDespesas()"><option value="todas">Todas</option></select></div>
@@ -358,9 +360,7 @@
                     </div>
                 </div>
                 
-                <div id="container-grafico-despesas" style="height: 400px; display: flex; justify-content: center; position: relative; margin-top: 10px;">
-                    <canvas id="graficoDespesasAnalise"></canvas>
-                </div>
+                <div id="container-grafico-despesas" style="height: 400px; display: flex; justify-content: center; position: relative; margin-top: 10px;"><canvas id="graficoDespesasAnalise"></canvas></div>
                 <div id="legenda-grafico-despesas" style="margin-top: 20px; text-align: center; font-size: 1.1em; font-weight: bold; color: #1a1a2e; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid transparent;"></div>
             </div>
         </section>
@@ -524,15 +524,15 @@
         let projetarCDI = false;
 
         // =========================================================
-        // 2. LOGIN E AUTENTICAÇÃO
+        // 2. LOGIN E AUTENTICAÇÃO E ATUALIZAÇÃO DINÂMICA DE ANOS
         // =========================================================
         auth.onAuthStateChanged(user => {
             const cab = document.getElementById('cabecalho-app');
             if (user) {
                 usuarioAtual = user; document.getElementById('user-display-email').innerText = `Logado: ${user.email}`; cab.style.display = 'block';
                 const m = (new Date().getMonth() + 1).toString().padStart(2, '0'); const a = new Date().getFullYear().toString();
-                document.getElementById('filtro-mes-trans').value = m; document.getElementById('filtro-ano-trans').value = a;
-                document.getElementById('filtro-graf-mes-desp').value = m; document.getElementById('filtro-graf-ano-desp').value = a;
+                document.getElementById('filtro-mes-trans').value = m; 
+                // O valor do ano será setado após os dados carregarem
                 navegar('tela-dashboard'); carregarDadosDoBanco(); carregarCDI();
             } else {
                 usuarioAtual = null; carteira = []; transacoes = []; listaMetas = []; cab.style.display = 'none';
@@ -551,7 +551,13 @@
         function salvarNoBanco() {
             if (usuarioAtual) {
                 db.collection("usuarios").doc(usuarioAtual.uid).set({ investimentos: carteira, gastos: transacoes, objetivos: listaMetas, categorias: categoriasAtuais, descricoes: descricoesAtuais }, { merge: true })
-                  .then(() => { processarCarteira(); renderizarTransacoes(); atualizarSelectsGerenciador(); if(document.getElementById('tela-grafico').classList.contains('ativa')) desenharGraficoDespesas(); })
+                  .then(() => { 
+                      atualizarFiltrosAnos();
+                      processarCarteira(); 
+                      renderizarTransacoes(); 
+                      atualizarSelectsGerenciador(); 
+                      if(document.getElementById('tela-grafico').classList.contains('ativa')) desenharGraficoDespesas(); 
+                  })
                   .catch(e => alert("Erro ao salvar: " + e));
             }
         }
@@ -569,7 +575,11 @@
                         ac = (doc.data().acessos || 0) + 1;
                     }
                     dRef.set({ acessos: ac }, { merge: true }); document.getElementById('contador-acessos').innerText = `| Visitas: ${ac}`;
-                    processarCarteira(); renderizarTransacoes(); atualizarSelectsGerenciador();
+                    
+                    atualizarFiltrosAnos();
+                    processarCarteira(); 
+                    renderizarTransacoes(); 
+                    atualizarSelectsGerenciador();
                 });
             }
         }
@@ -581,6 +591,40 @@
             let optDesc = ''; descricoesAtuais.sort().forEach(d => optDesc += `<option value="${d}">${d}</option>`);
             [document.getElementById('trans-desc'), document.getElementById('edit-trans-desc')].forEach(s => { if(s) { const val = s.value; s.innerHTML = optDesc; if(descricoesAtuais.includes(val)) s.value = val; }});
             const selDescGraf = document.getElementById('filtro-graf-desc-desp'); let optDescGraf = '<option value="todas">Todas</option>' + optDesc; if(selDescGraf) { const val = selDescGraf.value; selDescGraf.innerHTML = optDescGraf; if(descricoesAtuais.includes(val)) selDescGraf.value = val; }
+        }
+        
+        function atualizarFiltrosAnos() {
+            const anos = new Set();
+            const anoAtual = new Date().getFullYear().toString();
+            anos.add(anoAtual);
+
+            transacoes.forEach(t => {
+                if (t.data) {
+                    const ano = t.data.split('-')[0];
+                    if(ano) anos.add(ano);
+                }
+            });
+
+            const anosOrdenados = Array.from(anos).sort();
+            const selectsIds = ['filtro-ano-trans', 'filtro-graf-ano-desp'];
+            
+            selectsIds.forEach(id => {
+                const select = document.getElementById(id);
+                if (select) {
+                    const valorAnterior = select.value;
+                    let html = '<option value="todos">Todos</option>';
+                    anosOrdenados.forEach(ano => {
+                        html += `<option value="${ano}">${ano}</option>`;
+                    });
+                    select.innerHTML = html;
+                    
+                    if (valorAnterior === 'todos' || anosOrdenados.includes(valorAnterior)) {
+                        select.value = valorAnterior;
+                    } else {
+                        select.value = anoAtual;
+                    }
+                }
+            });
         }
 
         function abrirModalGerenciador(tipo) { document.getElementById('tipo-gerenciador-ativo').value = tipo; document.getElementById('titulo-modal-gerenciador').innerText = tipo === 'categorias' ? "Gerenciar Categorias" : "Gerenciar Descrições"; const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais; const ul = document.getElementById('lista-gerenciador-ui'); ul.innerHTML = ''; lista.sort().forEach((item, index) => { ul.innerHTML += `<li><span>${item}</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="deletarItemGerenciador(${index})" title="Excluir">❌</button></li>`; }); document.getElementById('modal-gerenciador').style.display = 'flex'; }
