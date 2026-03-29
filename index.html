@@ -159,7 +159,6 @@
                 <div><h3 style="margin-bottom: 15px; color: #1a1a2e;">Patrimônio por Instituição</h3><div class="bancos-grid" id="container-resumo-bancos"></div></div>
                 <div class="card" style="margin-top:0;">
                     <h3 style="text-align: center; margin-bottom: 10px;">Distribuição da Carteira</h3>
-                    
                     <div style="text-align: center; margin-bottom: 15px;">
                         <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Liquidez Diária:</label>
                         <select id="filtro-liquidez-pizza" onchange="atualizarGraficoPizza()" style="width: auto; padding: 5px; font-size: 0.9em; border-radius: 5px; border: 1px solid #ccc; margin-left: 5px; outline: none;">
@@ -168,7 +167,6 @@
                             <option value="Não">Não</option>
                         </select>
                     </div>
-
                     <div style="height: 250px; display: flex; justify-content: center; position: relative;"><canvas id="graficoPizza"></canvas></div>
                 </div>
             </div>
@@ -360,7 +358,9 @@
                     </div>
                 </div>
                 
-                <div id="container-grafico-despesas" style="height: 400px; display: flex; justify-content: center; position: relative; margin-top: 10px;"><canvas id="graficoDespesasAnalise"></canvas></div>
+                <div id="container-grafico-despesas" style="height: 400px; display: flex; justify-content: center; position: relative; margin-top: 10px;">
+                    <canvas id="graficoDespesasAnalise"></canvas>
+                </div>
                 <div id="legenda-grafico-despesas" style="margin-top: 20px; text-align: center; font-size: 1.1em; font-weight: bold; color: #1a1a2e; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid transparent;"></div>
             </div>
         </section>
@@ -998,14 +998,22 @@
                 type: 'line', 
                 data: { labels: lab, datasets: [ { label: 'Valor Bruto', data: bru, borderColor: '#0f3460', backgroundColor: 'rgba(15, 52, 96, 0.1)', fill: true, tension: 0.3 }, { label: 'Valor Líquido', data: liq, borderColor: '#e94560', backgroundColor: 'rgba(233, 69, 96, 0.1)', fill: true, tension: 0.3 } ]}, 
                 options: { 
+                    layout: { padding: 10 },
                     responsive: true, 
+                    maintainAspectRatio: false, 
                     interaction: { mode: 'index', intersect: false },
-                    plugins: { datalabels: { display: false } } 
+                    plugins: { datalabels: { display: false } },
+                    scales: {
+                        x: {
+                            ticks: {
+                                align: 'inner' 
+                            }
+                        }
+                    }
                 } 
             });
         }
 
-        // Gráfico Analítico de Despesas
         function desenharGraficoDespesas() {
             const ctx = document.getElementById('graficoDespesasAnalise').getContext('2d');
             if (chartDespesasInstance) chartDespesasInstance.destroy();
@@ -1030,7 +1038,7 @@
             
             let agregacao = {}; 
             let totalVolumePizza = 0; 
-            let saldoLiquidoFiltro = 0; // Novo cálculo inteligente (Entrada - Saída)
+            let saldoLiquidoFiltro = 0;
 
             transacoesFiltradas.forEach(t => { 
                 let chave;
@@ -1050,13 +1058,11 @@
                 saldoLiquidoFiltro += (t.tipo === 'entrada') ? valAbs : -valAbs;
             });
             
-            // Atualiza a legenda inferior com a cor dinâmica dependendo do saldo
             let corSaldo = saldoLiquidoFiltro >= 0 ? '#28a745' : '#dc3545';
             const elLegenda = document.getElementById('legenda-grafico-despesas');
             elLegenda.innerHTML = `Saldo Líquido do Filtro: <span style="color: ${corSaldo};">${fMoeda(saldoLiquidoFiltro)}</span>`;
             elLegenda.style.borderLeftColor = corSaldo; 
             
-            // Ordenação da Legenda: Sempre Entrada primeiro, depois as demais
             const chavesOrdenadas = Object.keys(agregacao).sort((a, b) => {
                 if (a === 'Entrada' && b === 'Saída') return -1;
                 if (a === 'Saída' && b === 'Entrada') return 1;
@@ -1064,7 +1070,6 @@
                 return a.localeCompare(b);
             });
 
-            // Ajusta a altura da div para caber todos os itens em UMA coluna sem quebrar
             const containerGrafico = document.getElementById('container-grafico-despesas');
             const alturaNecessaria = Math.max(400, chavesOrdenadas.length * 30);
             containerGrafico.style.height = alturaNecessaria + 'px';
@@ -1136,7 +1141,7 @@
         
         function baixarCSV(tipo) { 
             if(tipo === 'investimentos') {
-                if(carteira.length===0) return alert("Sem dados de investments."); 
+                if(carteira.length===0) return alert("Sem dados de investimentos."); 
                 let csv="banco;data;valor;taxa;liquidez;vencimento\n"; 
                 carteira.forEach(i=>{ const val = i.valor.toString().replace('.', ','); const tx = i.taxa.toString().replace('.', ','); csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${i.data};${val};${tx};${i.liquidez||'Sim'};${i.vencimento||''}\n`;}); 
                 const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); 
