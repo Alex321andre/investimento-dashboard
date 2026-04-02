@@ -94,7 +94,7 @@
         .barra-progresso { background-color: #e94560; height: 100%; border-radius: 10px; transition: width 0.5s ease-in-out; }
         .meta-info { display: flex; justify-content: space-between; font-size: 0.95em; font-weight: bold; align-items: center;}
         
-        .box-total-despesas { text-align: right; background: #fff; padding: 10px 15px; border-radius: 5px; border-left: 4px solid #17a2b8; margin-left: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .box-total-despesas { background: #fff; padding: 10px 15px; border-radius: 5px; border-left: 4px solid #17a2b8; margin-left: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
         @media (max-width: 600px) { .box-total-despesas { margin-left: 0; width: 100%; text-align: center; } }
         .badge-entrada { background:#28a745; color:white; padding:3px 8px; border-radius:10px; font-size:0.8em; font-weight:bold; }
         .badge-saida { background:#dc3545; color:white; padding:3px 8px; border-radius:10px; font-size:0.8em; font-weight:bold; }
@@ -159,7 +159,6 @@
                 <div><h3 style="margin-bottom: 15px; color: #1a1a2e;">Patrimônio por Instituição</h3><div class="bancos-grid" id="container-resumo-bancos"></div></div>
                 <div class="card" style="margin-top:0;">
                     <h3 style="text-align: center; margin-bottom: 10px;">Distribuição da Carteira</h3>
-                    
                     <div style="text-align: center; margin-bottom: 15px;">
                         <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Liquidez Diária:</label>
                         <select id="filtro-liquidez-pizza" onchange="atualizarGraficoPizza()" style="width: auto; padding: 5px; font-size: 0.9em; border-radius: 5px; border: 1px solid #ccc; margin-left: 5px; outline: none;">
@@ -168,7 +167,6 @@
                             <option value="Não">Não</option>
                         </select>
                     </div>
-
                     <div style="height: 250px; display: flex; justify-content: center; position: relative;"><canvas id="graficoPizza"></canvas></div>
                 </div>
             </div>
@@ -243,10 +241,8 @@
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Ano:</label><select id="filtro-ano-trans" onchange="renderizarTransacoes()"><option value="todos">Todos</option></select></div>
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Data Exata:</label><input type="date" id="filtro-data-trans" onchange="renderizarTransacoes()"></div>
                 
-                <div class="box-total-despesas">
-                    <span style="font-size: 0.85em; color: #666; font-weight: bold;">Saldo Visível (Filtro):</span><br>
-                    <strong id="total-trans-filtrado" style="font-size: 1.3em;">R$ 0,00</strong>
-                </div>
+                <div class="box-total-despesas" id="box-totais-transacoes" style="flex-grow: 1;">
+                    </div>
             </div>
 
             <div class="tabela-container" style="margin-top: 0;">
@@ -532,7 +528,6 @@
                 usuarioAtual = user; document.getElementById('user-display-email').innerText = `Logado: ${user.email}`; cab.style.display = 'block';
                 const m = (new Date().getMonth() + 1).toString().padStart(2, '0'); const a = new Date().getFullYear().toString();
                 document.getElementById('filtro-mes-trans').value = m; 
-                // O valor do ano será setado após os dados carregarem
                 navegar('tela-dashboard'); carregarDadosDoBanco(); carregarCDI();
             } else {
                 usuarioAtual = null; carteira = []; transacoes = []; listaMetas = []; cab.style.display = 'none';
@@ -861,7 +856,11 @@
         function adicionarTransacao(e) { e.preventDefault(); transacoes.push({ id: Date.now(), tipo: document.getElementById('trans-tipo').value, desc: document.getElementById('trans-desc').value, cat: document.getElementById('trans-cat').value, data: document.getElementById('trans-data').value, valor: parseFloat(document.getElementById('trans-valor').value) }); document.getElementById('trans-valor').value = ''; toggleFormTransacao(); salvarNoBanco(); }
         function renderizarTransacoes() {
             const corpo = document.getElementById('corpo-tabela-transacoes'); corpo.innerHTML = '';
-            let tMesDash = 0, tFilt = 0; const mAt = new Date().getMonth() + 1, aAt = new Date().getFullYear();
+            
+            let tMesDash = 0; 
+            let tFiltEntrada = 0, tFiltSaida = 0, tFiltSaldo = 0; // Contadores independentes para o filtro
+            
+            const mAt = new Date().getMonth() + 1, aAt = new Date().getFullYear();
             const fMes = document.getElementById('filtro-mes-trans').value, fAno = document.getElementById('filtro-ano-trans').value, fData = document.getElementById('filtro-data-trans').value;
             const tOrd = [...transacoes].sort((a,b) => new Date(b.data) - new Date(a.data)); let uGrp = "";
 
@@ -876,14 +875,47 @@
                 if (fData !== "") { if (t.data !== fData) mostrar = false; } else { if (fMes !== 'todos' && mes !== fMes) mostrar = false; if (fAno !== 'todos' && ano !== fAno) mostrar = false; }
                 
                 if (mostrar) {
-                    tFilt += (valAbsoluto * mult);
-                    if (fData === "" && (fMes === 'todos' || fAno === 'todos')) { const grpAtual = `${mes}/${ano}`; if (grpAtual !== uGrp) { corpo.innerHTML += `<tr style="background-color:#f1f3f5;"><td colspan="5" style="text-align:center; font-weight:bold;">🗓️ ${mes}/${ano}</td></tr>`; uGrp = grpAtual; } }
+                    if (tpReal === 'entrada') tFiltEntrada += valAbsoluto;
+                    else tFiltSaida += valAbsoluto;
+                    
+                    tFiltSaldo += (valAbsoluto * mult);
+
+                    if (fData === "" && (fMes === 'todos' || fAno === 'todos')) { 
+                        const grpAtual = `${mes}/${ano}`; 
+                        if (grpAtual !== uGrp) { 
+                            // Calcula Entradas e Saídas do Mês Específico da aba
+                            let tEntMes = 0, tSaiMes = 0;
+                            tOrd.forEach(tx => {
+                                const [txA, txM, txD] = tx.data.split('-');
+                                if(txM === mes && txA === ano) {
+                                    const txTp = tx.tipo || 'despesa';
+                                    if(txTp === 'entrada') tEntMes += Math.abs(tx.valor);
+                                    else tSaiMes += Math.abs(tx.valor);
+                                }
+                            });
+
+                            corpo.innerHTML += `<tr style="background-color:#f1f3f5;"><td colspan="5" style="text-align:center; font-weight:bold;">🗓️ ${mes}/${ano} <span style="margin-left: 20px; color:#28a745; font-size: 0.9em;">+ ${fMoeda(tEntMes)}</span> <span style="margin-left: 15px; color:#dc3545; font-size: 0.9em;">- ${fMoeda(tSaiMes)}</span></td></tr>`; 
+                            uGrp = grpAtual; 
+                        } 
+                    }
                     const cVal = tpReal === 'entrada' ? '#28a745' : '#dc3545'; const sin = tpReal === 'entrada' ? '+' : '-'; const bdg = tpReal === 'entrada' ? 'badge-entrada' : 'badge-saida';
                     corpo.innerHTML += `<tr><td>${t.desc}</td><td><span class="${bdg}">${t.cat||'Sem Categoria'}</span></td><td>${dia}/${mes}/${ano}</td><td style="color:${cVal}; font-weight:bold;">${sin} ${fMoeda(valAbsoluto)}</td><td style="white-space:nowrap;"><button class="btn-editar" onclick="abrirEdicaoTransacao(${t.id})">Editar</button><button class="btn-excluir" onclick="deletarItem(${t.id}, 'trans')">Excluir</button></td></tr>`;
                 }
             });
             const dFx = document.getElementById('dash-fluxo'); dFx.innerText = fMoeda(tMesDash); dFx.style.color = tMesDash >= 0 ? '#28a745' : '#dc3545';
-            const dFlt = document.getElementById('total-trans-filtrado'); dFlt.innerText = fMoeda(tFilt); dFlt.style.color = tFilt >= 0 ? '#28a745' : '#dc3545';
+            
+            // Renderiza as 3 caixinhas de total no cabeçalho
+            const boxTotais = document.getElementById('box-totais-transacoes');
+            if(boxTotais) {
+                boxTotais.innerHTML = `
+                    <div style="font-size: 0.85em; color: #666; font-weight: bold; margin-bottom: 5px;">Totais Visíveis (Filtro):</div>
+                    <div style="display: flex; gap: 15px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+                        <div style="color: #28a745; text-align: right;">Entradas:<br><strong style="font-size: 1.1em;">${fMoeda(tFiltEntrada)}</strong></div>
+                        <div style="color: #dc3545; text-align: right;">Saídas:<br><strong style="font-size: 1.1em;">${fMoeda(tFiltSaida)}</strong></div>
+                        <div style="color: ${tFiltSaldo >= 0 ? '#28a745' : '#dc3545'}; text-align: right; border-left: 2px solid #ccc; padding-left: 15px;">Saldo Líquido:<br><strong style="font-size: 1.3em;">${fMoeda(tFiltSaldo)}</strong></div>
+                    </div>
+                `;
+            }
         }
         function filtrarTabelaTransacoes() { const inputs = document.querySelectorAll('#tabela-transacoes thead input'); const rows = document.querySelectorAll('#corpo-tabela-transacoes tr'); rows.forEach(row => { if(row.cells.length < 5) return; let mostrarLinha = true; inputs.forEach((input, index) => { const textoFiltro = input.value.toLowerCase(); if (textoFiltro !== '') { const celula = row.cells[index]; if (celula) { if (!celula.textContent.toLowerCase().includes(textoFiltro)) { mostrarLinha = false; } } } }); row.style.display = mostrarLinha ? '' : 'none'; }); }
         function abrirEdicaoTransacao(id) { const t = transacoes.find(i => i.id === id); if(t) { document.getElementById('edit-trans-id').value = t.id; document.getElementById('edit-trans-tipo').value = t.tipo || 'despesa'; document.getElementById('edit-trans-data').value = t.data; document.getElementById('edit-trans-valor').value = Math.abs(t.valor); const selDesc = document.getElementById('edit-trans-desc'); if(!descricoesAtuais.includes(t.desc)) selDesc.innerHTML += `<option value="${t.desc}">${t.desc}</option>`; selDesc.value = t.desc; const selCat = document.getElementById('edit-trans-cat'); if(!categoriasAtuais.includes(t.cat)) selCat.innerHTML += `<option value="${t.cat}">${t.cat}</option>`; selCat.value = t.cat; document.getElementById('modal-editar-trans').style.display = 'flex'; } }
@@ -1083,11 +1115,15 @@
             let agregacao = {}; 
             let totalVolumePizza = 0; 
             let saldoLiquidoFiltro = 0;
+            let totEntradasGraf = 0;
+            let totSaidasGraf = 0;
 
             transacoesFiltradas.forEach(t => { 
+                const tpReal = t.tipo || 'despesa';
                 let chave;
+                
                 if (fAgrupar === 'tipo') {
-                    chave = (t.tipo === 'entrada') ? 'Entrada' : 'Saída';
+                    chave = (tpReal === 'entrada') ? 'Entrada' : 'Saída';
                 } else if (fAgrupar === 'cat') {
                     chave = t.cat || 'Sem Categoria';
                 } else {
@@ -1095,16 +1131,29 @@
                 }
                 
                 const valAbs = Math.abs(t.valor);
-                if (!agregacao[chave]) agregacao[chave] = { val: 0, tipo: t.tipo === 'entrada' ? 'entrada' : 'despesa' }; 
+                if (!agregacao[chave]) agregacao[chave] = { val: 0, tipo: tpReal }; 
                 agregacao[chave].val += valAbs; 
                 
                 totalVolumePizza += valAbs; 
-                saldoLiquidoFiltro += (t.tipo === 'entrada') ? valAbs : -valAbs;
+                
+                if (tpReal === 'entrada') {
+                    totEntradasGraf += valAbs;
+                    saldoLiquidoFiltro += valAbs;
+                } else {
+                    totSaidasGraf += valAbs;
+                    saldoLiquidoFiltro -= valAbs;
+                }
             });
             
             let corSaldo = saldoLiquidoFiltro >= 0 ? '#28a745' : '#dc3545';
             const elLegenda = document.getElementById('legenda-grafico-despesas');
-            elLegenda.innerHTML = `Saldo Líquido do Filtro: <span style="color: ${corSaldo};">${fMoeda(saldoLiquidoFiltro)}</span>`;
+            elLegenda.innerHTML = `
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px;">
+                    <div><span style="color: #666; font-size: 0.9em;">Total Entradas</span><br><span style="color: #28a745; font-size: 1.2em;">${fMoeda(totEntradasGraf)}</span></div>
+                    <div><span style="color: #666; font-size: 0.9em;">Total Saídas</span><br><span style="color: #dc3545; font-size: 1.2em;">${fMoeda(totSaidasGraf)}</span></div>
+                    <div style="border-left: 2px solid #ccc; padding-left: 15px;"><span style="color: #666; font-size: 0.9em;">Saldo Líquido (Filtro)</span><br><span style="color: ${corSaldo}; font-size: 1.2em;">${fMoeda(saldoLiquidoFiltro)}</span></div>
+                </div>
+            `;
             elLegenda.style.borderLeftColor = corSaldo; 
             
             const chavesOrdenadas = Object.keys(agregacao).sort((a, b) => {
@@ -1115,7 +1164,7 @@
             });
 
             const containerGrafico = document.getElementById('container-grafico-despesas');
-            const alturaNecessaria = Math.max(400, chavesOrdenadas.length * 30);
+            const alturaNecessaria = Math.max(350, chavesOrdenadas.length * 30);
             containerGrafico.style.height = alturaNecessaria + 'px';
 
             const labelsComInfo = chavesOrdenadas.map(l => { 
