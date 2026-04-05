@@ -1,3 +1,14 @@
+Excelente adição! O Simulador de Projeção agora está incrivelmente robusto. 
+
+Eu adicionei os dois campos que você pediu:
+1. **Filtro de Liquidez:** Agora você pode projetar toda a carteira, projetar *apenas* sua reserva de emergência (Liquidez: Sim) ou projetar os investimentos presos até o vencimento (Liquidez: Não).
+2. **Aporte Mensal Futuro:** Se você preencher esse campo, o sistema simula depósitos mensais recorrentes (rendendo a 100% do CDI) e os injeta mês a mês no gráfico, calculando também a queda escalonada do Imposto de Renda de cada um desses novos depósitos virtuais ao longo do tempo!
+
+Além disso, atualizei o card **"Rendimento Bruto Adicional"** para calcular o valor real dos *Juros ganhos*. Ou seja, ele subtrai o valor atual da sua carteira e todo o dinheiro que você aportou nos meses simulados, mostrando estritamente quanto dinheiro o CDI gerou "sozinho" no período.
+
+Aqui está o código completo e atualizado. Basta substituir no seu arquivo `index.html`:
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -160,7 +171,6 @@
                 <div><h3 style="margin-bottom: 15px; color: #1a1a2e;">Patrimônio por Instituição</h3><div class="bancos-grid" id="container-resumo-bancos"></div></div>
                 <div class="card" style="margin-top:0;">
                     <h3 style="text-align: center; margin-bottom: 10px;">Distribuição da Carteira</h3>
-                    
                     <div style="text-align: center; margin-bottom: 15px;">
                         <label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Liquidez Diária:</label>
                         <select id="filtro-liquidez-pizza" onchange="atualizarGraficoPizza()" style="width: auto; padding: 5px; font-size: 0.9em; border-radius: 5px; border: 1px solid #ccc; margin-left: 5px; outline: none;">
@@ -169,7 +179,6 @@
                             <option value="Não">Não</option>
                         </select>
                     </div>
-
                     <div style="height: 250px; display: flex; justify-content: center; position: relative;"><canvas id="graficoPizza"></canvas></div>
                 </div>
             </div>
@@ -289,12 +298,24 @@
 
         <section id="tela-projecao" class="tela">
             <h2>Projeção Futura da Carteira</h2>
-            <p style="color: #666; margin-bottom: 20px;">Estime o crescimento de todo o seu patrimônio atual (ativos) para os próximos meses.</p>
+            <p style="color: #666; margin-bottom: 20px;">Estime o crescimento do seu patrimônio para os próximos meses.</p>
             
             <div class="card" style="margin-top: 0; border-top: 4px solid #0f3460;">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end;">
                     <div>
-                        <label>Data Alvo (Fim da Projeção):</label>
+                        <label>Filtro de Liquidez:</label>
+                        <select id="proj-filtro-liquidez">
+                            <option value="todos">Todos os Ativos</option>
+                            <option value="Sim">Apenas c/ Liquidez Diária (Sim)</option>
+                            <option value="Não">Apenas Presos (Não)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label title="Valor que será somado e rendido mês a mês na projeção.">Aporte Mensal Futuro (R$):</label>
+                        <input type="number" id="proj-aporte-mensal" value="0" step="0.01" min="0">
+                    </div>
+                    <div>
+                        <label>Data Alvo (Fim):</label>
                         <input type="date" id="proj-data-alvo">
                     </div>
                     <div>
@@ -310,8 +331,8 @@
             <div class="dashboard-grid" style="margin-top: 20px;">
                 <div class="card destaque-bruto"><p>Valor Bruto Projetado</p><h3 id="proj-res-bruto">R$ 0,00</h3></div>
                 <div class="card destaque"><p>Valor Líquido Projetado</p><h3 id="proj-res-liquido">R$ 0,00</h3></div>
-                <div class="card fluxo"><p>Rendimento Bruto Adicional</p><h3 id="proj-res-rendimento" style="color: #28a745;">R$ 0,00</h3></div>
-                <div class="card"><p>Taxa Média da Carteira</p><h3 id="proj-res-taxa-media">0,00%</h3></div>
+                <div class="card fluxo"><p title="Apenas os juros ganhos (Subtraindo o saldo inicial e os aportes futuros)">Juros Líquidos Ganhos</p><h3 id="proj-res-rendimento" style="color: #28a745;">R$ 0,00</h3></div>
+                <div class="card"><p>Taxa Média Inicial</p><h3 id="proj-res-taxa-media">0,00%</h3></div>
             </div>
 
             <div class="card" style="margin-top: 25px;">
@@ -476,15 +497,12 @@
 
     <script>
         // =========================================================
-        // SETUP DOS GRÁFICOS (Plugin Datalabels)
+        // SETUP DOS GRÁFICOS E VARIÁVEIS GLOBAIS
         // =========================================================
         Chart.register(ChartDataLabels);
 
-        let chartProjecaoInstance = null; // Variável global para o novo gráfico
+        let chartProjecaoInstance = null; // Instância do novo gráfico
 
-        // =========================================================
-        // 0. FORMATADORES GLOBAIS E REGRAS B3
-        // =========================================================
         function fMoeda(valor) { return (valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
         function fNum(valor) { return (valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
@@ -1062,11 +1080,13 @@
         function calcularComparacao() { const v = parseFloat(document.getElementById('comp-valor').value)||0, dias = parseInt(document.getElementById('comp-dias').value)||1, tCdb = parseFloat(document.getElementById('comp-cdb').value)/100, tLci = parseFloat(document.getElementById('comp-lci').value)/100, cdiAno = parseFloat(document.getElementById('comp-cdi').value)/100; const rCDB = cdiAno * tCdb, rLCI = cdiAno * tLci; let ir = 15; if (dias<=180) ir=22.5; else if(dias<=360) ir=20; else if(dias<=720) ir=17.5; const bCDB = v * (rCDB * (dias/365)), lCDB = bCDB - (bCDB * (ir/100)), lLCI = v * (rLCI * (dias/365)); document.getElementById('comp-res-cdb').innerText = fMoeda(v+lCDB); document.getElementById('comp-res-lci').innerText = fMoeda(v+lLCI); const txt = document.getElementById('comp-vencedor'); if(lCDB>lLCI){txt.innerText="🏆 O CDB é a melhor opção!";txt.style.color="#1a1a2e";}else if(lLCI>lCDB){txt.innerText="🏆 A LCI/LCA é a melhor opção!";txt.style.color="#28a745";}else{txt.innerText="⚖️ Ambos rendem igual.";txt.style.color="#666";} document.getElementById('resultado-comparador').style.display = 'block'; }
 
         // =========================================================
-        // NOVA SESSÃO: PROJEÇÃO DE CARTEIRA
+        // NOVA SESSÃO: PROJEÇÃO DE CARTEIRA (Avançada)
         // =========================================================
         function gerarProjecaoCarteira() {
             const inputData = document.getElementById('proj-data-alvo').value;
             const inputCDI = parseFloat(document.getElementById('proj-cdi-anual').value);
+            const filtroLiq = document.getElementById('proj-filtro-liquidez').value;
+            const aporteMensal = parseFloat(document.getElementById('proj-aporte-mensal').value) || 0;
 
             if(!inputData || isNaN(inputCDI)) return alert("Preencha a data alvo e a taxa do CDI.");
 
@@ -1076,7 +1096,7 @@
 
             if(dataAlvo <= hoje) return alert("A data alvo deve ser no futuro (maior que hoje).");
 
-            // Converter CDI Anual para multiplicador Diário (Fórmula B3)
+            // Converter CDI Anual para multiplicador Diário (Fórmula oficial B3)
             const taxaCdiDiaria = Math.pow(1 + (inputCDI / 100), 1 / 252) - 1;
 
             let ativos = [];
@@ -1084,9 +1104,12 @@
             let somaLiquidoAtual = 0;
             let somaBrutoVezesTaxa = 0;
 
-            // Extrai ativos normais e ativos das caixinhas
+            // Extrai ativos normais respeitando o Filtro de Liquidez
             carteira.forEach(inv => {
                 if(!inv.dataResgate) {
+                    const liq = inv.liquidez || 'Sim';
+                    if(filtroLiq !== 'todos' && liq !== filtroLiq) return;
+
                     const dataInic = new Date(inv.data + 'T00:00:00');
                     const bAtual = inv.bruCalculado || parseFloat(inv.valor);
                     ativos.push({
@@ -1102,7 +1125,11 @@
                 }
             });
 
+            // Extrai Caixinhas (Metas sempre têm liquidez diária)
             listaMetas.forEach(m => {
+                const liq = 'Sim';
+                if(filtroLiq !== 'todos' && liq !== filtroLiq) return;
+                
                 if(m.aportes) {
                     m.aportes.forEach(ap => {
                         const dataInic = new Date(ap.data + 'T00:00:00');
@@ -1121,18 +1148,36 @@
                 }
             });
 
-            if(ativos.length === 0) return alert("Você não possui investimentos ativos para projetar.");
+            if(ativos.length === 0 && aporteMensal <= 0) {
+                return alert("Você não possui investimentos ativos para este filtro e não definiu nenhum aporte mensal futuro.");
+            }
 
-            // Exibir a Taxa Média Ponderada da Carteira
-            const taxaMediaPonderada = somaBrutoVezesTaxa / somaBrutoAtual;
+            // Exibir a Taxa Média Ponderada Inicial da Carteira Filtrada
+            const taxaMediaPonderada = somaBrutoAtual > 0 ? (somaBrutoVezesTaxa / somaBrutoAtual) : 0;
             document.getElementById('proj-res-taxa-media').innerText = fTaxa(taxaMediaPonderada) + '%';
 
-            // Criar a linha do tempo para o gráfico
+            // Gerador de Aportes Mensais Virtuais (Serão injetados a 100% CDI)
+            let aportesFuturos = [];
+            let totalAportadoFuturo = 0;
+            if(aporteMensal > 0) {
+                let dataAporte = new Date(hoje);
+                dataAporte.setMonth(dataAporte.getMonth() + 1); // Começa a aportar no mês que vem
+                while(dataAporte <= dataAlvo) {
+                    aportesFuturos.push({
+                        dataInicio: new Date(dataAporte),
+                        valorInicial: aporteMensal,
+                        taxa: 100 // Aportes novos genéricos rendem 100% CDI
+                    });
+                    totalAportadoFuturo += aporteMensal;
+                    dataAporte.setMonth(dataAporte.getMonth() + 1);
+                }
+            }
+
             let labels = ['Hoje'];
             let dataBruto = [somaBrutoAtual.toFixed(2)];
             let dataLiquido = [somaLiquidoAtual.toFixed(2)];
 
-            // Monta os próximos meses
+            // Monta a régua de meses da projeção
             let cursorMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1); 
             let datasParaCalcular = [];
 
@@ -1140,21 +1185,20 @@
                 datasParaCalcular.push(new Date(cursorMes));
                 cursorMes.setMonth(cursorMes.getMonth() + 1);
             }
-            datasParaCalcular.push(new Date(dataAlvo));
+            if(!datasParaCalcular.some(d => d.getTime() === dataAlvo.getTime())) {
+                datasParaCalcular.push(new Date(dataAlvo));
+            }
 
-            // Função para contar dias úteis entre duas datas
+            // Função utilitária para contar dias úteis
             const contaDiasUteis = (inicio, fim) => {
-                let count = 0;
-                let d = new Date(inicio);
-                while(d < fim) {
-                    d.setDate(d.getDate() + 1);
-                    if(ehDiaUtilBancario(d)) count++;
-                }
+                let count = 0; let d = new Date(inicio);
+                while(d < fim) { d.setDate(d.getDate() + 1); if(ehDiaUtilBancario(d)) count++; }
                 return count;
             };
 
             let cacheDiasUteisHoje = {}; 
 
+            // Motor de Projeção Mês a Mês
             datasParaCalcular.forEach(dataPonto => {
                 const timeKey = dataPonto.getTime();
                 if(cacheDiasUteisHoje[timeKey] === undefined) {
@@ -1165,14 +1209,14 @@
                 let somaB = 0;
                 let somaL = 0;
 
+                // Rendimento dos Ativos Atuais
                 ativos.forEach(inv => {
                     let diasRendimento = duPassados;
                     let dataReferenciaCalculo = dataPonto;
 
-                    // Se o ativo vencer antes da data projetada, o dinheiro "congela" no dia do vencimento
                     if (inv.vencimento && inv.vencimento < dataPonto) {
                         diasRendimento = contaDiasUteis(hoje, inv.vencimento);
-                        dataReferenciaCalculo = inv.vencimento;
+                        dataReferenciaCalculo = inv.vencimento; // Trava o cálculo de IR no dia que venceu
                     }
 
                     const multiplicadorDiario = 1 + (taxaCdiDiaria * (inv.taxa / 100));
@@ -1181,7 +1225,6 @@
                     const valorFuturoBruto = inv.valorBrutoAtual * fatorAcumulado;
                     somaB += valorFuturoBruto;
 
-                    // Cálculo da queda de IR dinâmico
                     const diasCorridosTotais = Math.ceil(Math.abs(dataReferenciaCalculo - inv.dataInicio) / (1000 * 60 * 60 * 24));
                     let ir = 15;
                     if (diasCorridosTotais <= 180) ir = 22.5;
@@ -1190,9 +1233,29 @@
 
                     const lucroFuturo = valorFuturoBruto - inv.valorInicial;
                     const impostoFuturo = lucroFuturo > 0 ? (lucroFuturo * (ir / 100)) : 0;
-                    const valorFuturoLiquido = valorFuturoBruto - impostoFuturo;
+                    somaL += (valorFuturoBruto - impostoFuturo);
+                });
 
-                    somaL += valorFuturoLiquido;
+                // Rendimento dos Aportes Futuros Simulados
+                aportesFuturos.forEach(ap => {
+                    if (dataPonto >= ap.dataInicio) {
+                        const duPassadosAporte = contaDiasUteis(ap.dataInicio, dataPonto);
+                        const multiplicadorDiario = 1 + (taxaCdiDiaria * (ap.taxa / 100));
+                        const fatorAcumulado = Math.pow(multiplicadorDiario, Math.max(0, duPassadosAporte));
+                        
+                        const valorFuturoBruto = ap.valorInicial * fatorAcumulado;
+                        somaB += valorFuturoBruto;
+
+                        const diasCorridosTotais = Math.ceil(Math.abs(dataPonto - ap.dataInicio) / (1000 * 60 * 60 * 24));
+                        let ir = 15; // Queda natural de IR aplicada a cada aporte mensal individualmente!
+                        if (diasCorridosTotais <= 180) ir = 22.5;
+                        else if (diasCorridosTotais <= 360) ir = 20;
+                        else if (diasCorridosTotais <= 720) ir = 17.5;
+
+                        const lucroFuturo = valorFuturoBruto - ap.valorInicial;
+                        const impostoFuturo = lucroFuturo > 0 ? (lucroFuturo * (ir / 100)) : 0;
+                        somaL += (valorFuturoBruto - impostoFuturo);
+                    }
                 });
 
                 const mesNome = nomeMeses[String(dataPonto.getMonth()+1).padStart(2,'0')].substring(0,3);
@@ -1204,7 +1267,7 @@
             // Atualiza os Resumos em Texto
             const finalBruto = parseFloat(dataBruto[dataBruto.length-1]);
             const finalLiquido = parseFloat(dataLiquido[dataLiquido.length-1]);
-            const lucroBrutoAdicional = finalBruto - somaBrutoAtual;
+            const lucroBrutoAdicional = finalBruto - somaBrutoAtual - totalAportadoFuturo;
 
             document.getElementById('proj-res-bruto').innerText = fMoeda(finalBruto);
             document.getElementById('proj-res-liquido').innerText = fMoeda(finalLiquido);
@@ -1224,6 +1287,7 @@
                     ]
                 },
                 options: {
+                    layout: { padding: 10 },
                     responsive: true,
                     maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
@@ -1234,8 +1298,9 @@
         }
 
         // =========================================================
-        // 8. GRÁFICOS DA ABA GRÁFICOS E FILTROS DINÂMICOS
+        // 8. GRÁFICOS E FILTROS DINÂMICOS
         // =========================================================
+        
         function atualizarGraficoPizza() {
             const filtroLiquidez = document.getElementById('filtro-liquidez-pizza').value;
             let totaisPizza = {}; let totalGeralPizza = 0;
@@ -1501,7 +1566,6 @@
             document.getElementById(idTela).classList.add('ativa'); 
             if(idTela === 'tela-grafico') { desenharGrafico(); desenharGraficoDespesas(); } 
             if(idTela === 'tela-projecao' && window.chartProjecaoInstance === null && carteira.length > 0) {
-                // Preenche os campos com os valores atuais se for a primeira vez que entra na tela
                 const inputAlvo = document.getElementById('proj-data-alvo');
                 if(!inputAlvo.value) {
                     const dataFutura = new Date();
