@@ -1,14 +1,3 @@
-Excelente adição! O Simulador de Projeção agora está incrivelmente robusto. 
-
-Eu adicionei os dois campos que você pediu:
-1. **Filtro de Liquidez:** Agora você pode projetar toda a carteira, projetar *apenas* sua reserva de emergência (Liquidez: Sim) ou projetar os investimentos presos até o vencimento (Liquidez: Não).
-2. **Aporte Mensal Futuro:** Se você preencher esse campo, o sistema simula depósitos mensais recorrentes (rendendo a 100% do CDI) e os injeta mês a mês no gráfico, calculando também a queda escalonada do Imposto de Renda de cada um desses novos depósitos virtuais ao longo do tempo!
-
-Além disso, atualizei o card **"Rendimento Bruto Adicional"** para calcular o valor real dos *Juros ganhos*. Ou seja, ele subtrai o valor atual da sua carteira e todo o dinheiro que você aportou nos meses simulados, mostrando estritamente quanto dinheiro o CDI gerou "sozinho" no período.
-
-Aqui está o código completo e atualizado. Basta substituir no seu arquivo `index.html`:
-
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -501,7 +490,7 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
         // =========================================================
         Chart.register(ChartDataLabels);
 
-        let chartProjecaoInstance = null; // Instância do novo gráfico
+        let chartProjecaoInstance = null; 
 
         function fMoeda(valor) { return (valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
         function fNum(valor) { return (valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -669,7 +658,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                 }
             });
 
-            // Atualiza os Anos
             const anosOrdenados = Array.from(anos).sort();
             ['filtro-ano-trans', 'filtro-graf-ano-desp'].forEach(id => {
                 const select = document.getElementById(id);
@@ -682,7 +670,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                 }
             });
 
-            // Atualiza os Meses
             const mesesOrdenados = Array.from(meses).sort();
             ['filtro-mes-trans', 'filtro-graf-mes-desp'].forEach(id => {
                 const select = document.getElementById(id);
@@ -796,7 +783,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                 let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5;
                 const rBruto = vAtual - valOriginal; const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
                 
-                // Salva na memória o cálculo de hoje para a aba de projeção poder usar depois
                 inv.liqCalculado = vLiq;
                 inv.bruCalculado = vAtual;
 
@@ -857,7 +843,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                     const dias = Math.ceil(Math.abs(new Date() - dataInv) / (1000 * 60 * 60 * 24)); let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5;
                     const rBruto = vAtual - valOriginal; const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
                     
-                    // Salva na memória o cálculo de hoje para a aba de projeção poder usar depois
                     totalLiquidoGlobal += vLiq; totaisBancos[nomeBancoMeta].liq += vLiq; metaLiqAtual += vLiq; 
                     aporte.liqCalculado = vLiq;
                     aporte.bruCalculado = vAtual;
@@ -986,11 +971,24 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
             calcularTotaisTransacoes();
         }
 
+        // --- CORREÇÃO DA BUSCA ---
         function filtrarTabelaTransacoes() { 
             const inputs = document.querySelectorAll('#tabela-transacoes thead input'); 
             const rows = document.querySelectorAll('#corpo-tabela-transacoes tr'); 
+            
+            // Verifica se tem QUALQUER filtro de texto digitado
+            let temFiltroAtivo = false;
+            inputs.forEach(input => {
+                if (input.value.trim() !== '') temFiltroAtivo = true;
+            });
+
             rows.forEach(row => { 
-                if (!row.hasAttribute('data-valor')) return; 
+                if (!row.hasAttribute('data-valor')) {
+                    // É a linha cinza do grupo de Mês. Se estiver buscando, esconde. Se não, mostra.
+                    row.style.display = temFiltroAtivo ? 'none' : '';
+                    return; 
+                }
+                
                 let mostrarLinha = true; 
                 inputs.forEach((input, index) => { 
                     const textoFiltro = input.value.toLowerCase(); 
@@ -1003,6 +1001,7 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                 }); 
                 row.style.display = mostrarLinha ? '' : 'none'; 
             }); 
+            
             calcularTotaisTransacoes();
         }
 
@@ -1096,7 +1095,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
 
             if(dataAlvo <= hoje) return alert("A data alvo deve ser no futuro (maior que hoje).");
 
-            // Converter CDI Anual para multiplicador Diário (Fórmula oficial B3)
             const taxaCdiDiaria = Math.pow(1 + (inputCDI / 100), 1 / 252) - 1;
 
             let ativos = [];
@@ -1104,7 +1102,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
             let somaLiquidoAtual = 0;
             let somaBrutoVezesTaxa = 0;
 
-            // Extrai ativos normais respeitando o Filtro de Liquidez
             carteira.forEach(inv => {
                 if(!inv.dataResgate) {
                     const liq = inv.liquidez || 'Sim';
@@ -1125,7 +1122,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                 }
             });
 
-            // Extrai Caixinhas (Metas sempre têm liquidez diária)
             listaMetas.forEach(m => {
                 const liq = 'Sim';
                 if(filtroLiq !== 'todos' && liq !== filtroLiq) return;
@@ -1152,21 +1148,19 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                 return alert("Você não possui investimentos ativos para este filtro e não definiu nenhum aporte mensal futuro.");
             }
 
-            // Exibir a Taxa Média Ponderada Inicial da Carteira Filtrada
             const taxaMediaPonderada = somaBrutoAtual > 0 ? (somaBrutoVezesTaxa / somaBrutoAtual) : 0;
             document.getElementById('proj-res-taxa-media').innerText = fTaxa(taxaMediaPonderada) + '%';
 
-            // Gerador de Aportes Mensais Virtuais (Serão injetados a 100% CDI)
             let aportesFuturos = [];
             let totalAportadoFuturo = 0;
             if(aporteMensal > 0) {
                 let dataAporte = new Date(hoje);
-                dataAporte.setMonth(dataAporte.getMonth() + 1); // Começa a aportar no mês que vem
+                dataAporte.setMonth(dataAporte.getMonth() + 1); 
                 while(dataAporte <= dataAlvo) {
                     aportesFuturos.push({
                         dataInicio: new Date(dataAporte),
                         valorInicial: aporteMensal,
-                        taxa: 100 // Aportes novos genéricos rendem 100% CDI
+                        taxa: 100 
                     });
                     totalAportadoFuturo += aporteMensal;
                     dataAporte.setMonth(dataAporte.getMonth() + 1);
@@ -1177,7 +1171,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
             let dataBruto = [somaBrutoAtual.toFixed(2)];
             let dataLiquido = [somaLiquidoAtual.toFixed(2)];
 
-            // Monta a régua de meses da projeção
             let cursorMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1); 
             let datasParaCalcular = [];
 
@@ -1189,7 +1182,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                 datasParaCalcular.push(new Date(dataAlvo));
             }
 
-            // Função utilitária para contar dias úteis
             const contaDiasUteis = (inicio, fim) => {
                 let count = 0; let d = new Date(inicio);
                 while(d < fim) { d.setDate(d.getDate() + 1); if(ehDiaUtilBancario(d)) count++; }
@@ -1198,7 +1190,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
 
             let cacheDiasUteisHoje = {}; 
 
-            // Motor de Projeção Mês a Mês
             datasParaCalcular.forEach(dataPonto => {
                 const timeKey = dataPonto.getTime();
                 if(cacheDiasUteisHoje[timeKey] === undefined) {
@@ -1209,14 +1200,13 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                 let somaB = 0;
                 let somaL = 0;
 
-                // Rendimento dos Ativos Atuais
                 ativos.forEach(inv => {
                     let diasRendimento = duPassados;
                     let dataReferenciaCalculo = dataPonto;
 
                     if (inv.vencimento && inv.vencimento < dataPonto) {
                         diasRendimento = contaDiasUteis(hoje, inv.vencimento);
-                        dataReferenciaCalculo = inv.vencimento; // Trava o cálculo de IR no dia que venceu
+                        dataReferenciaCalculo = inv.vencimento; 
                     }
 
                     const multiplicadorDiario = 1 + (taxaCdiDiaria * (inv.taxa / 100));
@@ -1236,7 +1226,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                     somaL += (valorFuturoBruto - impostoFuturo);
                 });
 
-                // Rendimento dos Aportes Futuros Simulados
                 aportesFuturos.forEach(ap => {
                     if (dataPonto >= ap.dataInicio) {
                         const duPassadosAporte = contaDiasUteis(ap.dataInicio, dataPonto);
@@ -1247,7 +1236,7 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                         somaB += valorFuturoBruto;
 
                         const diasCorridosTotais = Math.ceil(Math.abs(dataPonto - ap.dataInicio) / (1000 * 60 * 60 * 24));
-                        let ir = 15; // Queda natural de IR aplicada a cada aporte mensal individualmente!
+                        let ir = 15; 
                         if (diasCorridosTotais <= 180) ir = 22.5;
                         else if (diasCorridosTotais <= 360) ir = 20;
                         else if (diasCorridosTotais <= 720) ir = 17.5;
@@ -1264,7 +1253,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
                 dataLiquido.push(somaL.toFixed(2));
             });
 
-            // Atualiza os Resumos em Texto
             const finalBruto = parseFloat(dataBruto[dataBruto.length-1]);
             const finalLiquido = parseFloat(dataLiquido[dataLiquido.length-1]);
             const lucroBrutoAdicional = finalBruto - somaBrutoAtual - totalAportadoFuturo;
@@ -1273,7 +1261,6 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
             document.getElementById('proj-res-liquido').innerText = fMoeda(finalLiquido);
             document.getElementById('proj-res-rendimento').innerText = '+ ' + fMoeda(lucroBrutoAdicional);
 
-            // Desenha o Gráfico de Projeção
             const ctx = document.getElementById('graficoProjecaoEvolucao').getContext('2d');
             if (window.chartProjecaoInstance) window.chartProjecaoInstance.destroy();
             
@@ -1712,4 +1699,3 @@ Aqui está o código completo e atualizado. Basta substituir no seu arquivo `ind
     </script>
 </body>
 </html>
-```
