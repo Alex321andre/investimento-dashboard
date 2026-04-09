@@ -193,6 +193,15 @@
                 <h3 style="margin-bottom: 15px; color: #1a1a2e; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Registrar Aplicação</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
                     <div><label>Instituição Financeira:</label><input type="text" id="input-banco" required></div>
+                    
+                    <div>
+                        <label>Tipo de Ativo:</label>
+                        <select id="input-tipo-inv">
+                            <option value="CDB/LC">CDB / LC (Tributável)</option>
+                            <option value="LCI/LCA">LCI / LCA (Isento de IR)</option>
+                        </select>
+                    </div>
+
                     <div><label>Data da Aplicação:</label><input type="date" id="input-data" required></div>
                     <div><label>Valor Aplicado (R$):</label><input type="number" id="input-valor" step="0.01" min="1" required></div>
                     <div><label>Taxa (% do CDI):</label><input type="number" id="input-taxa" step="0.1" required></div>
@@ -206,7 +215,7 @@
                 <table id="tabela-resultados">
                     <thead>
                         <tr>
-                            <th>Banco / Status <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>Banco / Tipo <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Data Aplicação <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Liq. Diária <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Vencimento <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
@@ -269,7 +278,7 @@
                         <tr>
                             <th>Descrição <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
                             <th>Categoria <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
-                            <th>Data <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
+                            <th>Data Vencimento <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
                             <th>Valor <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
                             <th>Ações</th>
                         </tr>
@@ -489,7 +498,7 @@
 
         <div id="modal-resgatar" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center; color: #1a1a2e;">💰 Resgatar Investimento</h2><p style="font-size: 0.9em; color: #666; margin-bottom: 15px; text-align: center;">O investimento será encerrado e o valor final ficará salvo no seu histórico.</p><input type="hidden" id="resgate-id"><div class="grupo-input"><label>Data do Resgate:</label><input type="date" id="resgate-data" required></div><button type="button" class="btn-acao" style="background-color: #28a745;" onclick="confirmarResgate()">Confirmar Resgate</button><button type="button" class="btn-acao terciario" onclick="fecharResgate()">Cancelar</button></div></div>
         <div id="modal-gerenciador" class="modal-overlay"><div class="box-modal"><h2 id="titulo-modal-gerenciador" style="margin-bottom: 15px; text-align: center;">Gerenciar</h2><input type="hidden" id="tipo-gerenciador-ativo"><ul class="lista-gerenciador" id="lista-gerenciador-ui"></ul><div style="display: flex; gap: 10px; margin-top: 15px;"><input type="text" id="novo-item-nome" placeholder="Novo item..." style="flex: 1;"><button class="btn-acao" style="width: auto; margin: 0;" onclick="adicionarItemGerenciador()">Criar</button></div><button type="button" class="btn-acao terciario" style="margin-top: 15px;" onclick="fecharModalGerenciador()">Fechar</button></div></div>
-        <div id="modal-editar" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Investimento</h2><input type="hidden" id="edit-id"><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="grupo-input" style="grid-column: 1 / -1;"><label>Banco:</label><input type="text" id="edit-banco" required></div><div class="grupo-input"><label>Data:</label><input type="date" id="edit-data" required></div><div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-valor" step="0.01" required></div><div class="grupo-input"><label>Taxa (% CDI):</label><input type="number" id="edit-taxa" step="0.1" required></div><div class="grupo-input"><label>Liquidez Diária:</label><select id="edit-liquidez"><option value="Sim">Sim</option><option value="Não">Não</option></select></div><div class="grupo-input" style="grid-column: 1 / -1;"><label>Data de Vencimento / Resgate:</label><input type="date" id="edit-vencimento"></div></div><button type="button" class="btn-acao" onclick="salvarEdicao()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicao()">Cancelar</button></div></div>
+        <div id="modal-editar" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Investimento</h2><input type="hidden" id="edit-id"><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="grupo-input" style="grid-column: 1 / -1;"><label>Banco:</label><input type="text" id="edit-banco" required></div><div class="grupo-input" style="grid-column: 1 / -1;"><label>Tipo de Ativo:</label><select id="edit-tipo-inv"><option value="CDB/LC">CDB / LC (Tributável)</option><option value="LCI/LCA">LCI / LCA (Isento de IR)</option></select></div><div class="grupo-input"><label>Data:</label><input type="date" id="edit-data" required></div><div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-valor" step="0.01" required></div><div class="grupo-input"><label>Taxa (% CDI):</label><input type="number" id="edit-taxa" step="0.1" required></div><div class="grupo-input"><label>Liquidez Diária:</label><select id="edit-liquidez"><option value="Sim">Sim</option><option value="Não">Não</option></select></div><div class="grupo-input" style="grid-column: 1 / -1;"><label>Data de Vencimento / Resgate:</label><input type="date" id="edit-vencimento"></div></div><button type="button" class="btn-acao" onclick="salvarEdicao()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicao()">Cancelar</button></div></div>
         <div id="modal-editar-trans" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Transação</h2><input type="hidden" id="edit-trans-id"><div class="grupo-input"><label>Tipo:</label><select id="edit-trans-tipo"><option value="despesa">Saída</option><option value="entrada">Entrada</option></select></div><div class="grupo-input"><label>Descrição:</label><select id="edit-trans-desc" required></select></div><div class="grupo-input"><label>Categoria:</label><select id="edit-trans-cat" required></select></div><div class="grupo-input"><label>Data:</label><input type="date" id="edit-trans-data" required></div><div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-trans-valor" step="0.01" required></div><button type="button" class="btn-acao" onclick="salvarEdicaoTransacao()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicaoTransacao()">Cancelar</button></div></div>
         <div id="modal-editar-meta" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Alvo da Caixinha</h2><input type="hidden" id="edit-meta-id"><div class="grupo-input"><label>Nome / Objetivo:</label><input type="text" id="edit-meta-nome" required></div><div class="grupo-input"><label>Valor Alvo (R$):</label><input type="number" id="edit-meta-alvo" step="0.01" required></div><button type="button" class="btn-acao" onclick="salvarEdicaoMeta()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicaoMeta()">Cancelar</button></div></div>
         <div id="modal-aporte-meta" class="modal-overlay"><div class="box-modal"><h2 id="titulo-modal-aporte" style="margin-bottom: 15px; text-align: center;">Nova Aplicação</h2><input type="hidden" id="aporte-meta-id"><input type="hidden" id="aporte-id"><div class="grupo-input"><label>Data da Aplicação:</label><input type="date" id="aporte-data" required></div><div class="grupo-input"><label>Valor Aplicado (R$):</label><input type="number" id="aporte-valor" step="0.01" required></div><div class="grupo-input"><label>Taxa (% do CDI):</label><input type="number" id="aporte-taxa" step="0.1" required></div><button type="button" class="btn-acao" onclick="salvarAporte()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharAporte()">Cancelar</button></div></div>
@@ -780,6 +789,8 @@
             // PARTE A: CARTEIRA
             carteira.forEach(inv => {
                 const isResgatado = !!inv.dataResgate;
+                const tipoInv = inv.tipoInvestimento || 'CDB/LC'; // Retrocompatibilidade (dados velhos assumem CDB)
+                
                 const [ano, mes, dia] = inv.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
                 let dataFim = projetarCDI ? new Date() : new Date(); 
                 if(isResgatado) { const [rA, rM, rD] = inv.dataResgate.split('-'); dataFim = new Date(parseInt(rA), parseInt(rM) - 1, parseInt(rD)); }
@@ -797,7 +808,13 @@
                 
                 let vAtual = Math.round((valOriginal * fatorAcumulado) * 100) / 100;
                 const dias = Math.ceil(Math.abs(dataFim - dataInv) / (1000 * 60 * 60 * 24));
-                let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5;
+                
+                // NOVO CÁLCULO DE IR
+                let ir = 0;
+                if (tipoInv !== 'LCI/LCA') {
+                    if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5; else ir = 15;
+                }
+
                 const rBruto = vAtual - valOriginal; const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
                 
                 inv.liqCalculado = vLiq;
@@ -817,23 +834,24 @@
                        <button class="btn-excluir" onclick="deletarItem(${inv.id}, 'inv')">Excluir</button>`;
                 const liquidezDisplay = (inv.liquidez === 'Não') ? '<span style="color:#dc3545; font-weight:bold;">Não</span>' : '<span style="color:#28a745; font-weight:bold;">Sim</span>';
                 const vencimentoDisplay = inv.vencimento ? inv.vencimento.split('-').reverse().join('/') : '-';
+                const exibicaoIR = tipoInv === 'LCI/LCA' ? 'Isento' : `${fNum(ir)}%`;
 
                 corpoTabela.innerHTML += `<tr data-val-inicial="${valOriginal}" data-taxa="${parseFloat(inv.taxa)}" data-ir="${ir}" data-val-bruto="${vAtual}" data-val-liquido="${vLiq}" ${isResgatado ? 'style="background-color: #e9ecef; opacity: 0.8;"' : ''}>
-                    <td><b>${nomeBanco}</b>${strStatus}</td>
+                    <td><b>${nomeBanco}</b><br><span style="font-size:0.85em; color:#666;">${tipoInv}</span>${strStatus}</td>
                     <td>${dia}/${mes}/${ano}</td>
                     <td>${liquidezDisplay}</td>
                     <td>${vencimentoDisplay}</td>
                     <td>${fMoeda(valOriginal)}</td>
                     <td>${fTaxa(parseFloat(inv.taxa))}%</td>
                     <td>${dias}</td>
-                    <td>${fNum(ir)}%</td>
+                    <td>${exibicaoIR}</td>
                     <td style="color:${isResgatado?'#666':'green'};">${fMoeda(vAtual)}</td>
                     <td style="color:${isResgatado?'#666':'blue'}; font-weight:bold;">${fMoeda(vLiq)}</td>
                     <td style="white-space: nowrap;">${botoes}</td>
                 </tr>`;
             });
 
-            // PARTE B: CAIXINHAS / METAS
+            // PARTE B: CAIXINHAS / METAS (Sempre tributáveis)
             const nomeBancoMeta = "Caixinhas (Metas)";
             listaMetas.forEach(meta => {
                 if (!meta.aportes) { meta.aportes = []; if (meta.data && meta.valor) { meta.aportes.push({ id: Date.now(), data: meta.data, valor: meta.valor, taxa: meta.taxa || 100 }); } }
@@ -885,18 +903,46 @@
         
         function adicionarInvestimento(e) { 
             e.preventDefault(); 
-            carteira.push({ id: Date.now(), banco: document.getElementById('input-banco').value.trim(), data: document.getElementById('input-data').value, valor: document.getElementById('input-valor').value, taxa: document.getElementById('input-taxa').value, liquidez: document.getElementById('input-liquidez').value, vencimento: document.getElementById('input-vencimento').value }); 
+            carteira.push({ 
+                id: Date.now(), 
+                banco: document.getElementById('input-banco').value.trim(), 
+                tipoInvestimento: document.getElementById('input-tipo-inv').value,
+                data: document.getElementById('input-data').value, 
+                valor: document.getElementById('input-valor').value, 
+                taxa: document.getElementById('input-taxa').value, 
+                liquidez: document.getElementById('input-liquidez').value, 
+                vencimento: document.getElementById('input-vencimento').value 
+            }); 
             document.getElementById('form-investimento').reset(); toggleFormInvestimento(); salvarNoBanco(); 
         }
 
         function abrirEdicao(id) { 
             const inv = carteira.find(i => i.id === id); 
-            if(inv) { document.getElementById('edit-id').value = inv.id; document.getElementById('edit-banco').value = inv.banco || ""; document.getElementById('edit-data').value = inv.data; document.getElementById('edit-valor').value = inv.valor; document.getElementById('edit-taxa').value = inv.taxa; document.getElementById('edit-liquidez').value = inv.liquidez || "Sim"; document.getElementById('edit-vencimento').value = inv.vencimento || ""; document.getElementById('modal-editar').style.display = 'flex'; } 
+            if(inv) { 
+                document.getElementById('edit-id').value = inv.id; 
+                document.getElementById('edit-banco').value = inv.banco || ""; 
+                document.getElementById('edit-tipo-inv').value = inv.tipoInvestimento || "CDB/LC";
+                document.getElementById('edit-data').value = inv.data; 
+                document.getElementById('edit-valor').value = inv.valor; 
+                document.getElementById('edit-taxa').value = inv.taxa; 
+                document.getElementById('edit-liquidez').value = inv.liquidez || "Sim"; 
+                document.getElementById('edit-vencimento').value = inv.vencimento || ""; 
+                document.getElementById('modal-editar').style.display = 'flex'; 
+            } 
         }
         function fecharEdicao() { document.getElementById('modal-editar').style.display = 'none'; }
         function salvarEdicao() { 
             const id = parseInt(document.getElementById('edit-id').value); const idx = carteira.findIndex(i => i.id === id); 
-            if(idx !== -1) { carteira[idx].banco = document.getElementById('edit-banco').value; carteira[idx].data = document.getElementById('edit-data').value; carteira[idx].valor = parseFloat(document.getElementById('edit-valor').value); carteira[idx].taxa = parseFloat(document.getElementById('edit-taxa').value); carteira[idx].liquidez = document.getElementById('edit-liquidez').value; carteira[idx].vencimento = document.getElementById('edit-vencimento').value; salvarNoBanco(); fecharEdicao(); } 
+            if(idx !== -1) { 
+                carteira[idx].banco = document.getElementById('edit-banco').value; 
+                carteira[idx].tipoInvestimento = document.getElementById('edit-tipo-inv').value;
+                carteira[idx].data = document.getElementById('edit-data').value; 
+                carteira[idx].valor = parseFloat(document.getElementById('edit-valor').value); 
+                carteira[idx].taxa = parseFloat(document.getElementById('edit-taxa').value); 
+                carteira[idx].liquidez = document.getElementById('edit-liquidez').value; 
+                carteira[idx].vencimento = document.getElementById('edit-vencimento').value; 
+                salvarNoBanco(); fecharEdicao(); 
+            } 
         }
         function abrirResgate(id) { document.getElementById('resgate-id').value = id; document.getElementById('resgate-data').value = new Date().toISOString().split('T')[0]; document.getElementById('modal-resgatar').style.display = 'flex'; }
         function fecharResgate() { document.getElementById('modal-resgatar').style.display = 'none'; }
@@ -1011,7 +1057,6 @@
                     });
                 }
             } else {
-                // Fluxo Normal (Dinheiro/Pix/Débito)
                 transacoes.push({ 
                     id: Date.now(), 
                     tipo: tipo, 
@@ -1217,7 +1262,8 @@
                         valorInicial: parseFloat(inv.valor),
                         valorBrutoAtual: bAtual,
                         taxa: parseFloat(inv.taxa),
-                        vencimento: inv.vencimento ? new Date(inv.vencimento + 'T00:00:00') : null
+                        vencimento: inv.vencimento ? new Date(inv.vencimento + 'T00:00:00') : null,
+                        tipoInvestimento: inv.tipoInvestimento || 'CDB/LC' // NOVO: Passa o tipo para a projeção
                     });
                     somaBrutoAtual += bAtual;
                     somaLiquidoAtual += (inv.liqCalculado || bAtual);
@@ -1238,7 +1284,8 @@
                             valorInicial: parseFloat(ap.valor),
                             valorBrutoAtual: bAtual,
                             taxa: parseFloat(ap.taxa),
-                            vencimento: null
+                            vencimento: null,
+                            tipoInvestimento: 'CDB/LC' // Caixinhas sempre tributadas
                         });
                         somaBrutoAtual += bAtual;
                         somaLiquidoAtual += (ap.liqCalculado || bAtual);
@@ -1263,7 +1310,8 @@
                     aportesFuturos.push({
                         dataInicio: new Date(dataAporte),
                         valorInicial: aporteMensal,
-                        taxa: 100 
+                        taxa: 100,
+                        tipoInvestimento: 'CDB/LC'
                     });
                     totalAportadoFuturo += aporteMensal;
                     dataAporte.setMonth(dataAporte.getMonth() + 1);
@@ -1319,10 +1367,15 @@
                     somaB += valorFuturoBruto;
 
                     const diasCorridosTotais = Math.ceil(Math.abs(dataReferenciaCalculo - inv.dataInicio) / (1000 * 60 * 60 * 24));
-                    let ir = 15;
-                    if (diasCorridosTotais <= 180) ir = 22.5;
-                    else if (diasCorridosTotais <= 360) ir = 20;
-                    else if (diasCorridosTotais <= 720) ir = 17.5;
+                    
+                    // LÓGICA DE IR NA PROJEÇÃO (Isenta LCI/LCA)
+                    let ir = 0;
+                    if (inv.tipoInvestimento !== 'LCI/LCA') {
+                        if (diasCorridosTotais <= 180) ir = 22.5;
+                        else if (diasCorridosTotais <= 360) ir = 20;
+                        else if (diasCorridosTotais <= 720) ir = 17.5;
+                        else ir = 15;
+                    }
 
                     const lucroFuturo = valorFuturoBruto - inv.valorInicial;
                     const impostoFuturo = lucroFuturo > 0 ? (lucroFuturo * (ir / 100)) : 0;
@@ -1472,8 +1525,8 @@
             if (carteira.length === 0 && listaMetas.length === 0) return chartInstance = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [] } });
             
             let mixLinhaTempo = [];
-            carteira.forEach(inv => { mixLinhaTempo.push({ banco: inv.banco, data: inv.data, valor: inv.valor, taxa: inv.taxa, dataResgate: inv.dataResgate }); });
-            listaMetas.forEach(m => { if(m.aportes) m.aportes.forEach(ap => mixLinhaTempo.push({banco: "Caixinhas (Metas)", data: ap.data, valor: ap.valor, taxa: ap.taxa, dataResgate: null})); });
+            carteira.forEach(inv => { mixLinhaTempo.push({ banco: inv.banco, data: inv.data, valor: inv.valor, taxa: inv.taxa, dataResgate: inv.dataResgate, tipoInvestimento: inv.tipoInvestimento }); });
+            listaMetas.forEach(m => { if(m.aportes) m.aportes.forEach(ap => mixLinhaTempo.push({banco: "Caixinhas (Metas)", data: ap.data, valor: ap.valor, taxa: ap.taxa, dataResgate: null, tipoInvestimento: 'CDB/LC'})); });
             
             let cartProc = bSel !== 'todos' ? mixLinhaTempo.filter(i => (i.banco || "Não Informado") === bSel) : mixLinhaTempo; 
             const ord = [...cartProc].sort((a, b) => new Date(a.data) - new Date(b.data)); 
@@ -1485,7 +1538,7 @@
             for (let i = 0; i < cdiF.length; i++) { 
                 const dia = cdiF[i]; 
                 while (idx < ord.length && dia.dataObj >= new Date(ord[idx].data + 'T00:00:00')) { 
-                    ativ.push({ dataObj: new Date(ord[idx].data + 'T00:00:00'), valOri: parseFloat(ord[idx].valor), valAtu: parseFloat(ord[idx].valor), mult: parseFloat(ord[idx].taxa)/100, dataResg: ord[idx].dataResgate ? new Date(ord[idx].dataResgate + 'T00:00:00') : null }); 
+                    ativ.push({ dataObj: new Date(ord[idx].data + 'T00:00:00'), valOri: parseFloat(ord[idx].valor), valAtu: parseFloat(ord[idx].valor), mult: parseFloat(ord[idx].taxa)/100, dataResg: ord[idx].dataResgate ? new Date(ord[idx].dataResgate + 'T00:00:00') : null, tipoInvestimento: ord[idx].tipoInvestimento || 'CDB/LC' }); 
                     idx++; 
                 } 
                 
@@ -1496,7 +1549,13 @@
                         inv.valAtu *= truncaFatorB3(1 + (dia.valor * inv.mult)); 
                         b += inv.valAtu; 
                         const dias = Math.ceil(Math.abs(dia.dataObj - inv.dataObj) / (1000*60*60*24)); 
-                        let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5; 
+                        
+                        // LÓGICA DE IR HISTÓRICO (Isenta LCI/LCA)
+                        let ir = 0;
+                        if (inv.tipoInvestimento !== 'LCI/LCA') {
+                            if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5; else ir = 15; 
+                        }
+
                         l += inv.valAtu - ((inv.valAtu - inv.valOri) > 0 ? (inv.valAtu - inv.valOri) * (ir/100) : 0); 
                     }); 
                     
@@ -1684,8 +1743,13 @@
         function baixarCSV(tipo) { 
             if(tipo === 'investimentos') {
                 if(carteira.length===0) return alert("Sem dados de investimentos."); 
-                let csv="banco;data;valor;taxa;liquidez;vencimento\n"; 
-                carteira.forEach(i=>{ const val = i.valor.toString().replace('.', ','); const tx = i.taxa.toString().replace('.', ','); csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${i.data};${val};${tx};${i.liquidez||'Sim'};${i.vencimento||''}\n`;}); 
+                let csv="banco;tipoInvestimento;data;valor;taxa;liquidez;vencimento\n"; 
+                carteira.forEach(i=>{ 
+                    const val = i.valor.toString().replace('.', ','); 
+                    const tx = i.taxa.toString().replace('.', ','); 
+                    const tipoInv = i.tipoInvestimento || 'CDB/LC';
+                    csv+=`${i.banco ? i.banco.replace(/;/g,'') : "ND"};${tipoInv};${i.data};${val};${tx};${i.liquidez||'Sim'};${i.vencimento||''}\n`;
+                }); 
                 const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); 
             } else if (tipo === 'transacoes') {
                 if(transacoes.length===0) return alert("Sem dados de transações."); 
@@ -1703,7 +1767,7 @@
             if (tipo === 'investimentos') {
                 if(carteira.length===0) return alert("Sem dados!"); 
                 let msg="Relatório de Investimentos - InvestDash\n\n"; 
-                document.querySelectorAll('#corpo-tabela tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=10 && tr.style.display!=='none') msg+=`${tds[0].innerText} | ${tds[1].innerText} | Inicial: ${tds[4].innerText} | Liq: ${tds[9].innerText}\n`; }); 
+                document.querySelectorAll('#corpo-tabela tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=10 && tr.style.display!=='none') msg+=`${tds[0].innerText.replace(/\n/g, ' ')} | Inicial: ${tds[4].innerText} | Liq: ${tds[9].innerText}\n`; }); 
                 window.location.href=`mailto:?subject=Relatorio de Investimentos&body=${encodeURIComponent(msg)}`; 
             } else if (tipo === 'transacoes') {
                 if(transacoes.length===0) return alert("Sem dados!"); 
@@ -1727,9 +1791,23 @@
                     const c = linhaLimpa.split(sep); 
                     
                     if(tipo === 'investimentos' && c.length >= 4) { 
-                        const b = c[0].trim(); const d = c[1].trim(); const v = parseFloat(c[2].replace(',','.')); const t = parseFloat(c[3].replace(',','.')); 
-                        const liq = c[4] ? c[4].trim() : "Sim"; const ven = c[5] ? c[5].trim() : "";
-                        if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, data:d, valor:v, taxa:t, liquidez:liq, vencimento:ven}); q++; } 
+                        // Lógica de compatibilidade: se o CSV antigo não tinha coluna "Tipo", ele assume CDB/LC
+                        let b = c[0].trim();
+                        let tipoInv = 'CDB/LC';
+                        let offset = 0;
+                        
+                        if(c[1].includes('CDB') || c[1].includes('LCI') || c[1].includes('LCA') || c[1].includes('LC')) {
+                            tipoInv = c[1].trim();
+                            offset = 1;
+                        }
+
+                        const d = c[1 + offset].trim(); 
+                        const v = parseFloat(c[2 + offset].replace(',','.')); 
+                        const t = parseFloat(c[3 + offset].replace(',','.')); 
+                        const liq = c[4 + offset] ? c[4 + offset].trim() : "Sim"; 
+                        const ven = c[5 + offset] ? c[5 + offset].trim() : "";
+                        
+                        if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, tipoInvestimento:tipoInv, data:d, valor:v, taxa:t, liquidez:liq, vencimento:ven}); q++; } 
                     } else if (tipo === 'transacoes' && c.length >= 4) {
                         let offset = 0;
                         let p1 = c[0].trim().toLowerCase();
@@ -1770,9 +1848,22 @@
                 const c = linhaLimpa.split(sep);
                 
                 if(tipo === 'investimentos' && c.length >= 4){
-                    const b = c[0].trim(); const d = c[1].trim(); const v = parseFloat(c[2].replace(',','.')); const t = parseFloat(c[3].replace(',','.'));
-                    const liq = c[4] ? c[4].trim() : "Sim"; const ven = c[5] ? c[5].trim() : "";
-                    if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: Date.now() + i, banco: b, data: d, valor: v, taxa: t, liquidez: liq, vencimento: ven}); q++; }
+                    let b = c[0].trim();
+                    let tipoInv = 'CDB/LC';
+                    let offset = 0;
+                    
+                    if(c[1].includes('CDB') || c[1].includes('LCI') || c[1].includes('LCA') || c[1].includes('LC')) {
+                        tipoInv = c[1].trim();
+                        offset = 1;
+                    }
+
+                    const d = c[1 + offset].trim(); 
+                    const v = parseFloat(c[2 + offset].replace(',','.')); 
+                    const t = parseFloat(c[3 + offset].replace(',','.')); 
+                    const liq = c[4 + offset] ? c[4 + offset].trim() : "Sim"; 
+                    const ven = c[5 + offset] ? c[5 + offset].trim() : "";
+                    
+                    if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: Date.now() + i, banco: b, tipoInvestimento: tipoInv, data: d, valor: v, taxa: t, liquidez: liq, vencimento: ven}); q++; }
                 } else if (tipo === 'transacoes' && c.length >= 4) {
                     let offset = 0;
                     let p1 = c[0].trim().toLowerCase();
@@ -1802,4 +1893,3 @@
     </script>
 </body>
 </html>
-```
