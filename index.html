@@ -232,8 +232,13 @@
                 <div><label>Tipo:</label><select id="trans-tipo"><option value="despesa">Saída (Despesa)</option><option value="entrada">Entrada (Receita)</option></select></div>
                 <div><label>Descrição:</label><div style="display: flex; gap: 5px;"><select id="trans-desc" style="flex: 1;" required></select><button type="button" class="btn-acao secundario" style="width: auto; padding: 10px; margin: 0;" onclick="abrirModalGerenciador('descricoes')" title="Gerenciar Descrições">⚙️</button></div></div>
                 <div><label>Categoria:</label><div style="display: flex; gap: 5px;"><select id="trans-cat" style="flex: 1;" required></select><button type="button" class="btn-acao secundario" style="width: auto; padding: 10px; margin: 0;" onclick="abrirModalGerenciador('categorias')" title="Gerenciar Categorias">⚙️</button></div></div>
-                <div><label>Data:</label><input type="date" id="trans-data" required></div>
-                <div><label>Valor (R$):</label><input type="number" id="trans-valor" step="0.01" required></div>
+                
+                <div><label title="Dia em que você passou o cartão.">Data da Compra:</label><input type="date" id="trans-data-compra" required></div>
+                <div><label title="Dia em que o dinheiro sai da conta (Vencimento da 1ª fatura ou pagamento à vista).">Vencimento / Pgto:</label><input type="date" id="trans-data" required></div>
+                
+                <div><label title="Valor total da compra, mesmo se parcelado.">Valor Total (R$):</label><input type="number" id="trans-valor" step="0.01" required></div>
+                <div><label title="Se for à vista, deixe 1. Se for parcelado, dividiremos o valor pelas parcelas automaticamente mês a mês.">Parcelas (Cartão):</label><input type="number" id="trans-parcelas" value="1" min="1" required></div>
+                
                 <button type="submit" style="margin-top:0;">Salvar Transação</button>
             </form>
 
@@ -252,7 +257,7 @@
                         <tr>
                             <th>Descrição <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
                             <th>Categoria <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
-                            <th>Data <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
+                            <th>Data Vencimento <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
                             <th>Valor <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
                             <th>Ações</th>
                         </tr>
@@ -574,7 +579,7 @@
         };
 
         // =========================================================
-        // 2. LOGIN E AUTENTICAÇÃO E ATUALIZAÇÃO DINÂMICA DE DATAS
+        // 2. LOGIN E AUTENTICAÇÃO
         // =========================================================
         auth.onAuthStateChanged(user => {
             const cab = document.getElementById('cabecalho-app');
@@ -916,10 +921,59 @@
         }
 
         // =========================================================
-        // 5. TRANSAÇÕES
+        // 5. TRANSAÇÕES (Com Lógica de Parcelamento)
         // =========================================================
         function toggleFormTransacao() { const f = document.getElementById('form-transacao'); f.style.display = (f.style.display === 'none' || f.style.display === '') ? 'grid' : 'none'; }
-        function adicionarTransacao(e) { e.preventDefault(); transacoes.push({ id: Date.now(), tipo: document.getElementById('trans-tipo').value, desc: document.getElementById('trans-desc').value, cat: document.getElementById('trans-cat').value, data: document.getElementById('trans-data').value, valor: parseFloat(document.getElementById('trans-valor').value) }); document.getElementById('trans-valor').value = ''; toggleFormTransacao(); salvarNoBanco(); }
+        
+        function adicionarTransacao(e) { 
+            e.preventDefault(); 
+            const tipo = document.getElementById('trans-tipo').value;
+            const desc = document.getElementById('trans-desc').value;
+            const cat = document.getElementById('trans-cat').value;
+            const dataCompra = document.getElementById('trans-data-compra').value;
+            const dataPagamento = document.getElementById('trans-data').value;
+            const valorTotal = parseFloat(document.getElementById('trans-valor').value);
+            const parcelas = parseInt(document.getElementById('trans-parcelas').value) || 1;
+
+            const [cAno, cMes, cDia] = dataCompra.split('-');
+            const dataCompraFormatada = `${cDia}/${cMes}/${cAno}`;
+
+            if (parcelas > 1) {
+                const valorParcela = valorTotal / parcelas;
+                for (let i = 1; i <= parcelas; i++) {
+                    let [ano, mes, dia] = dataPagamento.split('-');
+                    
+                    let dataFutura = new Date(parseInt(ano), parseInt(mes) - 1 + (i - 1), parseInt(dia));
+                    let dataFormatada = `${dataFutura.getFullYear()}-${String(dataFutura.getMonth() + 1).padStart(2, '0')}-${String(dataFutura.getDate()).padStart(2, '0')}`;
+
+                    transacoes.push({ 
+                        id: Date.now() + i, 
+                        tipo: tipo, 
+                        desc: `${desc} [Compra: ${dataCompraFormatada}] (${i}/${parcelas})`, 
+                        cat: cat, 
+                        data: dataFormatada, 
+                        valor: valorParcela 
+                    });
+                }
+            } else {
+                const notaCompra = dataCompra !== dataPagamento ? ` [Compra: ${dataCompraFormatada}]` : '';
+                transacoes.push({ 
+                    id: Date.now(), 
+                    tipo: tipo, 
+                    desc: desc + notaCompra, 
+                    cat: cat, 
+                    data: dataPagamento, 
+                    valor: valorTotal 
+                });
+            }
+            
+            document.getElementById('trans-valor').value = ''; 
+            document.getElementById('trans-parcelas').value = '1'; 
+            document.getElementById('trans-data-compra').value = '';
+            toggleFormTransacao(); 
+            salvarNoBanco(); 
+        }
+
         function renderizarTransacoes() {
             const corpo = document.getElementById('corpo-tabela-transacoes'); corpo.innerHTML = '';
             
@@ -971,12 +1025,10 @@
             calcularTotaisTransacoes();
         }
 
-        // --- CORREÇÃO DA BUSCA ---
         function filtrarTabelaTransacoes() { 
             const inputs = document.querySelectorAll('#tabela-transacoes thead input'); 
             const rows = document.querySelectorAll('#corpo-tabela-transacoes tr'); 
             
-            // Verifica se tem QUALQUER filtro de texto digitado
             let temFiltroAtivo = false;
             inputs.forEach(input => {
                 if (input.value.trim() !== '') temFiltroAtivo = true;
@@ -984,7 +1036,6 @@
 
             rows.forEach(row => { 
                 if (!row.hasAttribute('data-valor')) {
-                    // É a linha cinza do grupo de Mês. Se estiver buscando, esconde. Se não, mostra.
                     row.style.display = temFiltroAtivo ? 'none' : '';
                     return; 
                 }
