@@ -1,3 +1,12 @@
+Você tem toda a razão. Da forma como eu havia feito, o formulário simples do dia a dia acabou ficando poluído com informações que você só vai usar de vez em quando. A regra de ouro de um bom software é manter a interface limpa!
+
+Refiz a lógica. Agora, quando você clicar em **"+ Nova Transação"**, o formulário voltará a ser exatamente como era antes: simples, rápido e direto ao ponto (apenas Valor e Data).
+
+Porém, adicionei uma caixinha de seleção (checkbox) chamada **"💳 Compra no Cartão / Parcelada"**. Somente se você marcar essa caixinha é que os campos de "Data da Compra", "Vencimento" e "Parcelas" vão aparecer magicamente na tela. Se deixar desmarcado, ele salva à vista como sempre fez.
+
+Aqui está o código completo com a interface limpa e a opção "escondida" no botão. Basta copiar e substituir tudo:
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -103,6 +112,11 @@
         ul.lista-gerenciador { list-style: none; margin-bottom: 15px; max-height: 180px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 5px; }
         ul.lista-gerenciador li { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; align-items: center; font-size: 0.9em; }
         ul.lista-gerenciador li:last-child { border-bottom: none; }
+        
+        /* Estilo do toggle de cartão */
+        .toggle-cartao { grid-column: 1 / -1; margin-bottom: 10px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #ccc; display: flex; align-items: center; gap: 10px; }
+        .toggle-cartao label { margin-bottom: 0; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: normal; color: #333;}
+        .toggle-cartao input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -229,11 +243,23 @@
             <form id="form-transacao" onsubmit="adicionarTransacao(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.3s ease-in-out; margin-bottom: 20px;">
                 <div style="grid-column: 1 / -1;"><h3 style="font-size: 1.1em; color: #1a1a2e; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Registrar Movimentação</h3></div>
                 
+                <div class="toggle-cartao">
+                    <label>
+                        <input type="checkbox" id="trans-is-cartao" onchange="toggleCartaoFields()">
+                        💳 Compra no Cartão de Crédito / Parcelada
+                    </label>
+                </div>
+
                 <div><label>Tipo:</label><select id="trans-tipo"><option value="despesa">Saída (Despesa)</option><option value="entrada">Entrada (Receita)</option></select></div>
                 <div><label>Descrição:</label><div style="display: flex; gap: 5px;"><select id="trans-desc" style="flex: 1;" required></select><button type="button" class="btn-acao secundario" style="width: auto; padding: 10px; margin: 0;" onclick="abrirModalGerenciador('descricoes')" title="Gerenciar Descrições">⚙️</button></div></div>
                 <div><label>Categoria:</label><div style="display: flex; gap: 5px;"><select id="trans-cat" style="flex: 1;" required></select><button type="button" class="btn-acao secundario" style="width: auto; padding: 10px; margin: 0;" onclick="abrirModalGerenciador('categorias')" title="Gerenciar Categorias">⚙️</button></div></div>
-                <div><label>Data:</label><input type="date" id="trans-data" required></div>
-                <div><label>Valor (R$):</label><input type="number" id="trans-valor" step="0.01" required></div>
+                
+                <div id="box-data-compra" style="display: none;"><label>Data da Compra:</label><input type="date" id="trans-data-compra"></div>
+                <div><label id="label-trans-data">Data:</label><input type="date" id="trans-data" required></div>
+                
+                <div><label>Valor Total (R$):</label><input type="number" id="trans-valor" step="0.01" required></div>
+                <div id="box-parcelas" style="display: none;"><label>Parcelas:</label><input type="number" id="trans-parcelas" value="1" min="1"></div>
+                
                 <button type="submit" style="margin-top:0;">Salvar Transação</button>
             </form>
 
@@ -574,7 +600,7 @@
         };
 
         // =========================================================
-        // 2. LOGIN E AUTENTICAÇÃO E ATUALIZAÇÃO DINÂMICA DE DATAS
+        // 2. LOGIN E AUTENTICAÇÃO
         // =========================================================
         auth.onAuthStateChanged(user => {
             const cab = document.getElementById('cabecalho-app');
@@ -916,10 +942,99 @@
         }
 
         // =========================================================
-        // 5. TRANSAÇÕES
+        // 5. TRANSAÇÕES (Com Toggle de Cartão de Crédito)
         // =========================================================
-        function toggleFormTransacao() { const f = document.getElementById('form-transacao'); f.style.display = (f.style.display === 'none' || f.style.display === '') ? 'grid' : 'none'; }
-        function adicionarTransacao(e) { e.preventDefault(); transacoes.push({ id: Date.now(), tipo: document.getElementById('trans-tipo').value, desc: document.getElementById('trans-desc').value, cat: document.getElementById('trans-cat').value, data: document.getElementById('trans-data').value, valor: parseFloat(document.getElementById('trans-valor').value) }); document.getElementById('trans-valor').value = ''; toggleFormTransacao(); salvarNoBanco(); }
+        function toggleCartaoFields() {
+            const isCartao = document.getElementById('trans-is-cartao').checked;
+            const boxCompra = document.getElementById('box-data-compra');
+            const boxParcelas = document.getElementById('box-parcelas');
+            const labelData = document.getElementById('label-trans-data');
+            const inputCompra = document.getElementById('trans-data-compra');
+
+            if(isCartao) {
+                boxCompra.style.display = 'block';
+                boxParcelas.style.display = 'block';
+                labelData.innerText = 'Vencimento da Fatura:';
+                inputCompra.required = true;
+            } else {
+                boxCompra.style.display = 'none';
+                boxParcelas.style.display = 'none';
+                labelData.innerText = 'Data:';
+                inputCompra.required = false;
+            }
+        }
+
+        function toggleFormTransacao() { 
+            const f = document.getElementById('form-transacao'); 
+            if(f.style.display === 'none' || f.style.display === '') {
+                f.reset();
+                document.getElementById('trans-is-cartao').checked = false;
+                toggleCartaoFields(); // Reseta para o modo simples (oculta cartão)
+                f.style.display = 'grid';
+            } else {
+                f.style.display = 'none';
+            }
+        }
+        
+        function adicionarTransacao(e) { 
+            e.preventDefault(); 
+            const tipo = document.getElementById('trans-tipo').value;
+            const desc = document.getElementById('trans-desc').value;
+            const cat = document.getElementById('trans-cat').value;
+            const dataPagamento = document.getElementById('trans-data').value;
+            const valorTotal = parseFloat(document.getElementById('trans-valor').value);
+            
+            const isCartao = document.getElementById('trans-is-cartao').checked;
+
+            if (isCartao) {
+                const dataCompra = document.getElementById('trans-data-compra').value;
+                const parcelas = parseInt(document.getElementById('trans-parcelas').value) || 1;
+                const [cAno, cMes, cDia] = dataCompra.split('-');
+                const dataCompraFormatada = `${cDia}/${cMes}/${cAno}`;
+
+                if (parcelas > 1) {
+                    const valorParcela = valorTotal / parcelas;
+                    for (let i = 1; i <= parcelas; i++) {
+                        let [ano, mes, dia] = dataPagamento.split('-');
+                        let dataFutura = new Date(parseInt(ano), parseInt(mes) - 1 + (i - 1), parseInt(dia));
+                        let dataFormatada = `${dataFutura.getFullYear()}-${String(dataFutura.getMonth() + 1).padStart(2, '0')}-${String(dataFutura.getDate()).padStart(2, '0')}`;
+
+                        transacoes.push({ 
+                            id: Date.now() + i, 
+                            tipo: tipo, 
+                            desc: `${desc} [Compra: ${dataCompraFormatada}] (${i}/${parcelas})`, 
+                            cat: cat, 
+                            data: dataFormatada, 
+                            valor: valorParcela 
+                        });
+                    }
+                } else {
+                    const notaCompra = dataCompra !== dataPagamento ? ` [Compra: ${dataCompraFormatada}]` : '';
+                    transacoes.push({ 
+                        id: Date.now(), 
+                        tipo: tipo, 
+                        desc: desc + notaCompra, 
+                        cat: cat, 
+                        data: dataPagamento, 
+                        valor: valorTotal 
+                    });
+                }
+            } else {
+                // Fluxo Normal (Dinheiro/Pix/Débito)
+                transacoes.push({ 
+                    id: Date.now(), 
+                    tipo: tipo, 
+                    desc: desc, 
+                    cat: cat, 
+                    data: dataPagamento, 
+                    valor: valorTotal 
+                });
+            }
+            
+            toggleFormTransacao(); 
+            salvarNoBanco(); 
+        }
+
         function renderizarTransacoes() {
             const corpo = document.getElementById('corpo-tabela-transacoes'); corpo.innerHTML = '';
             
@@ -971,12 +1086,10 @@
             calcularTotaisTransacoes();
         }
 
-        // --- CORREÇÃO DA BUSCA ---
         function filtrarTabelaTransacoes() { 
             const inputs = document.querySelectorAll('#tabela-transacoes thead input'); 
             const rows = document.querySelectorAll('#corpo-tabela-transacoes tr'); 
             
-            // Verifica se tem QUALQUER filtro de texto digitado
             let temFiltroAtivo = false;
             inputs.forEach(input => {
                 if (input.value.trim() !== '') temFiltroAtivo = true;
@@ -984,7 +1097,6 @@
 
             rows.forEach(row => { 
                 if (!row.hasAttribute('data-valor')) {
-                    // É a linha cinza do grupo de Mês. Se estiver buscando, esconde. Se não, mostra.
                     row.style.display = temFiltroAtivo ? 'none' : '';
                     return; 
                 }
@@ -1699,3 +1811,4 @@
     </script>
 </body>
 </html>
+```
