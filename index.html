@@ -444,15 +444,15 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
                 <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📥 Importar Arquivo CSV</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: banco; data; valor; taxa; liquidez; vencimento.</p>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: banco; tipoInvestimento; data; valor; taxa; liquidez; vencimento.</p>
                     <input type="file" id="input-csv-inv" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" onclick="importarCSV('investimentos')">Carregar CSV Investimentos</button>
                 </div>
 
                 <div class="card" style="border-top: 4px solid #0f3460; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato: <strong>banco;data;valor;taxa;liquidez;vencimento</strong></p>
-                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Ex: C6;2024-10-21;301.00;103.0;Sim;2026-10-21</p>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato: <strong>banco;tipoInvestimento;data;valor;taxa;liquidez;vencimento</strong></p>
+                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Ex: C6;CDB/LC;2024-10-21;301.00;103.0;Sim;2026-10-21</p>
                     <textarea id="input-csv-texto-inv" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
                     <button type="button" class="btn-acao secundario" style="background-color: #0f3460;" onclick="importarCSVTexto('investimentos')">Importar Texto Colado</button>
                 </div>
@@ -469,15 +469,15 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📥 Importar Arquivo CSV</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: <strong>descrição;categoria;data;valor</strong></p>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: <strong>data;descrição;valor</strong></p>
                     <input type="file" id="input-csv-trans" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSV('transacoes')">Carregar CSV Transações</button>
                 </div>
 
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato 4 colunas: <strong>descrição;categoria;data;valor</strong></p>
-                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Dica: Use <strong>(-)</strong> para saídas e <strong>(+)</strong> para entradas!<br>Ex: Mercado;Alimentação;2024-10-21;<strong>-150.50</strong></p>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato 3 colunas: <strong>data;descrição;valor</strong></p>
+                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Dica: Use <strong>(-)</strong> para saídas e <strong>(+)</strong> para entradas!<br>Ex: 2024-10-21;Mercado;<strong>-150.50</strong></p>
                     <textarea id="input-csv-texto-trans" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSVTexto('transacoes')">Importar Texto Colado</button>
                 </div>
@@ -789,7 +789,7 @@
             // PARTE A: CARTEIRA
             carteira.forEach(inv => {
                 const isResgatado = !!inv.dataResgate;
-                const tipoInv = inv.tipoInvestimento || 'CDB/LC'; // Retrocompatibilidade (dados velhos assumem CDB)
+                const tipoInv = inv.tipoInvestimento || 'CDB/LC'; 
                 
                 const [ano, mes, dia] = inv.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
                 let dataFim = projetarCDI ? new Date() : new Date(); 
@@ -809,7 +809,6 @@
                 let vAtual = Math.round((valOriginal * fatorAcumulado) * 100) / 100;
                 const dias = Math.ceil(Math.abs(dataFim - dataInv) / (1000 * 60 * 60 * 24));
                 
-                // NOVO CÁLCULO DE IR
                 let ir = 0;
                 if (tipoInv !== 'LCI/LCA') {
                     if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5; else ir = 15;
@@ -1263,7 +1262,7 @@
                         valorBrutoAtual: bAtual,
                         taxa: parseFloat(inv.taxa),
                         vencimento: inv.vencimento ? new Date(inv.vencimento + 'T00:00:00') : null,
-                        tipoInvestimento: inv.tipoInvestimento || 'CDB/LC' // NOVO: Passa o tipo para a projeção
+                        tipoInvestimento: inv.tipoInvestimento || 'CDB/LC' 
                     });
                     somaBrutoAtual += bAtual;
                     somaLiquidoAtual += (inv.liqCalculado || bAtual);
@@ -1285,7 +1284,7 @@
                             valorBrutoAtual: bAtual,
                             taxa: parseFloat(ap.taxa),
                             vencimento: null,
-                            tipoInvestimento: 'CDB/LC' // Caixinhas sempre tributadas
+                            tipoInvestimento: 'CDB/LC'
                         });
                         somaBrutoAtual += bAtual;
                         somaLiquidoAtual += (ap.liqCalculado || bAtual);
@@ -1368,7 +1367,6 @@
 
                     const diasCorridosTotais = Math.ceil(Math.abs(dataReferenciaCalculo - inv.dataInicio) / (1000 * 60 * 60 * 24));
                     
-                    // LÓGICA DE IR NA PROJEÇÃO (Isenta LCI/LCA)
                     let ir = 0;
                     if (inv.tipoInvestimento !== 'LCI/LCA') {
                         if (diasCorridosTotais <= 180) ir = 22.5;
@@ -1753,11 +1751,11 @@
                 const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); 
             } else if (tipo === 'transacoes') {
                 if(transacoes.length===0) return alert("Sem dados de transações."); 
-                let csv="descricao;categoria;data;valor\n"; 
+                let csv="data;descricao;valor\n"; 
                 transacoes.forEach(t=>{ 
                     const sinal = t.tipo === 'entrada' ? '+' : '-';
                     const val = t.valor.toString().replace('.', ','); 
-                    csv+=`${t.desc.replace(/;/g,'')};${t.cat.replace(/;/g,'')};${t.data};${sinal}${val}\n`;
+                    csv+=`${t.data};${t.desc.replace(/;/g,'')};${sinal}${val}\n`;
                 }); 
                 const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="transacoes.csv"; link.click(); 
             }
@@ -1791,7 +1789,6 @@
                     const c = linhaLimpa.split(sep); 
                     
                     if(tipo === 'investimentos' && c.length >= 4) { 
-                        // Lógica de compatibilidade: se o CSV antigo não tinha coluna "Tipo", ele assume CDB/LC
                         let b = c[0].trim();
                         let tipoInv = 'CDB/LC';
                         let offset = 0;
@@ -1808,21 +1805,17 @@
                         const ven = c[5 + offset] ? c[5 + offset].trim() : "";
                         
                         if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, tipoInvestimento:tipoInv, data:d, valor:v, taxa:t, liquidez:liq, vencimento:ven}); q++; } 
-                    } else if (tipo === 'transacoes' && c.length >= 4) {
-                        let offset = 0;
-                        let p1 = c[0].trim().toLowerCase();
-                        if(p1 === 'entrada' || p1 === 'saída' || p1 === 'saida' || p1 === 'despesa' || p1 === 'receita' || p1 === 'ajuste') offset = 1;
-                        
-                        const desc = c[0 + offset] ? c[0 + offset].trim() : ""; 
-                        const cat = c[1 + offset] ? c[1 + offset].trim() : ""; 
-                        const d = c[2 + offset] ? c[2 + offset].trim() : "";
-                        let strVal = c[3 + offset];
+                    } else if (tipo === 'transacoes' && c.length >= 3) {
+                        const d = c[0].trim(); 
+                        const desc = c[1] ? c[1].trim() : ""; 
+                        let strVal = c[2];
 
                         if (strVal) {
                             let vOriginal = parseFloat(strVal.replace(',','.'));
                             if(desc && d && !isNaN(vOriginal)) {
                                 let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
                                 let vFinal = Math.abs(vOriginal); 
+                                let cat = "Outros"; 
 
                                 if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
                                 if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
@@ -1840,7 +1833,7 @@
             const texto = document.getElementById(inputId).value.trim();
             if(!texto) return alert("Cole os dados no campo de texto primeiro.");
             const l = texto.split('\n'); let q = 0; let inicio = 0;
-            if(l[0].toLowerCase().includes(tipo === 'investimentos' ? 'banco' : 'descri')) inicio = 1;
+            if(l[0].toLowerCase().includes(tipo === 'investimentos' ? 'banco' : 'data')) inicio = 1;
             for(let i = inicio; i < l.length; i++){
                 if(l[i].trim() === '') continue; 
                 let linhaLimpa = l[i].replace(/"/g, '');
@@ -1864,21 +1857,17 @@
                     const ven = c[5 + offset] ? c[5 + offset].trim() : "";
                     
                     if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: Date.now() + i, banco: b, tipoInvestimento: tipoInv, data: d, valor: v, taxa: t, liquidez: liq, vencimento: ven}); q++; }
-                } else if (tipo === 'transacoes' && c.length >= 4) {
-                    let offset = 0;
-                    let p1 = c[0].trim().toLowerCase();
-                    if(p1 === 'entrada' || p1 === 'saída' || p1 === 'saida' || p1 === 'despesa' || p1 === 'receita' || p1 === 'ajuste') offset = 1;
-                    
-                    const desc = c[0 + offset] ? c[0 + offset].trim() : ""; 
-                    const cat = c[1 + offset] ? c[1 + offset].trim() : ""; 
-                    const d = c[2 + offset] ? c[2 + offset].trim() : "";
-                    let strVal = c[3 + offset];
+                } else if (tipo === 'transacoes' && c.length >= 3) {
+                    const d = c[0].trim(); 
+                    const desc = c[1] ? c[1].trim() : ""; 
+                    let strVal = c[2];
 
                     if (strVal) {
                         let vOriginal = parseFloat(strVal.replace(',','.'));
                         if(desc && d && !isNaN(vOriginal)) {
                             let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
                             let vFinal = Math.abs(vOriginal); 
+                            let cat = "Outros";
 
                             if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
                             if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
