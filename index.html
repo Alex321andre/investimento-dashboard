@@ -469,7 +469,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📥 Importar Arquivo CSV</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: <strong>data;descrição;valor</strong></p>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: <strong>data;descrição;valor</strong><br><span style="color: #dc3545; font-weight: bold;">(Os sinais serão invertidos automaticamente)</span></p>
                     <input type="file" id="input-csv-trans" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSV('transacoes')">Carregar CSV Transações</button>
                 </div>
@@ -477,7 +477,7 @@
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
                     <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato 3 colunas: <strong>data;descrição;valor</strong></p>
-                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Dica: Use <strong>(-)</strong> para saídas e <strong>(+)</strong> para entradas!<br>Ex: 2024-10-21;Mercado;<strong>-150.50</strong></p>
+                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Dica: Os sinais serão <strong>invertidos automaticamente</strong> para se adaptar ao seu banco!<br>Ex: 2024-10-21;Mercado;<strong>150.50</strong> (Será lido como Saída)</p>
                     <textarea id="input-csv-texto-trans" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSVTexto('transacoes')">Importar Texto Colado</button>
                 </div>
@@ -1811,7 +1811,8 @@
                         let strVal = c[2];
 
                         if (strVal) {
-                            let vOriginal = parseFloat(strVal.replace(',','.'));
+                            // MULTIPLY BY -1 TO INVERT THE SIGN
+                            let vOriginal = parseFloat(strVal.replace(',','.')) * -1;
                             if(desc && d && !isNaN(vOriginal)) {
                                 let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
                                 let vFinal = Math.abs(vOriginal); 
@@ -1863,7 +1864,8 @@
                     let strVal = c[2];
 
                     if (strVal) {
-                        let vOriginal = parseFloat(strVal.replace(',','.'));
+                        // MULTIPLY BY -1 TO INVERT THE SIGN
+                        let vOriginal = parseFloat(strVal.replace(',','.')) * -1;
                         if(desc && d && !isNaN(vOriginal)) {
                             let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
                             let vFinal = Math.abs(vOriginal); 
