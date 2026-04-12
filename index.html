@@ -833,13 +833,30 @@
 
         async function carregarCDI() {
             try {
-                const hoje = new Date(); const dIni = new Date(); dIni.setFullYear(hoje.getFullYear() - 9);
+                document.getElementById('status-api').innerHTML = "⏳ Baixando histórico do CDI em lotes...";
+                const hoje = new Date();
+                const anoAtual = hoje.getFullYear();
+                const anoInicialBase = 2010;
+                const tamanhoLote = 5;
+                let promessasFetch = [];
                 const formata = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
-                const res = await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${formata(dIni)}&dataFinal=${formata(hoje)}`);
-                serieCDI = await res.json();
+
+                for (let ano = anoInicialBase; ano <= anoAtual; ano += tamanhoLote) {
+                    let dataIniLote = new Date(ano, 0, 1);
+                    let dataFimLote = new Date(ano + tamanhoLote - 1, 11, 31);
+                    if (dataFimLote > hoje) dataFimLote = hoje;
+                    const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${formata(dataIniLote)}&dataFinal=${formata(dataFimLote)}`;
+                    promessasFetch.push(fetch(url).then(res => res.json()));
+                }
+
+                const resultadosEmLotes = await Promise.all(promessasFetch);
+                serieCDI = resultadosEmLotes.flat();
+
                 let textoStatus = "✅ API e Nuvem OK!";
                 if(serieCDI.length > 0) {
-                    const dtIni = serieCDI[0].data; const ultimoRegistro = serieCDI[serieCDI.length - 1]; const dtFim = ultimoRegistro.data;
+                    const dtIni = serieCDI[0].data;
+                    const ultimoRegistro = serieCDI[serieCDI.length - 1];
+                    const dtFim = ultimoRegistro.data;
                     textoStatus += ` (CDI de ${dtIni} até ${dtFim})`;
                     let taxaDiaria = parseFloat(ultimoRegistro.valor) / 100;
                     let fatorDia = truncaFatorB3(1 + taxaDiaria);
@@ -847,7 +864,10 @@
                 }
                 document.getElementById('status-api').innerHTML = textoStatus;
                 processarCarteira();
-            } catch (e) { document.getElementById('status-api').innerText = " Erro na API do BCB."; }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('status-api').innerText = "❌ Erro ao baixar dados do BCB.";
+            }
         }
 
         function processarCarteira() {
