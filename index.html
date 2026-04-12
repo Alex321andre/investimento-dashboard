@@ -108,6 +108,10 @@
         .toggle-cartao { grid-column: 1 / -1; margin-bottom: 10px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #ccc; display: flex; align-items: center; gap: 10px; }
         .toggle-cartao label { margin-bottom: 0; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: normal; color: #333;}
         .toggle-cartao input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+        
+        .banco-selector { background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 15px; }
+        .banco-selector label { display: inline-block; margin-right: 10px; font-weight: bold; color: #0f3460; }
+        .banco-selector select { width: auto; display: inline-block; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -466,19 +470,28 @@
             </div>
 
             <h3 style="color: #e94560; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 5px;">💸 Dados de Transações (Caixa)</h3>
+            
+            <div class="banco-selector">
+                <label>Selecione o formato do seu Banco:</label>
+                <select id="banco-importacao-trans">
+                    <option value="nubank">Nubank (3 Colunas: data;descrição;valor)</option>
+                    <option value="c6">C6 Bank (Fatura - 9 Colunas)</option>
+                </select>
+                <p style="font-size: 0.85em; color: #666; margin-top: 5px;">O sistema inverterá automaticamente os sinais para garantir que as compras sejam registradas como Saídas.</p>
+            </div>
+
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📥 Importar Arquivo CSV</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Formato: <strong>data;descrição;valor</strong><br><span style="color: #dc3545; font-weight: bold;">(Os sinais serão invertidos automaticamente)</span></p>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Envie o arquivo direto do seu aplicativo.</p>
                     <input type="file" id="input-csv-trans" accept=".csv" style="width: 100%; margin-bottom: 10px;">
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSV('transacoes')">Carregar CSV Transações</button>
                 </div>
 
                 <div class="card" style="border-top: 4px solid #e94560; margin-top: 0;">
                     <h3 style="font-size: 1.1em;">📋 Importar via Texto</h3>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Formato 3 colunas: <strong>data;descrição;valor</strong></p>
-                    <p style="font-size: 0.8em; color: #dc3545; margin-bottom: 10px;">Dica: Os sinais serão <strong>invertidos automaticamente</strong> para se adaptar ao seu banco!<br>Ex: 2024-10-21;Mercado;<strong>150.50</strong> (Será lido como Saída)</p>
-                    <textarea id="input-csv-texto-trans" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 5px;">Cole as linhas do seu CSV aqui.</p>
+                    <textarea id="input-csv-texto-trans" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; resize: vertical;" placeholder="Cole o texto CSV aqui..."></textarea>
                     <button type="button" class="btn-acao secundario" style="background-color: #e94560; border-color: #e94560;" onclick="importarCSVTexto('transacoes')">Importar Texto Colado</button>
                 </div>
 
@@ -1782,6 +1795,9 @@
             const r = new FileReader(); 
             r.onload = function(e){ 
                 const l = e.target.result.split('\n'); let q = 0; 
+                
+                const bancoOrigem = document.getElementById('banco-importacao-trans') ? document.getElementById('banco-importacao-trans').value : 'nubank';
+
                 for(let i=1; i<l.length; i++){ 
                     if(l[i].trim() === '') continue;
                     let linhaLimpa = l[i].replace(/"/g, ''); 
@@ -1805,22 +1821,50 @@
                         const ven = c[5 + offset] ? c[5 + offset].trim() : "";
                         
                         if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, tipoInvestimento:tipoInv, data:d, valor:v, taxa:t, liquidez:liq, vencimento:ven}); q++; } 
-                    } else if (tipo === 'transacoes' && c.length >= 3) {
-                        const d = c[0].trim(); 
-                        const desc = c[1] ? c[1].trim() : ""; 
-                        let strVal = c[2];
+                    } else if (tipo === 'transacoes') {
+                        if (bancoOrigem === 'nubank' && c.length >= 3) {
+                            const d = c[0].trim(); 
+                            const desc = c[1] ? c[1].trim() : ""; 
+                            let strVal = c[2];
 
-                        if (strVal) {
-                            // MULTIPLY BY -1 TO INVERT THE SIGN
-                            let vOriginal = parseFloat(strVal.replace(',','.')) * -1;
-                            if(desc && d && !isNaN(vOriginal)) {
-                                let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
-                                let vFinal = Math.abs(vOriginal); 
-                                let cat = "Outros"; 
+                            if (strVal) {
+                                // INVERT THE SIGN FOR NUBANK
+                                let vOriginal = parseFloat(strVal.replace(',','.')) * -1;
+                                if(desc && d && !isNaN(vOriginal)) {
+                                    let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
+                                    let vFinal = Math.abs(vOriginal); 
+                                    let cat = "Outros"; 
 
-                                if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
-                                if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
-                                transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                                    if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
+                                    if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
+                                    transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                                }
+                            }
+                        } else if (bancoOrigem === 'c6' && c.length >= 9) {
+                            const dataRaw = c[0].trim(); // DD/MM/YYYY
+                            const cat = c[3] ? c[3].trim() : "Outros";
+                            const desc = c[4] ? c[4].trim() : "";
+                            let strVal = c[8];
+
+                            if (dataRaw && strVal) {
+                                // CONVERT DATE DD/MM/YYYY to YYYY-MM-DD
+                                const partes = dataRaw.split('/');
+                                let d = dataRaw;
+                                if (partes.length === 3) {
+                                    d = `${partes[2]}-${partes[1]}-${partes[0]}`;
+                                }
+
+                                // INVERT THE SIGN FOR C6
+                                let vOriginal = parseFloat(strVal.replace(',','.')) * -1;
+                                
+                                if (desc && d && !isNaN(vOriginal)) {
+                                    let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
+                                    let vFinal = Math.abs(vOriginal);
+
+                                    if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
+                                    if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
+                                    transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                                }
                             }
                         }
                     }
@@ -1834,7 +1878,11 @@
             const texto = document.getElementById(inputId).value.trim();
             if(!texto) return alert("Cole os dados no campo de texto primeiro.");
             const l = texto.split('\n'); let q = 0; let inicio = 0;
+            
+            const bancoOrigem = document.getElementById('banco-importacao-trans') ? document.getElementById('banco-importacao-trans').value : 'nubank';
+
             if(l[0].toLowerCase().includes(tipo === 'investimentos' ? 'banco' : 'data')) inicio = 1;
+            
             for(let i = inicio; i < l.length; i++){
                 if(l[i].trim() === '') continue; 
                 let linhaLimpa = l[i].replace(/"/g, '');
@@ -1858,22 +1906,50 @@
                     const ven = c[5 + offset] ? c[5 + offset].trim() : "";
                     
                     if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: Date.now() + i, banco: b, tipoInvestimento: tipoInv, data: d, valor: v, taxa: t, liquidez: liq, vencimento: ven}); q++; }
-                } else if (tipo === 'transacoes' && c.length >= 3) {
-                    const d = c[0].trim(); 
-                    const desc = c[1] ? c[1].trim() : ""; 
-                    let strVal = c[2];
+                } else if (tipo === 'transacoes') {
+                    if (bancoOrigem === 'nubank' && c.length >= 3) {
+                        const d = c[0].trim(); 
+                        const desc = c[1] ? c[1].trim() : ""; 
+                        let strVal = c[2];
 
-                    if (strVal) {
-                        // MULTIPLY BY -1 TO INVERT THE SIGN
-                        let vOriginal = parseFloat(strVal.replace(',','.')) * -1;
-                        if(desc && d && !isNaN(vOriginal)) {
-                            let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
-                            let vFinal = Math.abs(vOriginal); 
-                            let cat = "Outros";
+                        if (strVal) {
+                            // INVERT THE SIGN FOR NUBANK
+                            let vOriginal = parseFloat(strVal.replace(',','.')) * -1;
+                            if(desc && d && !isNaN(vOriginal)) {
+                                let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
+                                let vFinal = Math.abs(vOriginal); 
+                                let cat = "Outros";
 
-                            if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
-                            if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
-                            transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                                if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
+                                if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
+                                transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                            }
+                        }
+                    } else if (bancoOrigem === 'c6' && c.length >= 9) {
+                        const dataRaw = c[0].trim(); 
+                        const cat = c[3] ? c[3].trim() : "Outros";
+                        const desc = c[4] ? c[4].trim() : "";
+                        let strVal = c[8];
+
+                        if (dataRaw && strVal) {
+                            // CONVERT DATE DD/MM/YYYY to YYYY-MM-DD
+                            const partes = dataRaw.split('/');
+                            let d = dataRaw;
+                            if (partes.length === 3) {
+                                d = `${partes[2]}-${partes[1]}-${partes[0]}`;
+                            }
+
+                            // INVERT THE SIGN FOR C6
+                            let vOriginal = parseFloat(strVal.replace(',','.')) * -1;
+                            
+                            if (desc && d && !isNaN(vOriginal)) {
+                                let tp = vOriginal >= 0 ? 'entrada' : 'despesa';
+                                let vFinal = Math.abs(vOriginal);
+
+                                if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
+                                if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
+                                transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                            }
                         }
                     }
                 }
