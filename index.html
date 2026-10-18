@@ -819,31 +819,40 @@
             return cdiEfetivo;
         }
 
-        // --- FUNÇÃO CORRIGIDA ABAIXO (Resolve definitivamente o Erro 406 com Proxy) --- //
+        // --- FUNÇÃO CORRIGIDA COM DUPLA REDUNDÂNCIA DE PROXY --- //
         async function carregarCDI() {
-            try {
-                document.getElementById('status-api').innerHTML = "⏳ A ligar a um servidor seguro alternativo (A contornar a Firewall do BCB)...";
-                
-                // Usamos a API do Banco Central, mas agora através de um Proxy CORS seguro (AllOrigins).
-                // Isto resolve definitivamente o Erro 406, pois o pedido é feito pelo servidor do proxy,
-                // que tem uma assinatura autorizada e ignorada pela firewall do Banco Central, enviando os dados em bruto de volta para o seu navegador.
-                const urlBCB = encodeURIComponent('https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json');
-                const proxyUrl = `https://api.allorigins.win/raw?url=${urlBCB}`;
-                
-                // Pedido simples GET sem cabeçalhos customizados para evitar problemas de bloqueio
-                const res = await fetch(proxyUrl);
-                
-                if (!res.ok) {
-                    throw new Error(`Status ${res.status}`);
-                }
-                
-                const jsonResposta = await res.json();
-                
-                if (!Array.isArray(jsonResposta)) {
-                    throw new Error("Formato inesperado recebido do servidor.");
-                }
+            document.getElementById('status-api').innerHTML = "⏳ A ligar ao servidor seguro de cotações...";
+            
+            const urlAlvo = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json';
+            
+            // Lista de Proxies em Cascata (se o primeiro falhar por instabilidade, o segundo assume automaticamente)
+            const proxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(urlAlvo)}`,
+                `https://thingproxy.freeboard.io/fetch/${urlAlvo}`
+            ];
 
-                // Filtramos os dados localmente para garantir apenas os registos relevantes (a partir de 2010), mantendo a performance
+            let jsonResposta = null;
+
+            for (let i = 0; i < proxies.length; i++) {
+                try {
+                    const res = await fetch(proxies[i]);
+                    if (res.ok) {
+                        jsonResposta = await res.json();
+                        if (Array.isArray(jsonResposta) && jsonResposta.length > 0) {
+                            break; // Sucesso obtido com este proxy
+                        }
+                    }
+                } catch (err) {
+                    console.warn(`Tentativa ${i + 1} falhou. A testar alternativa...`, err);
+                }
+            }
+
+            if (!jsonResposta || !Array.isArray(jsonResposta)) {
+                document.getElementById('status-api').innerHTML = `❌ Erro de Conexão: Não foi possível obter o histórico do BCB.`;
+                return;
+            }
+
+            try {
                 serieCDI = jsonResposta.filter(item => {
                     if (!item || !item.data || item.valor === undefined) return false;
                     const ano = parseInt(item.data.split('/')[2]);
@@ -872,7 +881,7 @@
 
             } catch (e) {
                 console.error(e);
-                document.getElementById('status-api').innerHTML = `❌ Erro de Conexão: ${e.message}`;
+                document.getElementById('status-api').innerHTML = `❌ Erro de Processamento: ${e.message}`;
             }
         }
         // --- FIM DA FUNÇÃO CORRIGIDA --- //
