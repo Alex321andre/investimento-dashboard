@@ -819,42 +819,40 @@
             return cdiEfetivo;
         }
 
-        // --- FUNÇÃO CORRIGIDA ABAIXO --- //
+        // --- FUNÇÃO CORRIGIDA ABAIXO (Resolve o Erro 406 e Otimiza a Carga) --- //
         async function carregarCDI() {
             try {
-                document.getElementById('status-api').innerHTML = "⏳ Baixando histórico do CDI (Acesso único seguro)...";
+                document.getElementById('status-api').innerHTML = "⏳ A descarregar histórico do CDI (Acesso global seguro)...";
                 
-                const hoje = new Date();
-                const formata = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json`;
                 
-                const dataInicial = "01/01/2010";
-                const dataFinal = formata(hoje);
-                
-                // 1. Faz UMA ÚNICA requisição para o período todo. 
-                // A API suporta isso tranquilamente e evita bloqueios (Rate Limit) do BCB.
-                const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${dataInicial}&dataFinal=${dataFinal}`;
-                
-                const res = await fetch(url);
+                const res = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
                 
                 if (!res.ok) {
-                    throw new Error(`Erro na API do BCB: Status ${res.status}`);
+                    throw new Error(`Status ${res.status}`);
                 }
                 
                 const jsonResposta = await res.json();
                 
-                // 2. Validação rigorosa: Verifica se realmente veio uma lista
                 if (!Array.isArray(jsonResposta)) {
-                    throw new Error("O BCB retornou um formato inesperado.");
+                    throw new Error("O BCB devolveu um formato inesperado.");
                 }
 
-                // 3. Filtra apenas os registros limpos (ignora mensagens de erro disfarçadas)
-                serieCDI = jsonResposta.filter(item => item && item.data && item.valor !== undefined);
+                serieCDI = jsonResposta.filter(item => {
+                    if (!item || !item.data || item.valor === undefined) return false;
+                    const ano = parseInt(item.data.split('/')[2]);
+                    return ano >= 2010;
+                });
 
                 if (serieCDI.length === 0) {
-                     throw new Error("A lista de CDI veio vazia.");
+                     throw new Error("A lista de CDI encontra-se vazia.");
                 }
 
-                // 4. Se chegou até aqui, os dados estão perfeitos para montar o Dashboard
                 let textoStatus = "✅ API e Nuvem OK!";
                 const dtIni = serieCDI[0].data;
                 const ultimoRegistro = serieCDI[serieCDI.length - 1];
@@ -1088,8 +1086,6 @@
                 row.style.display = mostrarLinha ? '' : 'none';
             });
 
-            // Após filtrar, se o checkbox de 'selecionar todos' estava ativo, precisamos desativar
-            // ou garantir que as lógicas fiquem limpas
             const chkAll = document.getElementById('chk-all-inv');
             if(chkAll) chkAll.checked = false;
             toggleSelectAll('inv');
@@ -1215,7 +1211,6 @@
             const fMes = document.getElementById('filtro-mes-trans').value, fAno = document.getElementById('filtro-ano-trans').value, fData = document.getElementById('filtro-data-trans').value;
             const tOrd = [...transacoes].sort((a,b) => new Date(b.data) - new Date(a.data)); let uGrp = "";
 
-            // Desmarca o Checkbox de "Selecionar Todos" sempre que a tabela for recarregada
             const chkAll = document.getElementById('chk-all-trans');
             if (chkAll) chkAll.checked = false;
             verificarSelecao('trans');
