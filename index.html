@@ -820,26 +820,34 @@
             return cdiEfetivo;
         }
 
+        // --- FUNÇÃO CORRIGIDA ABAIXO --- //
         async function carregarCDI() {
             try {
-                document.getElementById('status-api').innerHTML = "⏳ Baixando histórico do CDI em lotes...";
+                document.getElementById('status-api').innerHTML = "⏳ Baixando histórico do CDI (sequencial para evitar bloqueios)...";
                 const hoje = new Date();
                 const anoAtual = hoje.getFullYear();
                 const anoInicialBase = 2010;
                 const tamanhoLote = 5;
-                let promessasFetch = [];
+                let resultadosFinais = [];
                 const formata = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
 
                 for (let ano = anoInicialBase; ano <= anoAtual; ano += tamanhoLote) {
                     let dataIniLote = new Date(ano, 0, 1);
                     let dataFimLote = new Date(ano + tamanhoLote - 1, 11, 31);
                     if (dataFimLote > hoje) dataFimLote = hoje;
+                    
                     const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${formata(dataIniLote)}&dataFinal=${formata(dataFimLote)}`;
-                    promessasFetch.push(fetch(url).then(res => res.json()));
+                    
+                    const res = await fetch(url);
+                    if (!res.ok) {
+                        throw new Error(`Erro na API do BCB: Status ${res.status}`);
+                    }
+                    
+                    const loteJson = await res.json();
+                    resultadosFinais = resultadosFinais.concat(loteJson);
                 }
 
-                const resultadosEmLotes = await Promise.all(promessasFetch);
-                serieCDI = resultadosEmLotes.flat();
+                serieCDI = resultadosFinais;
 
                 let textoStatus = "✅ API e Nuvem OK!";
                 if(serieCDI.length > 0) {
@@ -855,9 +863,10 @@
                 processarCarteira();
             } catch (e) {
                 console.error(e);
-                document.getElementById('status-api').innerText = "❌ Erro ao baixar dados do BCB.";
+                document.getElementById('status-api').innerHTML = "❌ Erro ao baixar dados do BCB. Recarregue a página.";
             }
         }
+        // --- FIM DA FUNÇÃO CORRIGIDA --- //
 
         function processarCarteira() {
             const corpoTabela = document.getElementById('corpo-tabela'); corpoTabela.innerHTML = '';
@@ -1154,7 +1163,7 @@
                         transacoes.push({ 
                             id: Date.now() + i, 
                             tipo: tipo, 
-                            desc: `${desc} [Compra: ${dataCompraFormatada}] (${i}/${parcelas})`, 
+                            desc: `${desc} [Compra:${dataCompraFormatada}] (${i}/${parcelas})`, 
                             cat: cat, 
                             data: dataFormatada, 
                             valor: valorParcela 
@@ -1240,7 +1249,7 @@
                         <td>${t.desc}</td>
                         <td><span class="${bdg}">${t.cat||'Sem Categoria'}</span></td>
                         <td>${dia}/${mes}/${ano}</td>
-                        <td style="color:${cVal}; font-weight:bold;">${sin} ${fMoeda(valAbsoluto)}</td>
+                        <td style="color:${cVal}; font-weight:bold;">${sin}${fMoeda(valAbsoluto)}</td>
                         <td style="white-space:nowrap;"><button class="btn-editar" onclick="abrirEdicaoTransacao(${t.id})">Editar</button><button class="btn-excluir" onclick="deletarItem(${t.id}, 'trans')">Excluir</button></td>
                     </tr>`;
                 }
@@ -1339,7 +1348,7 @@
             listaMetas.forEach(m => {
                 let p = (m.liqAtual / m.alvo) * 100; if(p > 100) p = 100;
                 let htmlAportes = `<table style="width:100%; font-size:0.9em; margin-top:15px; border-top: 1px solid #eee; padding-top: 10px;"><tr style="text-align:left; color:#666; border-bottom:1px solid #ddd;"><th>Data</th><th>Investido</th><th>Taxa</th><th>Líquido Atual</th><th></th></tr>`;
-                if(m.aportes && m.aportes.length > 0) { m.aportes.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(ap => { const [ano, mes, dia] = ap.data.split('-'); htmlAportes += `<tr><td>${dia}/${mes}/${ano}</td><td>${fMoeda(ap.valor)}</td><td>${fTaxa(ap.taxa)}%</td><td style="color:blue; font-weight:bold;">${fMoeda(ap.liqCalculado||0)}</td><td style="text-align:right;"><button style="background:none;border:none;cursor:pointer;font-size:1.1em;margin-right:8px;" onclick="abrirAporte(${m.id}, ${ap.id})" title="Editar Aplicação">✏️</button><button style="background:none;border:none;cursor:pointer;font-size:1.1em;" onclick="deletarAporte(${m.id}, ${ap.id})" title="Excluir Aplicação">❌</button></td></tr>`; }); } htmlAportes += `</table>`;
+                if(m.aportes && m.aportes.length > 0) { m.aportes.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(ap => { const [ano, mes, dia] = ap.data.split('-'); htmlAportes += `<tr><td>${dia}/${mes}/${ano}</td><td>${fMoeda(ap.valor)}</td><td>${fTaxa(ap.taxa)}%</td><td style="color:blue; font-weight:bold;">${fMoeda(ap.liqCalculado||0)}</td><td style="text-align:right;"><button style="background:none;border:none;cursor:pointer;font-size:1.1em;margin-right:8px;" onclick="abrirAporte(${m.id},${ap.id})" title="Editar Aplicação">✏️</button><button style="background:none;border:none;cursor:pointer;font-size:1.1em;" onclick="deletarAporte(${m.id},${ap.id})" title="Excluir Aplicação">❌</button></td></tr>`; }); } htmlAportes += `</table>`;
                 cont.innerHTML += `<div class="meta-card"><div class="meta-info" style="margin-bottom: 10px;"><span style="font-size:1.2em;">🎯 <strong style="color:#1a1a2e;">${m.nome}</strong></span><div><button class="btn-editar" onclick="abrirEdicaoMeta(${m.id})">Editar Alvo</button><button class="btn-excluir" onclick="deletarItem(${m.id}, 'meta')">Excluir Caixinha</button></div></div><div class="meta-info"><span style="color:#666;">Total Aplicado: ${fMoeda(m.invAtual||0)} | Total Atual: <strong style="color:blue;">${fMoeda(m.liqAtual||0)}</strong></span><span style="color:#1a1a2e;">Alvo: ${fMoeda(m.alvo)} (${fNum(p)}%)</span></div><div class="barra-fundo" style="margin-top:5px; height:10px;"><div class="barra-progresso" style="width: ${p}%; ${p===100?'background-color:#28a745;':''}"></div></div>${htmlAportes}<button class="btn-acao secundario" style="margin-top:15px; font-size:0.9em; padding:10px;" onclick="abrirAporte(${m.id}, null)">+ Nova Aplicação nesta Caixinha</button></div>`;
             });
         }
