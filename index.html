@@ -69,7 +69,6 @@
         .btn-editar { background-color: #ffc107; color: #000; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; transition: 0.3s; margin-right: 5px; font-weight: bold;}
         .btn-editar:hover { background-color: #e0a800; }
 
-        /* Estilo Botão de Excluir Lote */
         .btn-excluir-lote { opacity: 0.5; cursor: not-allowed !important; transition: 0.3s; background-color: #dc3545; border-color: #dc3545; padding: 10px 15px; font-size: 0.9em; border-radius: 5px; color: white; border: none; font-weight: bold; }
         .btn-excluir-lote.ativo { opacity: 1; cursor: pointer !important; }
         .btn-excluir-lote.ativo:hover { background-color: #c82333; }
@@ -823,47 +822,58 @@
         // --- FUNÇÃO CORRIGIDA ABAIXO --- //
         async function carregarCDI() {
             try {
-                document.getElementById('status-api').innerHTML = "⏳ Baixando histórico do CDI (sequencial para evitar bloqueios)...";
+                document.getElementById('status-api').innerHTML = "⏳ Baixando histórico do CDI (Acesso único seguro)...";
+                
                 const hoje = new Date();
-                const anoAtual = hoje.getFullYear();
-                const anoInicialBase = 2010;
-                const tamanhoLote = 5;
-                let resultadosFinais = [];
                 const formata = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
-
-                for (let ano = anoInicialBase; ano <= anoAtual; ano += tamanhoLote) {
-                    let dataIniLote = new Date(ano, 0, 1);
-                    let dataFimLote = new Date(ano + tamanhoLote - 1, 11, 31);
-                    if (dataFimLote > hoje) dataFimLote = hoje;
-                    
-                    const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${formata(dataIniLote)}&dataFinal=${formata(dataFimLote)}`;
-                    
-                    const res = await fetch(url);
-                    if (!res.ok) {
-                        throw new Error(`Erro na API do BCB: Status ${res.status}`);
-                    }
-                    
-                    const loteJson = await res.json();
-                    resultadosFinais = resultadosFinais.concat(loteJson);
+                
+                const dataInicial = "01/01/2010";
+                const dataFinal = formata(hoje);
+                
+                // 1. Faz UMA ÚNICA requisição para o período todo. 
+                // A API suporta isso tranquilamente e evita bloqueios (Rate Limit) do BCB.
+                const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${dataInicial}&dataFinal=${dataFinal}`;
+                
+                const res = await fetch(url);
+                
+                if (!res.ok) {
+                    throw new Error(`Erro na API do BCB: Status ${res.status}`);
+                }
+                
+                const jsonResposta = await res.json();
+                
+                // 2. Validação rigorosa: Verifica se realmente veio uma lista
+                if (!Array.isArray(jsonResposta)) {
+                    throw new Error("O BCB retornou um formato inesperado.");
                 }
 
-                serieCDI = resultadosFinais;
+                // 3. Filtra apenas os registros limpos (ignora mensagens de erro disfarçadas)
+                serieCDI = jsonResposta.filter(item => item && item.data && item.valor !== undefined);
 
+                if (serieCDI.length === 0) {
+                     throw new Error("A lista de CDI veio vazia.");
+                }
+
+                // 4. Se chegou até aqui, os dados estão perfeitos para montar o Dashboard
                 let textoStatus = "✅ API e Nuvem OK!";
-                if(serieCDI.length > 0) {
-                    const dtIni = serieCDI[0].data;
-                    const ultimoRegistro = serieCDI[serieCDI.length - 1];
-                    const dtFim = ultimoRegistro.data;
-                    textoStatus += ` (CDI de ${dtIni} até ${dtFim})`;
-                    let taxaDiaria = parseFloat(ultimoRegistro.valor) / 100;
-                    let fatorDia = truncaFatorB3(1 + taxaDiaria);
-                    textoStatus += `<br><span style="font-size: 0.85em; font-weight: normal; color: #666;">Fator multiplicador do último dia útil oficial (100% CDI): <strong>${fatorDia}</strong></span>`;
-                }
+                const dtIni = serieCDI[0].data;
+                const ultimoRegistro = serieCDI[serieCDI.length - 1];
+                const dtFim = ultimoRegistro.data;
+                
+                textoStatus += ` (CDI de ${dtIni} até ${dtFim})`;
+                
+                let taxaDiaria = parseFloat(ultimoRegistro.valor) / 100;
+                let fatorDia = truncaFatorB3(1 + taxaDiaria);
+                
+                textoStatus += `<br><span style="font-size: 0.85em; font-weight: normal; color: #666;">Fator multiplicador do último dia útil oficial (100% CDI): <strong>${fatorDia}</strong></span>`;
+                
                 document.getElementById('status-api').innerHTML = textoStatus;
+                
                 processarCarteira();
+
             } catch (e) {
                 console.error(e);
-                document.getElementById('status-api').innerHTML = "❌ Erro ao baixar dados do BCB. Recarregue a página.";
+                document.getElementById('status-api').innerHTML = `❌ Erro no BCB: ${e.message}`;
             }
         }
         // --- FIM DA FUNÇÃO CORRIGIDA --- //
