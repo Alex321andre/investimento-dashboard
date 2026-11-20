@@ -20,9 +20,9 @@
         nav button:hover { background-color: #e94560; border-color: #e94560; }
         main { flex: 1; padding: 20px; max-width: 1200px; margin: 0 auto; width: 100%; position: relative; }
         
-        .tela { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .tela { display: none; animation: fadeIn 0.3s ease-in-out; }
         .tela.ativa { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
         
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 10px; }
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
@@ -47,13 +47,13 @@
         input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; }
         input:focus, select:focus { border-color: #e94560; outline: none; }
         
-        button[type="button"], button[type="submit"], .btn-acao { width: 100%; padding: 15px; background-color: #e94560; color: white; border: none; border-radius: 5px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button[type="button"], button[type="submit"], .btn-acao { width: 100%; padding: 15px; background-color: #e94560; color: white; border: none; border-radius: 5px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 10px; }
         button[type="submit"]:hover, .btn-acao:hover { background-color: #d83a53; }
         .btn-acao.secundario { background-color: #0f3460; }
         .btn-acao.secundario:hover { background-color: #16213e; }
         .btn-acao.terciario { background: transparent; border: 1px solid #1a1a2e; color: #1a1a2e; }
         .btn-acao.terciario:hover { background-color: #f0f2f5; }
-        .btn-acao.header-btn { background-color: #17a2b8; color: white; border-radius: 5px; padding: 10px 20px; font-size: 1em; border: none; cursor: pointer; transition: 0.3s; }
+        .btn-acao.header-btn { background-color: #17a2b8; color: white; border-radius: 5px; padding: 10px 20px; font-size: 1em; border: none; cursor: pointer; transition: 0.2s; }
         .btn-acao.header-btn:hover { background-color: #138496; }
         
         .tabela-container { overflow-x: auto; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 15px; }
@@ -64,13 +64,12 @@
         
         .input-filtro-tabela { width: 100%; padding: 6px; margin-top: 8px; font-size: 0.9em; font-weight: normal; color: #333; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; display: block; }
         
-        .btn-excluir { background-color: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; transition: 0.3s; }
+        .btn-excluir { background-color: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; transition: 0.2s; }
         .btn-excluir:hover { background-color: #c82333; }
-        .btn-editar { background-color: #ffc107; color: #000; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; transition: 0.3s; margin-right: 5px; font-weight: bold;}
+        .btn-editar { background-color: #ffc107; color: #000; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; transition: 0.2s; margin-right: 5px; font-weight: bold;}
         .btn-editar:hover { background-color: #e0a800; }
 
-        /* Estilo Botão de Excluir Lote */
-        .btn-excluir-lote { opacity: 0.5; cursor: not-allowed !important; transition: 0.3s; background-color: #dc3545; border-color: #dc3545; padding: 10px 15px; font-size: 0.9em; border-radius: 5px; color: white; border: none; font-weight: bold; }
+        .btn-excluir-lote { opacity: 0.5; cursor: not-allowed !important; transition: 0.2s; background-color: #dc3545; border-color: #dc3545; padding: 10px 15px; font-size: 0.9em; border-radius: 5px; color: white; border: none; font-weight: bold; }
         .btn-excluir-lote.ativo { opacity: 1; cursor: pointer !important; }
         .btn-excluir-lote.ativo:hover { background-color: #c82333; }
         input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
@@ -94,7 +93,7 @@
 
         .meta-card { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .barra-fundo { width: 100%; background-color: #e0e0e0; border-radius: 10px; height: 20px; margin-top: 15px; margin-bottom: 10px; overflow: hidden; }
-        .barra-progresso { background-color: #e94560; height: 100%; border-radius: 10px; transition: width 0.5s ease-in-out; }
+        .barra-progresso { background-color: #e94560; height: 100%; border-radius: 10px; transition: width 0.3s ease-in-out; }
         .meta-info { display: flex; justify-content: space-between; font-size: 0.95em; font-weight: bold; align-items: center;}
         
         .box-total-despesas { background: #fff; padding: 10px 15px; border-radius: 5px; border-left: 4px solid #17a2b8; margin-left: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
@@ -113,6 +112,30 @@
         .banco-selector { background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 15px; }
         .banco-selector label { display: inline-block; margin-right: 10px; font-weight: bold; color: #0f3460; }
         .banco-selector select { width: auto; display: inline-block; font-weight: bold; }
+
+        .toast-notificacao {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #1a1a2e;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 6px;
+            border-left: 4px solid #17a2b8;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+            font-size: 0.92em;
+            font-weight: 600;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            max-width: 340px;
+        }
+        .toast-notificacao.visivel {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -123,6 +146,7 @@
         <p style="margin-top: 5px; font-size: 0.95em;">
             <span id="user-display-email"></span> 
             <span id="contador-acessos" style="color: #e94560; font-weight: bold; margin-left: 15px;"></span>
+            <span id="status-sync-fundo" style="font-size: 0.85em; color: #a8d5ff; margin-left: 12px;"></span>
         </p>
         <nav>
             <button onclick="navegar('tela-dashboard')">1. Dashboard</button>
@@ -156,8 +180,8 @@
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <select id="filtro-liquidez-dash" onchange="processarCarteira()" style="width: auto; padding: 10px 15px; font-size: 0.9em; border-radius: 20px; border: 1px solid #ccc; font-weight: bold; color: #1a1a2e; outline: none; background-color: #fff; cursor: pointer;">
                         <option value="todos">Liquidez: Todos</option>
-                        <option value="Sim">Liquidez: Diária (Sim)</option>
-                        <option value="Não">Liquidez: Presa (Não)</option>
+                        <option value="Sim">Liquidez: Sim</option>
+                        <option value="Não">Liquidez: Não</option>
                     </select>
                     <button class="btn-acao secundario btn-projetar" style="margin: 0; width: auto; padding: 10px 15px; font-size: 0.9em; border-radius: 20px;" onclick="toggleProjecao()" title="Sincroniza os dias úteis faltantes com base na última taxa disponível do Banco Central.">
                         🔮 Projetar Rendimento até Hoje
@@ -194,7 +218,7 @@
                 </div>
             </div>
 
-            <form id="form-investimento" style="display:none; animation: fadeIn 0.3s ease-in-out;" onsubmit="adicionarInvestimento(event)">
+            <form id="form-investimento" style="display:none; animation: fadeIn 0.2s ease-in-out;" onsubmit="adicionarInvestimento(event)">
                 <h3 style="margin-bottom: 15px; color: #1a1a2e; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Registrar Aplicação</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
                     <div><label>Instituição Financeira:</label><input type="text" id="input-banco" required></div>
@@ -210,7 +234,7 @@
                     <div><label>Data da Aplicação:</label><input type="date" id="input-data" required></div>
                     <div><label>Valor Aplicado (R$):</label><input type="number" id="input-valor" step="0.01" min="1" required></div>
                     <div><label>Taxa (% do CDI):</label><input type="number" id="input-taxa" step="0.1" required></div>
-                    <div><label>Liquidez Diária:</label><select id="input-liquidez"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
+                    <div><label>Liquidez:</label><select id="input-liquidez"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
                     <div><label>Vencimento / Resgate:</label><input type="date" id="input-vencimento"></div>
                     <button type="submit" style="margin-top: 0;">Salvar Investimento</button>
                 </div>
@@ -223,7 +247,7 @@
                             <th style="text-align: center; width: 30px;"><input type="checkbox" id="chk-all-inv" onchange="toggleSelectAll('inv')" title="Selecionar Todos na Busca"></th>
                             <th>Banco / Tipo <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Data Aplicação <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
-                            <th>Liq. Diária <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
+                            <th>Liquidez <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Vencimento <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Valor Inicial <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
                             <th>Taxa <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaInvestimentos()" placeholder="Buscar..."></th>
@@ -249,7 +273,7 @@
                 </div>
             </div>
             
-            <form id="form-transacao" onsubmit="adicionarTransacao(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.3s ease-in-out; margin-bottom: 20px;">
+            <form id="form-transacao" onsubmit="adicionarTransacao(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.2s ease-in-out; margin-bottom: 20px;">
                 <div style="grid-column: 1 / -1;"><h3 style="font-size: 1.1em; color: #1a1a2e; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Registrar Movimentação</h3></div>
                 
                 <div class="toggle-cartao">
@@ -268,6 +292,7 @@
                 
                 <div><label>Valor Total (R$):</label><input type="number" id="trans-valor" step="0.01" required></div>
                 <div id="box-parcelas" style="display: none;"><label>Parcelas:</label><input type="number" id="trans-parcelas" value="1" min="1"></div>
+                <div style="grid-column: 1 / -1;"><label>Observação:</label><input type="text" id="trans-obs" placeholder="Digite uma observação (opcional)..."></div>
                 
                 <button type="submit" style="margin-top:0;">Salvar Transação</button>
             </form>
@@ -277,8 +302,7 @@
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Ano:</label><select id="filtro-ano-trans" onchange="renderizarTransacoes()"><option value="todos">Todos</option></select></div>
                 <div><label style="font-size: 0.85em; font-weight: bold; color: #1a1a2e;">Data Exata:</label><input type="date" id="filtro-data-trans" onchange="renderizarTransacoes()"></div>
                 
-                <div class="box-total-despesas" id="box-totais-transacoes" style="flex-grow: 1;">
-                    </div>
+                <div class="box-total-despesas" id="box-totais-transacoes" style="flex-grow: 1;"></div>
             </div>
 
             <div class="tabela-container" style="margin-top: 0;">
@@ -288,6 +312,7 @@
                             <th style="text-align: center; width: 30px;"><input type="checkbox" id="chk-all-trans" onchange="toggleSelectAll('trans')" title="Selecionar Todos na Busca"></th>
                             <th>Descrição <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
                             <th>Categoria <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
+                            <th>Observação <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
                             <th>Data Vencimento <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
                             <th>Valor <br><input type="text" class="input-filtro-tabela" onkeyup="filtrarTabelaTransacoes()" placeholder="Buscar..."></th>
                             <th>Ações</th>
@@ -309,7 +334,7 @@
             </div>
             <p style="margin-top: 5px; margin-bottom: 15px; color: #666;">Crie uma caixinha e vá depositando seus aportes nela. Tudo rende CDI e vai para o seu Dashboard!</p>
             
-            <form id="form-meta" onsubmit="adicionarMeta(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.3s ease-in-out; margin-bottom: 20px;">
+            <form id="form-meta" onsubmit="adicionarMeta(event)" style="display: none; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; animation: fadeIn 0.2s ease-in-out; margin-bottom: 20px;">
                 <div style="grid-column: 1 / -1;"><h3 style="font-size: 1.1em; color: #1a1a2e; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Nova Caixinha e Primeira Aplicação</h3></div>
                 <div><label>Nome (Ex: Viagem):</label><input type="text" id="meta-nome" required></div>
                 <div><label>Valor Alvo Geral (R$):</label><input type="number" id="meta-alvo" step="0.01" required></div>
@@ -331,8 +356,8 @@
                         <label>Filtro de Liquidez:</label>
                         <select id="proj-filtro-liquidez">
                             <option value="todos">Todos os Ativos</option>
-                            <option value="Sim">Apenas c/ Liquidez Diária (Sim)</option>
-                            <option value="Não">Apenas Presos (Não)</option>
+                            <option value="Sim">Apenas c/ Liquidez (Sim)</option>
+                            <option value="Não">Apenas Liquidez Não</option>
                         </select>
                     </div>
                     <div>
@@ -512,46 +537,78 @@
 
         <div id="modal-resgatar" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center; color: #1a1a2e;">💰 Resgatar Investimento</h2><p style="font-size: 0.9em; color: #666; margin-bottom: 15px; text-align: center;">O investimento será encerrado e o valor final ficará salvo no seu histórico.</p><input type="hidden" id="resgate-id"><div class="grupo-input"><label>Data do Resgate:</label><input type="date" id="resgate-data" required></div><button type="button" class="btn-acao" style="background-color: #28a745;" onclick="confirmarResgate()">Confirmar Resgate</button><button type="button" class="btn-acao terciario" onclick="fecharResgate()">Cancelar</button></div></div>
         <div id="modal-gerenciador" class="modal-overlay"><div class="box-modal"><h2 id="titulo-modal-gerenciador" style="margin-bottom: 15px; text-align: center;">Gerenciar</h2><input type="hidden" id="tipo-gerenciador-ativo"><ul class="lista-gerenciador" id="lista-gerenciador-ui"></ul><div style="display: flex; gap: 10px; margin-top: 15px;"><input type="text" id="novo-item-nome" placeholder="Novo item..." style="flex: 1;"><button class="btn-acao" style="width: auto; margin: 0;" onclick="adicionarItemGerenciador()">Criar</button></div><button type="button" class="btn-acao terciario" style="margin-top: 15px;" onclick="fecharModalGerenciador()">Fechar</button></div></div>
-        <div id="modal-editar" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Investimento</h2><input type="hidden" id="edit-id"><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="grupo-input" style="grid-column: 1 / -1;"><label>Banco:</label><input type="text" id="edit-banco" required></div><div class="grupo-input" style="grid-column: 1 / -1;"><label>Tipo de Ativo:</label><select id="edit-tipo-inv"><option value="CDB/LC">CDB / LC (Tributável)</option><option value="LCI/LCA">LCI / LCA (Isento de IR)</option></select></div><div class="grupo-input"><label>Data:</label><input type="date" id="edit-data" required></div><div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-valor" step="0.01" required></div><div class="grupo-input"><label>Taxa (% CDI):</label><input type="number" id="edit-taxa" step="0.1" required></div><div class="grupo-input"><label>Liquidez Diária:</label><select id="edit-liquidez"><option value="Sim">Sim</option><option value="Não">Não</option></select></div><div class="grupo-input" style="grid-column: 1 / -1;"><label>Data de Vencimento / Resgate:</label><input type="date" id="edit-vencimento"></div></div><button type="button" class="btn-acao" onclick="salvarEdicao()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicao()">Cancelar</button></div></div>
-        <div id="modal-editar-trans" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Transação</h2><input type="hidden" id="edit-trans-id"><div class="grupo-input"><label>Tipo:</label><select id="edit-trans-tipo"><option value="despesa">Saída</option><option value="entrada">Entrada</option></select></div><div class="grupo-input"><label>Descrição:</label><select id="edit-trans-desc" required></select></div><div class="grupo-input"><label>Categoria:</label><select id="edit-trans-cat" required></select></div><div class="grupo-input"><label>Data:</label><input type="date" id="edit-trans-data" required></div><div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-trans-valor" step="0.01" required></div><button type="button" class="btn-acao" onclick="salvarEdicaoTransacao()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicaoTransacao()">Cancelar</button></div></div>
+        <div id="modal-editar" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Investimento</h2><input type="hidden" id="edit-id"><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"><div class="grupo-input" style="grid-column: 1 / -1;"><label>Banco:</label><input type="text" id="edit-banco" required></div><div class="grupo-input" style="grid-column: 1 / -1;"><label>Tipo de Ativo:</label><select id="edit-tipo-inv"><option value="CDB/LC">CDB / LC (Tributável)</option><option value="LCI/LCA">LCI / LCA (Isento de IR)</option></select></div><div class="grupo-input"><label>Data:</label><input type="date" id="edit-data" required></div><div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-valor" step="0.01" required></div><div class="grupo-input"><label>Taxa (% CDI):</label><input type="number" id="edit-taxa" step="0.1" required></div><div class="grupo-input"><label>Liquidez:</label><select id="edit-liquidez"><option value="Sim">Sim</option><option value="Não">Não</option></select></div><div class="grupo-input" style="grid-column: 1 / -1;"><label>Data de Vencimento / Resgate:</label><input type="date" id="edit-vencimento"></div></div><button type="button" class="btn-acao" onclick="salvarEdicao()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicao()">Cancelar</button></div></div>
+        <div id="modal-editar-trans" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Transação</h2><input type="hidden" id="edit-trans-id"><div class="grupo-input"><label>Tipo:</label><select id="edit-trans-tipo"><option value="despesa">Saída</option><option value="entrada">Entrada</option></select></div><div class="grupo-input"><label>Descrição:</label><select id="edit-trans-desc" required></select></div><div class="grupo-input"><label>Categoria:</label><select id="edit-trans-cat" required></select></div><div class="grupo-input"><label>Observação:</label><input type="text" id="edit-trans-obs" placeholder="Digite uma observação..."></div><div class="grupo-input"><label>Data:</label><input type="date" id="edit-trans-data" required></div><div class="grupo-input"><label>Valor (R$):</label><input type="number" id="edit-trans-valor" step="0.01" required></div><button type="button" class="btn-acao" onclick="salvarEdicaoTransacao()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicaoTransacao()">Cancelar</button></div></div>
         <div id="modal-editar-meta" class="modal-overlay"><div class="box-modal"><h2 style="margin-bottom: 15px; text-align: center;">Editar Alvo da Caixinha</h2><input type="hidden" id="edit-meta-id"><div class="grupo-input"><label>Nome / Objetivo:</label><input type="text" id="edit-meta-nome" required></div><div class="grupo-input"><label>Valor Alvo (R$):</label><input type="number" id="edit-meta-alvo" step="0.01" required></div><button type="button" class="btn-acao" onclick="salvarEdicaoMeta()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharEdicaoMeta()">Cancelar</button></div></div>
         <div id="modal-aporte-meta" class="modal-overlay"><div class="box-modal"><h2 id="titulo-modal-aporte" style="margin-bottom: 15px; text-align: center;">Nova Aplicação</h2><input type="hidden" id="aporte-meta-id"><input type="hidden" id="aporte-id"><div class="grupo-input"><label>Data da Aplicação:</label><input type="date" id="aporte-data" required></div><div class="grupo-input"><label>Valor Aplicado (R$):</label><input type="number" id="aporte-valor" step="0.01" required></div><div class="grupo-input"><label>Taxa (% do CDI):</label><input type="number" id="aporte-taxa" step="0.1" required></div><button type="button" class="btn-acao" onclick="salvarAporte()">💾 Salvar</button><button type="button" class="btn-acao terciario" onclick="fecharAporte()">Cancelar</button></div></div>
 
     </main>
 
+    <div id="toast-notificacao" class="toast-notificacao"></div>
+
     <footer>
-        <p>Desenvolvido por <strong>Alexandre da Silva Alves Rodrigues</strong> | Desafio Acadêmico</p>
+        <p>Desenvolvido por <strong>Alexandre da Silva Alves Rodrigues</strong></p>
         <p style="margin-top: 5px; font-size: 0.9em;">Contato: <a href="mailto:alex321andre@gmail.com" style="color: #e94560; text-decoration: none; font-weight: bold;">alex321andre@gmail.com</a></p>
     </footer>
 
     <script>
-        // =========================================================
-        // SETUP DOS GRÁFICOS E VARIÁVEIS GLOBAIS
-        // =========================================================
         Chart.register(ChartDataLabels);
 
-        let chartProjecaoInstance = null; 
+        let chartProjecaoInstance = null;
+        let toastTimer = null;
+
+        function notificar(mensagem, tipo = 'info') {
+            const toast = document.getElementById('toast-notificacao');
+            if (!toast) return;
+            const cores = { info: '#17a2b8', sucesso: '#28a745', aviso: '#ffc107', erro: '#dc3545' };
+            toast.style.borderLeftColor = cores[tipo] || cores.info;
+            toast.innerText = mensagem;
+            toast.classList.add('visivel');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('visivel'), 3000);
+        }
+
+        function gerarIdUnico(offset = 0) {
+            return Date.now() + offset + Math.floor(Math.random() * 10000);
+        }
+
+        function parseDataLocalMs(isoDateStr) {
+            const [ano, mes, dia] = isoDateStr.split('-');
+            return new Date(parseInt(ano, 10), parseInt(mes, 10) - 1, parseInt(dia, 10)).getTime();
+        }
+
+        function parseDataBRMs(brDateStr) {
+            const [dia, mes, ano] = brDateStr.split('/');
+            return new Date(parseInt(ano, 10), parseInt(mes, 10) - 1, parseInt(dia, 10)).getTime();
+        }
+
+        function buscarIndiceInicioCDI(listaCDI, dataInicioMs) {
+            let esq = 0;
+            let dir = listaCDI.length - 1;
+            let ans = listaCDI.length;
+            while (esq <= dir) {
+                const meio = (esq + dir) >> 1;
+                if (listaCDI[meio].dataMs >= dataInicioMs) {
+                    ans = meio;
+                    dir = meio - 1;
+                } else {
+                    esq = meio + 1;
+                }
+            }
+            return ans;
+        }
 
         function fMoeda(valor) { return (valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
         function fNum(valor) { return (valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
         function truncaFatorB3(fator) {
-            let str = fator.toString();
-            let pontoIdx = str.indexOf('.');
-            if (pontoIdx !== -1 && str.length > pontoIdx + 9) {
-                str = str.substring(0, pontoIdx + 9);
-            }
-            return parseFloat(str);
+            return Math.trunc(fator * 100000000) / 100000000;
         }
 
         function fTaxa(valor) {
             if (!valor) return "0,00";
-            let str = valor.toString();
-            let pontoIdx = str.indexOf('.');
-            if (pontoIdx !== -1 && str.length > pontoIdx + 9) {
-                str = str.substring(0, pontoIdx + 9);
-            }
-            return parseFloat(str).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
+            const truncado = Math.trunc(valor * 100000000) / 100000000;
+            return truncado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 8 });
         }
 
         function obterDataPascoa(ano) {
@@ -574,21 +631,16 @@
             const ano = dataObj.getFullYear();
             const pascoa = obterDataPascoa(ano);
             const addDias = (data, dias) => { let res = new Date(data); res.setDate(res.getDate() + dias); return res; };
-            const sextaSanta = addDias(pascoa, -2);
-            const carnavalSeg = addDias(pascoa, -48);
-            const carnavalTer = addDias(pascoa, -47);
-            const corpusChristi = addDias(pascoa, 60);
-
             const formataDDMM = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-            const feriadosMoveis = [formataDDMM(sextaSanta), formataDDMM(carnavalSeg), formataDDMM(carnavalTer), formataDDMM(corpusChristi)];
-            if (feriadosMoveis.includes(dataString)) return false;
-
-            return true;
+            const feriadosMoveis = [
+                formataDDMM(addDias(pascoa, -2)),
+                formataDDMM(addDias(pascoa, -48)),
+                formataDDMM(addDias(pascoa, -47)),
+                formataDDMM(addDias(pascoa, 60))
+            ];
+            return !feriadosMoveis.includes(dataString);
         }
 
-        // =========================================================
-        // 1. CONFIGURAÇÃO FIREBASE E VARIÁVEIS GLOBAIS
-        // =========================================================
         const firebaseConfig = {
             apiKey: "AIzaSyBhiK51VWfa7juHSkYJSKY9wuRViT-3SKk",
             authDomain: "investdash-f7382.firebaseapp.com",
@@ -601,11 +653,18 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
-        let serieCDI = []; let carteira = []; let transacoes = []; let listaMetas = [];
-        let categoriasAtuais = ["Alimentação", "Assinaturas/Serviços", "Cuidados Pessoais", "Doações", "Educação", "Impostos", "Lazer", "Moradia", "Outros", "Pets", "Presentes", "Rendimentos", "Salário", "Saúde", "Taxas", "Transporte", "Vestuário", "Viagem"];
-        let descricoesAtuais = ["Academia", "Aluguel", "Cartão de Crédito", "Condomínio", "Conta de Água", "Conta de Luz", "Farmácia", "Freelance", "Gasolina", "Ifood/Delivery", "Internet/TV", "Mensalidade", "Mesada", "Padaria", "Salário", "Supermercado", "Uber/App de Transporte"];
+        const CATEGORIAS_PADRAO = ["Alimentação", "Assinaturas/Serviços", "Cuidados Pessoais", "Doações", "Educação", "Impostos", "Lazer", "Moradia", "Outros", "Pets", "Presentes", "Rendimentos", "Salário", "Saúde", "Taxas", "Transporte", "Vestuário", "Viagem"];
+        const DESCRICOES_PADRAO = ["Academia", "Aluguel", "Cartão de Crédito", "Condomínio", "Conta de Água", "Conta de Luz", "Farmácia", "Freelance", "Gasolina", "Ifood/Delivery", "Internet/TV", "Mensalidade", "Mesada", "Padaria", "Salário", "Supermercado", "Uber/App de Transporte"];
+
+        let serieCDI = [];
+        let serieCDIProjetadaCache = null;
+        let carteira = []; let transacoes = []; let listaMetas = [];
+        let categoriasAtuais = [...CATEGORIAS_PADRAO];
+        let descricoesAtuais = [...DESCRICOES_PADRAO];
         let chartInstance = null; let chartPizzaInstance = null; let chartDespesasInstance = null; let usuarioAtual = null; let totalLiquidoGlobal = 0;
         let projetarCDI = false;
+        let filaSyncTimer = null;
+        let existemAlteracoesPendentes = false;
         
         const nomeMeses = {
             '01': 'Janeiro', '02': 'Fevereiro', '03': 'Março', '04': 'Abril',
@@ -613,9 +672,6 @@
             '09': 'Setembro', '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'
         };
 
-        // =========================================================
-        // 2. LOGIN E AUTENTICAÇÃO
-        // =========================================================
         auth.onAuthStateChanged(user => {
             const cab = document.getElementById('cabecalho-app');
             if (user) {
@@ -623,31 +679,87 @@
                 navegar('tela-dashboard'); carregarDadosDoBanco(); carregarCDI();
             } else {
                 usuarioAtual = null; carteira = []; transacoes = []; listaMetas = []; cab.style.display = 'none';
+                categoriasAtuais = [...CATEGORIAS_PADRAO];
+                descricoesAtuais = [...DESCRICOES_PADRAO];
                 document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); document.getElementById('tela-login').classList.add('ativa');
             }
         });
 
-        function criarConta() { const e=document.getElementById('login-email').value, s=document.getElementById('login-senha').value; if(e&&s) auth.createUserWithEmailAndPassword(e,s).then(()=>alert("Criada com sucesso!")).catch(err=>alert("Erro: "+err.message)); }
-        function fazerLogin() { const e=document.getElementById('login-email').value, s=document.getElementById('login-senha').value; if(e&&s) auth.signInWithEmailAndPassword(e,s).catch(()=>alert("Incorreto.")); }
-        function fazerLogout() { auth.signOut(); }
-        function recuperarSenha() { const e=document.getElementById('login-email').value; if(!e)return alert("Digite o e-mail."); auth.sendPasswordResetEmail(e).then(()=>alert("E-mail enviado!")).catch(()=>alert("Erro.")); }
+        function criarConta() { const e=document.getElementById('login-email').value, s=document.getElementById('login-senha').value; if(e&&s) auth.createUserWithEmailAndPassword(e,s).then(()=>notificar("Conta criada com sucesso!", "sucesso")).catch(err=>notificar("Erro: "+err.message, "erro")); }
+        function fazerLogin() { const e=document.getElementById('login-email').value, s=document.getElementById('login-senha').value; if(e&&s) auth.signInWithEmailAndPassword(e,s).catch(()=>notificar("E-mail ou senha incorretos.", "erro")); }
+        function fazerLogout() {
+            if (existemAlteracoesPendentes && usuarioAtual) {
+                clearTimeout(filaSyncTimer);
+                enviarParaFirestoreEmSegundoPlano();
+            }
+            auth.signOut();
+        }
+        function recuperarSenha() { const e=document.getElementById('login-email').value; if(!e) return notificar("Digite o e-mail.", "aviso"); auth.sendPasswordResetEmail(e).then(()=>notificar("E-mail de recuperação enviado!", "sucesso")).catch(()=>notificar("Erro ao enviar e-mail.", "erro")); }
 
-        // =========================================================
-        // 3. BANCO E GERENCIADORES
-        // =========================================================
-        function salvarNoBanco() {
-            if (usuarioAtual) {
-                db.collection("usuarios").doc(usuarioAtual.uid).set({ investimentos: carteira, gastos: transacoes, objetivos: listaMetas, categorias: categoriasAtuais, descricoes: descricoesAtuais }, { merge: true })
-                  .then(() => { 
-                      atualizarFiltrosAnosEMeses();
-                      processarCarteira(); 
-                      renderizarTransacoes(); 
-                      atualizarSelectsGerenciador(); 
-                      if(document.getElementById('tela-grafico').classList.contains('ativa')) desenharGraficoDespesas(); 
-                  })
-                  .catch(e => alert("Erro ao salvar: " + e));
+        function atualizarUIEmMemoria(escopo = 'tudo') {
+            if (escopo === 'tudo' || escopo === 'carteira') {
+                processarCarteira();
+            }
+            if (escopo === 'tudo' || escopo === 'transacoes') {
+                atualizarFiltrosAnosEMeses();
+                renderizarTransacoes();
+                atualizarSelectsGerenciador();
+                if (document.getElementById('tela-grafico').classList.contains('ativa')) {
+                    desenharGraficoDespesas();
+                }
             }
         }
+
+        function atualizarIndicadorSync(texto, cor = '#a8d5ff') {
+            const el = document.getElementById('status-sync-fundo');
+            if (el) {
+                el.innerText = texto;
+                el.style.color = cor;
+            }
+        }
+
+        function enviarParaFirestoreEmSegundoPlano() {
+            if (!usuarioAtual) return;
+            existemAlteracoesPendentes = false;
+            const uid = usuarioAtual.uid;
+            const payload = {
+                investimentos: carteira,
+                gastos: transacoes,
+                objetivos: listaMetas,
+                categorias: categoriasAtuais,
+                descricoes: descricoesAtuais
+            };
+
+            atualizarIndicadorSync("☁️ Salvando...", "#ffc107");
+
+            db.collection("usuarios").doc(uid).set(payload, { merge: true })
+                .then(() => {
+                    if (!existemAlteracoesPendentes) {
+                        atualizarIndicadorSync("☁️ Sincronizado", "#28a745");
+                    }
+                })
+                .catch(e => {
+                    console.error("Erro ao sincronizar em segundo plano:", e);
+                    atualizarIndicadorSync("⚠️ Falha ao salvar", "#dc3545");
+                });
+        }
+
+        function salvarNoBanco(escopo = 'tudo', debounceMs = 200) {
+            atualizarUIEmMemoria(escopo);
+            if (usuarioAtual) {
+                existemAlteracoesPendentes = true;
+                atualizarIndicadorSync("☁️ Pendente...", "#a8d5ff");
+                clearTimeout(filaSyncTimer);
+                filaSyncTimer = setTimeout(enviarParaFirestoreEmSegundoPlano, debounceMs);
+            }
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (existemAlteracoesPendentes && usuarioAtual) {
+                clearTimeout(filaSyncTimer);
+                enviarParaFirestoreEmSegundoPlano();
+            }
+        });
 
         function carregarDadosDoBanco() {
             if (usuarioAtual) {
@@ -657,27 +769,53 @@
                     let ac = 1;
                     if (doc.exists) {
                         carteira = doc.data().investimentos || []; transacoes = doc.data().gastos || []; listaMetas = doc.data().objetivos || []; 
-                        if(doc.data().categorias) categoriasAtuais = doc.data().categorias;
-                        if(doc.data().descricoes) descricoesAtuais = doc.data().descricoes;
+                        categoriasAtuais = doc.data().categorias || [...CATEGORIAS_PADRAO];
+                        descricoesAtuais = doc.data().descricoes || [...DESCRICOES_PADRAO];
                         ac = (doc.data().acessos || 0) + 1;
+                    } else {
+                        carteira = []; transacoes = []; listaMetas = [];
+                        categoriasAtuais = [...CATEGORIAS_PADRAO];
+                        descricoesAtuais = [...DESCRICOES_PADRAO];
                     }
                     dRef.set({ acessos: ac }, { merge: true }); document.getElementById('contador-acessos').innerText = `| Visitas: ${ac}`;
-                    
-                    atualizarFiltrosAnosEMeses();
-                    processarCarteira(); 
-                    renderizarTransacoes(); 
-                    atualizarSelectsGerenciador();
+                    atualizarIndicadorSync("☁️ Sincronizado", "#28a745");
+                    atualizarUIEmMemoria('tudo');
                 });
             }
         }
 
         function atualizarSelectsGerenciador() {
-            let optCat = ''; categoriasAtuais.sort().forEach(c => optCat += `<option value="${c}">${c}</option>`);
-            [document.getElementById('trans-cat'), document.getElementById('edit-trans-cat')].forEach(s => { if(s) { const val = s.value; s.innerHTML = optCat; if(categoriasAtuais.includes(val)) s.value = val; }});
-            const selCatGraf = document.getElementById('filtro-graf-cat-desp'); let optCatGraf = '<option value="todas">Todas</option>' + optCat; if(selCatGraf) { const val = selCatGraf.value; selCatGraf.innerHTML = optCatGraf; if(categoriasAtuais.includes(val)) selCatGraf.value = val; }
-            let optDesc = ''; descricoesAtuais.sort().forEach(d => optDesc += `<option value="${d}">${d}</option>`);
-            [document.getElementById('trans-desc'), document.getElementById('edit-trans-desc')].forEach(s => { if(s) { const val = s.value; s.innerHTML = optDesc; if(descricoesAtuais.includes(val)) s.value = val; }});
-            const selDescGraf = document.getElementById('filtro-graf-desc-desp'); let optDescGraf = '<option value="todas">Todas</option>' + optDesc; if(selDescGraf) { const val = selDescGraf.value; selDescGraf.innerHTML = optDescGraf; if(descricoesAtuais.includes(val)) selDescGraf.value = val; }
+            const catsOrdenadas = [...categoriasAtuais].sort();
+            const optCat = catsOrdenadas.map(c => `<option value="${c}">${c}</option>`).join('');
+            [document.getElementById('trans-cat'), document.getElementById('edit-trans-cat')].forEach(s => {
+                if (s) {
+                    const val = s.value;
+                    s.innerHTML = optCat;
+                    if (categoriasAtuais.includes(val)) s.value = val;
+                }
+            });
+            const selCatGraf = document.getElementById('filtro-graf-cat-desp');
+            if (selCatGraf) {
+                const val = selCatGraf.value;
+                selCatGraf.innerHTML = '<option value="todas">Todas</option>' + optCat;
+                if (categoriasAtuais.includes(val)) selCatGraf.value = val;
+            }
+
+            const descsOrdenadas = [...descricoesAtuais].sort();
+            const optDesc = descsOrdenadas.map(d => `<option value="${d}">${d}</option>`).join('');
+            [document.getElementById('trans-desc'), document.getElementById('edit-trans-desc')].forEach(s => {
+                if (s) {
+                    const val = s.value;
+                    s.innerHTML = optDesc;
+                    if (descricoesAtuais.includes(val)) s.value = val;
+                }
+            });
+            const selDescGraf = document.getElementById('filtro-graf-desc-desp');
+            if (selDescGraf) {
+                const val = selDescGraf.value;
+                selDescGraf.innerHTML = '<option value="todas">Todas</option>' + optDesc;
+                if (descricoesAtuais.includes(val)) selDescGraf.value = val;
+            }
         }
         
         function atualizarFiltrosAnosEMeses() {
@@ -690,47 +828,50 @@
             anos.add(anoAtual);
             meses.add(mesAtual);
 
-            transacoes.forEach(t => {
-                if (t.data) {
-                    const partesData = t.data.split('-');
-                    if(partesData[0]) anos.add(partesData[0]);
-                    if(partesData[1]) meses.add(partesData[1]);
+            for (let i = 0; i < transacoes.length; i++) {
+                const d = transacoes[i].data;
+                if (d && d.length >= 7) {
+                    anos.add(d.substring(0, 4));
+                    meses.add(d.substring(5, 7));
                 }
-            });
+            }
 
             const anosOrdenados = Array.from(anos).sort();
+            const htmlAnos = '<option value="todos">Todos</option>' + anosOrdenados.map(ano => `<option value="${ano}">${ano}</option>`).join('');
             ['filtro-ano-trans', 'filtro-graf-ano-desp'].forEach(id => {
                 const select = document.getElementById(id);
                 if (select) {
                     const valorAnterior = select.value;
-                    let html = '<option value="todos">Todos</option>';
-                    anosOrdenados.forEach(ano => { html += `<option value="${ano}">${ano}</option>`; });
-                    select.innerHTML = html;
+                    select.innerHTML = htmlAnos;
                     select.value = (valorAnterior === 'todos' || anosOrdenados.includes(valorAnterior)) ? valorAnterior : anoAtual;
                 }
             });
 
             const mesesOrdenados = Array.from(meses).sort();
+            const htmlMeses = '<option value="todos">Todos</option>' + mesesOrdenados.map(m => `<option value="${m}">${nomeMeses[m] || m}</option>`).join('');
             ['filtro-mes-trans', 'filtro-graf-mes-desp'].forEach(id => {
                 const select = document.getElementById(id);
                 if (select) {
                     const valorAnterior = select.value;
-                    let html = '<option value="todos">Todos</option>';
-                    mesesOrdenados.forEach(m => { html += `<option value="${m}">${nomeMeses[m] || m}</option>`; });
-                    select.innerHTML = html;
+                    select.innerHTML = htmlMeses;
                     select.value = (valorAnterior === 'todos' || mesesOrdenados.includes(valorAnterior)) ? valorAnterior : mesAtual;
                 }
             });
         }
 
-        function abrirModalGerenciador(tipo) { document.getElementById('tipo-gerenciador-ativo').value = tipo; document.getElementById('titulo-modal-gerenciador').innerText = tipo === 'categorias' ? "Gerenciar Categorias" : "Gerenciar Descrições"; const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais; const ul = document.getElementById('lista-gerenciador-ui'); ul.innerHTML = ''; lista.sort().forEach((item, index) => { ul.innerHTML += `<li><span>${item}</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="deletarItemGerenciador(${index})" title="Excluir">❌</button></li>`; }); document.getElementById('modal-gerenciador').style.display = 'flex'; }
+        function abrirModalGerenciador(tipo) {
+            document.getElementById('tipo-gerenciador-ativo').value = tipo;
+            document.getElementById('titulo-modal-gerenciador').innerText = tipo === 'categorias' ? "Gerenciar Categorias" : "Gerenciar Descrições";
+            const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais;
+            lista.sort();
+            const ul = document.getElementById('lista-gerenciador-ui');
+            ul.innerHTML = lista.map((item, index) => `<li><span>${item}</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="deletarItemGerenciador(${index})" title="Excluir">❌</button></li>`).join('');
+            document.getElementById('modal-gerenciador').style.display = 'flex';
+        }
         function fecharModalGerenciador() { document.getElementById('modal-gerenciador').style.display = 'none'; document.getElementById('novo-item-nome').value = ''; }
-        function adicionarItemGerenciador() { const tipo = document.getElementById('tipo-gerenciador-ativo').value; const nova = document.getElementById('novo-item-nome').value.trim(); const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais; if(nova && !lista.includes(nova)) { lista.push(nova); document.getElementById('novo-item-nome').value = ''; salvarNoBanco(); abrirModalGerenciador(tipo); } }
-        function deletarItemGerenciador(idx) { if(confirm("Apagar este item?")) { const tipo = document.getElementById('tipo-gerenciador-ativo').value; const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais; lista.splice(idx, 1); salvarNoBanco(); abrirModalGerenciador(tipo); } }
+        function adicionarItemGerenciador() { const tipo = document.getElementById('tipo-gerenciador-ativo').value; const nova = document.getElementById('novo-item-nome').value.trim(); const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais; if(nova && !lista.includes(nova)) { lista.push(nova); document.getElementById('novo-item-nome').value = ''; salvarNoBanco('transacoes'); abrirModalGerenciador(tipo); } }
+        function deletarItemGerenciador(idx) { const tipo = document.getElementById('tipo-gerenciador-ativo').value; const lista = tipo === 'categorias' ? categoriasAtuais : descricoesAtuais; lista.splice(idx, 1); salvarNoBanco('transacoes'); abrirModalGerenciador(tipo); }
 
-        // =========================================================
-        // FUNÇÕES DE SELEÇÃO E EXCLUSÃO EM LOTE
-        // =========================================================
         function toggleSelectAll(tipo) {
             const isChecked = document.getElementById(`chk-all-${tipo}`).checked;
             const checkboxes = document.querySelectorAll(`.chk-${tipo}`);
@@ -760,27 +901,22 @@
             const checkboxes = document.querySelectorAll(`.chk-${tipo}:checked`);
             if (checkboxes.length === 0) return;
 
-            if (confirm(`Tem certeza que deseja excluir permanentemente ${checkboxes.length} iten(s) selecionado(s)?`)) {
-                const idsParaExcluir = Array.from(checkboxes).map(chk => parseInt(chk.value));
+            const idsParaExcluir = new Set(Array.from(checkboxes).map(chk => parseInt(chk.value, 10)));
 
-                if (tipo === 'inv') {
-                    carteira = carteira.filter(i => !idsParaExcluir.includes(i.id));
-                } else if (tipo === 'trans') {
-                    transacoes = transacoes.filter(i => !idsParaExcluir.includes(i.id));
-                }
-
-                salvarNoBanco();
-                
-                const chkAll = document.getElementById(`chk-all-${tipo}`);
-                if (chkAll) chkAll.checked = false;
-                
-                verificarSelecao(tipo);
+            if (tipo === 'inv') {
+                carteira = carteira.filter(i => !idsParaExcluir.has(i.id));
+            } else if (tipo === 'trans') {
+                transacoes = transacoes.filter(i => !idsParaExcluir.has(i.id));
             }
+
+            const chkAll = document.getElementById(`chk-all-${tipo}`);
+            if (chkAll) chkAll.checked = false;
+
+            salvarNoBanco(tipo === 'inv' ? 'carteira' : 'transacoes');
+            verificarSelecao(tipo);
+            notificar(`${idsParaExcluir.size} registro(s) removido(s).`, "sucesso");
         }
 
-        // =========================================================
-        // 4. LÓGICA CORE, PROJEÇÃO E RENDERIZAÇÃO
-        // =========================================================
         function toggleProjecao() {
             projetarCDI = !projetarCDI;
             const botoes = document.querySelectorAll('.btn-projetar');
@@ -800,29 +936,36 @@
         }
 
         function obterCDIEfetivo() {
-            let cdiEfetivo = [...serieCDI];
-            if (projetarCDI && serieCDI.length > 0) {
-                const ultimoDado = serieCDI[serieCDI.length - 1];
-                const [d, m, a] = ultimoDado.data.split('/');
-                let dataCursor = new Date(parseInt(a), parseInt(m) - 1, parseInt(d));
-                const hoje = new Date();
-                hoje.setHours(0,0,0,0);
-                while(dataCursor < hoje) {
-                    dataCursor.setDate(dataCursor.getDate() + 1);
-                    if (ehDiaUtilBancario(dataCursor)) {
-                        cdiEfetivo.push({
-                            data: `${String(dataCursor.getDate()).padStart(2,'0')}/${String(dataCursor.getMonth()+1).padStart(2,'0')}/${dataCursor.getFullYear()}`,
-                            valor: ultimoDado.valor 
-                        });
-                    }
+            if (!projetarCDI) return serieCDI;
+            if (serieCDI.length === 0) return [];
+            if (serieCDIProjetadaCache) return serieCDIProjetadaCache;
+
+            const cdiEfetivo = [...serieCDI];
+            const ultimoDado = serieCDI[serieCDI.length - 1];
+            const [d, m, a] = ultimoDado.data.split('/');
+            let dataCursor = new Date(parseInt(a, 10), parseInt(m, 10) - 1, parseInt(d, 10));
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+
+            while (dataCursor < hoje) {
+                dataCursor.setDate(dataCursor.getDate() + 1);
+                if (ehDiaUtilBancario(dataCursor)) {
+                    const dataStr = `${String(dataCursor.getDate()).padStart(2,'0')}/${String(dataCursor.getMonth()+1).padStart(2,'0')}/${dataCursor.getFullYear()}`;
+                    cdiEfetivo.push({
+                        data: dataStr,
+                        valor: ultimoDado.valor,
+                        dataMs: dataCursor.getTime(),
+                        taxaDiaria: ultimoDado.taxaDiaria
+                    });
                 }
             }
+            serieCDIProjetadaCache = cdiEfetivo;
             return cdiEfetivo;
         }
 
         async function carregarCDI() {
             try {
-                document.getElementById('status-api').innerHTML = "⏳ Baixando histórico do CDI em lotes...";
+                document.getElementById('status-api').innerText = "⏳ Baixando histórico do CDI em lotes...";
                 const hoje = new Date();
                 const anoAtual = hoje.getFullYear();
                 const anoInicialBase = 2010;
@@ -839,16 +982,23 @@
                 }
 
                 const resultadosEmLotes = await Promise.all(promessasFetch);
-                serieCDI = resultadosEmLotes.flat();
+                const bruto = resultadosEmLotes.flat();
+                serieCDIProjetadaCache = null;
+
+                serieCDI = bruto.map(item => ({
+                    data: item.data,
+                    valor: item.valor,
+                    dataMs: parseDataBRMs(item.data),
+                    taxaDiaria: parseFloat(item.valor) / 100
+                }));
 
                 let textoStatus = "✅ API e Nuvem OK!";
-                if(serieCDI.length > 0) {
+                if (serieCDI.length > 0) {
                     const dtIni = serieCDI[0].data;
                     const ultimoRegistro = serieCDI[serieCDI.length - 1];
                     const dtFim = ultimoRegistro.data;
                     textoStatus += ` (CDI de ${dtIni} até ${dtFim})`;
-                    let taxaDiaria = parseFloat(ultimoRegistro.valor) / 100;
-                    let fatorDia = truncaFatorB3(1 + taxaDiaria);
+                    let fatorDia = truncaFatorB3(1 + ultimoRegistro.taxaDiaria);
                     textoStatus += `<br><span style="font-size: 0.85em; font-weight: normal; color: #666;">Fator multiplicador do último dia útil oficial (100% CDI): <strong>${fatorDia}</strong></span>`;
                 }
                 document.getElementById('status-api').innerHTML = textoStatus;
@@ -860,9 +1010,10 @@
         }
 
         function processarCarteira() {
-            const corpoTabela = document.getElementById('corpo-tabela'); corpoTabela.innerHTML = '';
+            const corpoTabela = document.getElementById('corpo-tabela');
             let valInv = 0, valBru = 0; totalLiquidoGlobal = 0; let totaisBancos = {};
             const cdiEfetivo = obterCDIEfetivo();
+            const lenCDI = cdiEfetivo.length;
             
             const filtroLiqDash = document.getElementById('filtro-liquidez-dash') ? document.getElementById('filtro-liquidez-dash').value : 'todos';
 
@@ -870,52 +1021,63 @@
             if (chkAll) chkAll.checked = false;
             verificarSelecao('inv');
 
-            if (cdiEfetivo.length === 0) {
+            if (lenCDI === 0) {
                 corpoTabela.innerHTML = '<tr><td colspan="12" style="text-align:center;">Aguardando API...</td></tr>';
                 calcularTotaisInvestimentos();
                 return;
             }
 
-            // PARTE A: CARTEIRA
-            carteira.forEach(inv => {
+            const agoraMs = Date.now();
+            const linhasHTML = [];
+
+            for (let idx = 0; idx < carteira.length; idx++) {
+                const inv = carteira[idx];
                 const isResgatado = !!inv.dataResgate;
-                const tipoInv = inv.tipoInvestimento || 'CDB/LC'; 
+                const tipoInv = inv.tipoInvestimento || 'CDB/LC';
                 
-                const [ano, mes, dia] = inv.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
-                let dataFim = projetarCDI ? new Date() : new Date(); 
-                if(isResgatado) { const [rA, rM, rD] = inv.dataResgate.split('-'); dataFim = new Date(parseInt(rA), parseInt(rM) - 1, parseInt(rD)); }
+                const [ano, mes, dia] = inv.data.split('-');
+                const dataInvMs = new Date(parseInt(ano, 10), parseInt(mes, 10) - 1, parseInt(dia, 10)).getTime();
+                const dataFimMs = isResgatado ? parseDataLocalMs(inv.dataResgate) : agoraMs;
                 const nomeBanco = inv.banco || "Não Informado";
                 
-                let valOriginal = parseFloat(inv.valor); let percentualCDI = parseFloat(inv.taxa) / 100; let fatorAcumulado = 1;
+                const valOriginal = parseFloat(inv.valor);
+                const taxaNum = parseFloat(inv.taxa);
+                const percentualCDI = taxaNum / 100;
+                let fatorAcumulado = 1;
                 
-                for (let i = 0; i < cdiEfetivo.length; i++) {
-                    const [dBCB, mBCB, aBCB] = cdiEfetivo[i].data.split('/'); const dataBCB = new Date(parseInt(aBCB), parseInt(mBCB) - 1, parseInt(dBCB));
-                    if (dataBCB >= dataInv && dataBCB <= dataFim) {
-                        let taxaDiaria = parseFloat(cdiEfetivo[i].valor) / 100;
-                        fatorAcumulado *= truncaFatorB3(1 + (taxaDiaria * percentualCDI));
-                    }
+                let i = buscarIndiceInicioCDI(cdiEfetivo, dataInvMs);
+                for (; i < lenCDI; i++) {
+                    const itemCDI = cdiEfetivo[i];
+                    if (itemCDI.dataMs > dataFimMs) break;
+                    fatorAcumulado *= truncaFatorB3(1 + (itemCDI.taxaDiaria * percentualCDI));
                 }
                 
-                let vAtual = Math.round((valOriginal * fatorAcumulado) * 100) / 100;
-                const dias = Math.ceil(Math.abs(dataFim - dataInv) / (1000 * 60 * 60 * 24));
+                const vAtual = Math.round((valOriginal * fatorAcumulado) * 100) / 100;
+                const dias = Math.ceil(Math.abs(dataFimMs - dataInvMs) / 86400000);
                 
                 let ir = 0;
                 if (tipoInv !== 'LCI/LCA') {
-                    if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5; else ir = 15;
+                    if (dias <= 180) ir = 22.5;
+                    else if (dias <= 360) ir = 20;
+                    else if (dias <= 720) ir = 17.5;
+                    else ir = 15;
                 }
 
-                const rBruto = vAtual - valOriginal; const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
+                const rBruto = vAtual - valOriginal;
+                const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
                 
                 inv.liqCalculado = vLiq;
                 inv.bruCalculado = vAtual;
 
-                if(!isResgatado) {
+                if (!isResgatado) {
                     const liqInv = inv.liquidez || 'Sim';
                     if (filtroLiqDash === 'todos' || liqInv === filtroLiqDash) {
                         valInv += valOriginal; valBru += vAtual; totalLiquidoGlobal += vLiq; 
                         if (!totaisBancos[nomeBanco]) totaisBancos[nomeBanco] = { inv: 0, bru: 0, liq: 0, bruVezesTaxa: 0 };
-                        totaisBancos[nomeBanco].inv += valOriginal; totaisBancos[nomeBanco].bru += vAtual; totaisBancos[nomeBanco].liq += vLiq;
-                        totaisBancos[nomeBanco].bruVezesTaxa += (vAtual * parseFloat(inv.taxa));
+                        totaisBancos[nomeBanco].inv += valOriginal;
+                        totaisBancos[nomeBanco].bru += vAtual;
+                        totaisBancos[nomeBanco].liq += vLiq;
+                        totaisBancos[nomeBanco].bruVezesTaxa += (vAtual * taxaNum);
                     }
                 }
 
@@ -929,52 +1091,66 @@
                 const vencimentoDisplay = inv.vencimento ? inv.vencimento.split('-').reverse().join('/') : '-';
                 const exibicaoIR = tipoInv === 'LCI/LCA' ? 'Isento' : `${fNum(ir)}%`;
 
-                corpoTabela.innerHTML += `<tr data-val-inicial="${valOriginal}" data-taxa="${parseFloat(inv.taxa)}" data-ir="${ir}" data-val-bruto="${vAtual}" data-val-liquido="${vLiq}" ${isResgatado ? 'style="background-color: #e9ecef; opacity: 0.8;"' : ''}>
+                linhasHTML.push(`<tr data-val-inicial="${valOriginal}" data-taxa="${taxaNum}" data-ir="${ir}" data-val-bruto="${vAtual}" data-val-liquido="${vLiq}" ${isResgatado ? 'style="background-color: #e9ecef; opacity: 0.8;"' : ''}>
                     <td style="text-align: center;"><input type="checkbox" class="chk-inv" value="${inv.id}" onchange="verificarSelecao('inv')"></td>
                     <td><b>${nomeBanco}</b><br><span style="font-size:0.85em; color:#666;">${tipoInv}</span>${strStatus}</td>
                     <td>${dia}/${mes}/${ano}</td>
                     <td>${liquidezDisplay}</td>
                     <td>${vencimentoDisplay}</td>
                     <td>${fMoeda(valOriginal)}</td>
-                    <td>${fTaxa(parseFloat(inv.taxa))}%</td>
+                    <td>${fTaxa(taxaNum)}%</td>
                     <td>${dias}</td>
                     <td>${exibicaoIR}</td>
                     <td style="color:${isResgatado?'#666':'green'};">${fMoeda(vAtual)}</td>
                     <td style="color:${isResgatado?'#666':'blue'}; font-weight:bold;">${fMoeda(vLiq)}</td>
                     <td style="white-space: nowrap;">${botoes}</td>
-                </tr>`;
-            });
+                </tr>`);
+            }
 
-            // PARTE B: CAIXINHAS / METAS
             const nomeBancoMeta = "Caixinhas (Metas)";
-            listaMetas.forEach(meta => {
-                if (!meta.aportes) { meta.aportes = []; if (meta.data && meta.valor) { meta.aportes.push({ id: Date.now(), data: meta.data, valor: meta.valor, taxa: meta.taxa || 100 }); } }
+            for (let mIdx = 0; mIdx < listaMetas.length; mIdx++) {
+                const meta = listaMetas[mIdx];
+                if (!meta.aportes) {
+                    meta.aportes = [];
+                    if (meta.data && meta.valor) {
+                        meta.aportes.push({ id: gerarIdUnico(mIdx), data: meta.data, valor: meta.valor, taxa: meta.taxa || 100 });
+                    }
+                }
                 
-                let metaLiqAtual = 0; let metaInvAtual = 0;
-                meta.aportes.forEach(aporte => {
-                    const [ano, mes, dia] = aporte.data.split('-'); const dataInv = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
-                    let valOriginal = parseFloat(aporte.valor); let percentualCDI = parseFloat(aporte.taxa) / 100; let fatorAcumulado = 1;
+                let metaLiqAtual = 0;
+                let metaInvAtual = 0;
+
+                for (let aIdx = 0; aIdx < meta.aportes.length; aIdx++) {
+                    const aporte = meta.aportes[aIdx];
+                    const dataInvMs = parseDataLocalMs(aporte.data);
+                    const valOriginal = parseFloat(aporte.valor);
+                    const taxaNum = parseFloat(aporte.taxa);
+                    const percentualCDI = taxaNum / 100;
+                    let fatorAcumulado = 1;
                     
-                    for (let i = 0; i < cdiEfetivo.length; i++) { 
-                        const [dBCB, mBCB, aBCB] = cdiEfetivo[i].data.split('/'); const dataBCB = new Date(parseInt(aBCB), parseInt(mBCB) - 1, parseInt(dBCB)); 
-                        let limiteData = projetarCDI ? new Date() : new Date();
-                        if (dataBCB >= dataInv && dataBCB <= limiteData) {
-                            let taxaDiaria = parseFloat(cdiEfetivo[i].valor) / 100;
-                            fatorAcumulado *= truncaFatorB3(1 + (taxaDiaria * percentualCDI));
-                        } 
+                    let i = buscarIndiceInicioCDI(cdiEfetivo, dataInvMs);
+                    for (; i < lenCDI; i++) {
+                        const itemCDI = cdiEfetivo[i];
+                        if (itemCDI.dataMs > agoraMs) break;
+                        fatorAcumulado *= truncaFatorB3(1 + (itemCDI.taxaDiaria * percentualCDI));
                     }
                     
-                    let vAtual = Math.round((valOriginal * fatorAcumulado) * 100) / 100;
-                    const dias = Math.ceil(Math.abs(new Date() - dataInv) / (1000 * 60 * 60 * 24)); let ir = 15; if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5;
-                    const rBruto = vAtual - valOriginal; const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
+                    const vAtual = Math.round((valOriginal * fatorAcumulado) * 100) / 100;
+                    const dias = Math.ceil(Math.abs(agoraMs - dataInvMs) / 86400000);
+                    let ir = 15;
+                    if (dias <= 180) ir = 22.5;
+                    else if (dias <= 360) ir = 20;
+                    else if (dias <= 720) ir = 17.5;
+
+                    const rBruto = vAtual - valOriginal;
+                    const vLiq = vAtual - (rBruto > 0 ? rBruto * (ir / 100) : 0);
                     
                     aporte.liqCalculado = vLiq;
                     aporte.bruCalculado = vAtual;
                     metaInvAtual += valOriginal;
                     metaLiqAtual += vLiq;
 
-                    const liqInv = 'Sim';
-                    if(filtroLiqDash === 'todos' || liqInv === filtroLiqDash) {
+                    if (filtroLiqDash === 'todos' || filtroLiqDash === 'Sim') {
                         valInv += valOriginal; 
                         valBru += vAtual; 
                         totalLiquidoGlobal += vLiq; 
@@ -982,13 +1158,20 @@
                         totaisBancos[nomeBancoMeta].inv += valOriginal; 
                         totaisBancos[nomeBancoMeta].bru += vAtual; 
                         totaisBancos[nomeBancoMeta].liq += vLiq;
-                        totaisBancos[nomeBancoMeta].bruVezesTaxa += (vAtual * parseFloat(aporte.taxa));
+                        totaisBancos[nomeBancoMeta].bruVezesTaxa += (vAtual * taxaNum);
                     }
-                });
-                meta.liqAtual = metaLiqAtual; meta.invAtual = metaInvAtual;
-            });
+                }
+                meta.liqAtual = metaLiqAtual;
+                meta.invAtual = metaInvAtual;
+            }
 
-            if (carteira.length === 0 && listaMetas.length === 0) { corpoTabela.innerHTML = '<tr><td colspan="12" style="text-align:center;">Nenhuma aplicação ou caixinha cadastrada.</td></tr>'; }
+            if (carteira.length === 0 && listaMetas.length === 0) {
+                corpoTabela.innerHTML = '<tr><td colspan="12" style="text-align:center;">Nenhuma aplicação ou caixinha cadastrada.</td></tr>';
+            } else if (carteira.length === 0) {
+                corpoTabela.innerHTML = '<tr><td colspan="12" style="text-align:center;">Nenhum investimento direto cadastrado (veja suas Caixinhas na aba 4).</td></tr>';
+            } else {
+                corpoTabela.innerHTML = linhasHTML.join('');
+            }
 
             document.getElementById('dash-valor-investido').innerText = fMoeda(valInv);
             document.getElementById('dash-valor-bruto').innerText = fMoeda(valBru);
@@ -997,17 +1180,19 @@
             document.getElementById('dash-rentabilidade').innerText = `${rent >= 0 ? '+' : ''}${fNum(rent)}%`;
             document.getElementById('dash-rentabilidade').style.color = rent >= 0 ? 'green' : 'red';
 
-            renderizarCardsBancos(totaisBancos); atualizarFiltroGrafico(); atualizarGraficoPizza(); renderizarMetas();
+            renderizarCardsBancos(totaisBancos);
+            atualizarFiltroGrafico();
+            atualizarGraficoPizza();
+            renderizarMetas();
             calcularTotaisInvestimentos();
         }
 
-        // TELA DE INVESTIMENTOS
         function toggleFormInvestimento() { const f = document.getElementById('form-investimento'); f.style.display = f.style.display === 'none' ? 'grid' : 'none'; }
         
         function adicionarInvestimento(e) { 
             e.preventDefault(); 
             carteira.push({ 
-                id: Date.now(), 
+                id: gerarIdUnico(), 
                 banco: document.getElementById('input-banco').value.trim(), 
                 tipoInvestimento: document.getElementById('input-tipo-inv').value,
                 data: document.getElementById('input-data').value, 
@@ -1016,7 +1201,9 @@
                 liquidez: document.getElementById('input-liquidez').value, 
                 vencimento: document.getElementById('input-vencimento').value 
             }); 
-            document.getElementById('form-investimento').reset(); toggleFormInvestimento(); salvarNoBanco(); 
+            document.getElementById('form-investimento').reset();
+            toggleFormInvestimento();
+            salvarNoBanco('carteira');
         }
 
         function abrirEdicao(id) { 
@@ -1035,7 +1222,7 @@
         }
         function fecharEdicao() { document.getElementById('modal-editar').style.display = 'none'; }
         function salvarEdicao() { 
-            const id = parseInt(document.getElementById('edit-id').value); const idx = carteira.findIndex(i => i.id === id); 
+            const id = parseInt(document.getElementById('edit-id').value, 10); const idx = carteira.findIndex(i => i.id === id); 
             if(idx !== -1) { 
                 carteira[idx].banco = document.getElementById('edit-banco').value; 
                 carteira[idx].tipoInvestimento = document.getElementById('edit-tipo-inv').value;
@@ -1044,12 +1231,24 @@
                 carteira[idx].taxa = parseFloat(document.getElementById('edit-taxa').value); 
                 carteira[idx].liquidez = document.getElementById('edit-liquidez').value; 
                 carteira[idx].vencimento = document.getElementById('edit-vencimento').value; 
-                salvarNoBanco(); fecharEdicao(); 
+                fecharEdicao();
+                salvarNoBanco('carteira');
             } 
         }
         function abrirResgate(id) { document.getElementById('resgate-id').value = id; document.getElementById('resgate-data').value = new Date().toISOString().split('T')[0]; document.getElementById('modal-resgatar').style.display = 'flex'; }
         function fecharResgate() { document.getElementById('modal-resgatar').style.display = 'none'; }
-        function confirmarResgate() { const id = parseInt(document.getElementById('resgate-id').value); const dataR = document.getElementById('resgate-data').value; if(!dataR) return alert("Preencha a data do resgate."); const idx = carteira.findIndex(i => i.id === id); if(idx !== -1) { if(new Date(dataR) < new Date(carteira[idx].data)) return alert("A data de resgate não pode ser anterior à data de aplicação."); carteira[idx].dataResgate = dataR; salvarNoBanco(); fecharResgate(); } }
+        function confirmarResgate() {
+            const id = parseInt(document.getElementById('resgate-id').value, 10);
+            const dataR = document.getElementById('resgate-data').value;
+            if(!dataR) return notificar("Preencha a data do resgate.", "aviso");
+            const idx = carteira.findIndex(i => i.id === id);
+            if(idx !== -1) {
+                if(new Date(dataR) < new Date(carteira[idx].data)) return notificar("A data de resgate não pode ser anterior à aplicação.", "erro");
+                carteira[idx].dataResgate = dataR;
+                fecharResgate();
+                salvarNoBanco('carteira');
+            }
+        }
 
         function filtrarTabelaInvestimentos() {
             const inputs = document.querySelectorAll('#tabela-resultados thead .input-filtro-tabela');
@@ -1060,7 +1259,7 @@
                 inputs.forEach((input, index) => {
                     const textoFiltro = input.value.toLowerCase();
                     if (textoFiltro !== '') { 
-                        const celula = row.cells[index + 1]; // +1 para pular o checkbox
+                        const celula = row.cells[index + 1];
                         if (celula) { 
                             if (!celula.textContent.toLowerCase().includes(textoFiltro)) { mostrarLinha = false; } 
                         } 
@@ -1069,8 +1268,6 @@
                 row.style.display = mostrarLinha ? '' : 'none';
             });
 
-            // Após filtrar, se o checkbox de 'selecionar todos' estava ativo, precisamos desativar
-            // ou garantir que as lógicas fiquem limpas
             const chkAll = document.getElementById('chk-all-inv');
             if(chkAll) chkAll.checked = false;
             toggleSelectAll('inv');
@@ -1093,9 +1290,6 @@
             tfoot.innerHTML = `<tr style="background-color: #0f3460; color: white; font-weight: bold; border-top: 3px solid #e94560;"><td colspan="5" style="text-align: right; padding: 15px 10px;">📊 TOTAIS (Filtro Ativo):</td><td style="padding: 15px 10px;">${fMoeda(sumInicial)}</td><td style="padding: 15px 10px;" title="Taxa Média Ponderada">${fTaxa(taxaMedia)}%</td><td style="padding: 15px 10px; text-align: center;">-</td><td style="padding: 15px 10px;" title="IR Médio Ponderado">${fNum(irMedio)}%</td><td style="padding: 15px 10px;">${fMoeda(sumBruto)}</td><td style="padding: 15px 10px; color: #a8d5ff;">${fMoeda(sumLiquido)}</td><td></td></tr>`;
         }
 
-        // =========================================================
-        // 5. TRANSAÇÕES (Com Toggle de Cartão de Crédito)
-        // =========================================================
         function toggleCartaoFields() {
             const isCartao = document.getElementById('trans-is-cartao').checked;
             const boxCompra = document.getElementById('box-data-compra');
@@ -1120,8 +1314,9 @@
             const f = document.getElementById('form-transacao'); 
             if(f.style.display === 'none' || f.style.display === '') {
                 f.reset();
+                document.getElementById('trans-obs').value = '';
                 document.getElementById('trans-is-cartao').checked = false;
-                toggleCartaoFields(); // Reseta para o modo simples (oculta cartão)
+                toggleCartaoFields();
                 f.style.display = 'grid';
             } else {
                 f.style.display = 'none';
@@ -1133,6 +1328,7 @@
             const tipo = document.getElementById('trans-tipo').value;
             const desc = document.getElementById('trans-desc').value;
             const cat = document.getElementById('trans-cat').value;
+            const obs = document.getElementById('trans-obs').value.trim();
             const dataPagamento = document.getElementById('trans-data').value;
             const valorTotal = parseFloat(document.getElementById('trans-valor').value);
             
@@ -1140,7 +1336,7 @@
 
             if (isCartao) {
                 const dataCompra = document.getElementById('trans-data-compra').value;
-                const parcelas = parseInt(document.getElementById('trans-parcelas').value) || 1;
+                const parcelas = parseInt(document.getElementById('trans-parcelas').value, 10) || 1;
                 const [cAno, cMes, cDia] = dataCompra.split('-');
                 const dataCompraFormatada = `${cDia}/${cMes}/${cAno}`;
 
@@ -1148,14 +1344,15 @@
                     const valorParcela = valorTotal / parcelas;
                     for (let i = 1; i <= parcelas; i++) {
                         let [ano, mes, dia] = dataPagamento.split('-');
-                        let dataFutura = new Date(parseInt(ano), parseInt(mes) - 1 + (i - 1), parseInt(dia));
+                        let dataFutura = new Date(parseInt(ano, 10), parseInt(mes, 10) - 1 + (i - 1), parseInt(dia, 10));
                         let dataFormatada = `${dataFutura.getFullYear()}-${String(dataFutura.getMonth() + 1).padStart(2, '0')}-${String(dataFutura.getDate()).padStart(2, '0')}`;
 
                         transacoes.push({ 
-                            id: Date.now() + i, 
+                            id: gerarIdUnico(i), 
                             tipo: tipo, 
                             desc: `${desc} [Compra: ${dataCompraFormatada}] (${i}/${parcelas})`, 
-                            cat: cat, 
+                            cat: cat,
+                            obs: obs,
                             data: dataFormatada, 
                             valor: valorParcela 
                         });
@@ -1163,89 +1360,108 @@
                 } else {
                     const notaCompra = dataCompra !== dataPagamento ? ` [Compra: ${dataCompraFormatada}]` : '';
                     transacoes.push({ 
-                        id: Date.now(), 
+                        id: gerarIdUnico(), 
                         tipo: tipo, 
                         desc: desc + notaCompra, 
-                        cat: cat, 
+                        cat: cat,
+                        obs: obs,
                         data: dataPagamento, 
                         valor: valorTotal 
                     });
                 }
             } else {
                 transacoes.push({ 
-                    id: Date.now(), 
+                    id: gerarIdUnico(), 
                     tipo: tipo, 
                     desc: desc, 
-                    cat: cat, 
+                    cat: cat,
+                    obs: obs,
                     data: dataPagamento, 
                     valor: valorTotal 
                 });
             }
             
             toggleFormTransacao(); 
-            salvarNoBanco(); 
+            salvarNoBanco('transacoes'); 
         }
 
         function renderizarTransacoes() {
-            const corpo = document.getElementById('corpo-tabela-transacoes'); corpo.innerHTML = '';
-            
+            const corpo = document.getElementById('corpo-tabela-transacoes');
             let tMesDash = 0; 
-            let tFiltEntrada = 0, tFiltSaida = 0, tFiltSaldo = 0;
             
-            const mAt = new Date().getMonth() + 1, aAt = new Date().getFullYear();
-            const fMes = document.getElementById('filtro-mes-trans').value, fAno = document.getElementById('filtro-ano-trans').value, fData = document.getElementById('filtro-data-trans').value;
-            const tOrd = [...transacoes].sort((a,b) => new Date(b.data) - new Date(a.data)); let uGrp = "";
+            const agora = new Date();
+            const mAt = agora.getMonth() + 1, aAt = agora.getFullYear();
+            const fMes = document.getElementById('filtro-mes-trans').value;
+            const fAno = document.getElementById('filtro-ano-trans').value;
+            const fData = document.getElementById('filtro-data-trans').value;
+            const tOrd = [...transacoes].sort((a,b) => b.data.localeCompare(a.data));
 
-            // Desmarca o Checkbox de "Selecionar Todos" sempre que a tabela for recarregada
             const chkAll = document.getElementById('chk-all-trans');
             if (chkAll) chkAll.checked = false;
             verificarSelecao('trans');
 
-            tOrd.forEach(t => {
-                const tpReal = t.tipo || 'despesa'; const mult = tpReal === 'entrada' ? 1 : -1;
+            const totaisPorMes = {};
+            for (let i = 0; i < tOrd.length; i++) {
+                const tx = tOrd[i];
+                const chaveMes = `${tx.data.substring(5, 7)}/${tx.data.substring(0, 4)}`;
+                if (!totaisPorMes[chaveMes]) totaisPorMes[chaveMes] = { ent: 0, sai: 0 };
+                if ((tx.tipo || 'despesa') === 'entrada') totaisPorMes[chaveMes].ent += Math.abs(tx.valor);
+                else totaisPorMes[chaveMes].sai += Math.abs(tx.valor);
+            }
+
+            let uGrp = "";
+            const linhasHTML = [];
+
+            for (let i = 0; i < tOrd.length; i++) {
+                const t = tOrd[i];
+                const tpReal = t.tipo || 'despesa';
+                const mult = tpReal === 'entrada' ? 1 : -1;
                 const valAbsoluto = Math.abs(t.valor); 
-                const [ano, mes, dia] = t.data.split('-'); 
+                const ano = t.data.substring(0, 4);
+                const mes = t.data.substring(5, 7);
+                const dia = t.data.substring(8, 10);
                 
-                if(parseInt(mes) === mAt && parseInt(ano) === aAt) { tMesDash += (valAbsoluto * mult); }
+                if (parseInt(mes, 10) === mAt && parseInt(ano, 10) === aAt) {
+                    tMesDash += (valAbsoluto * mult);
+                }
                 
                 let mostrar = true;
-                if (fData !== "") { if (t.data !== fData) mostrar = false; } else { if (fMes !== 'todos' && mes !== fMes) mostrar = false; if (fAno !== 'todos' && ano !== fAno) mostrar = false; }
+                if (fData !== "") {
+                    if (t.data !== fData) mostrar = false;
+                } else {
+                    if (fMes !== 'todos' && mes !== fMes) mostrar = false;
+                    if (fAno !== 'todos' && ano !== fAno) mostrar = false;
+                }
                 
                 if (mostrar) {
-                    if (tpReal === 'entrada') tFiltEntrada += valAbsoluto;
-                    else tFiltSaida += valAbsoluto;
-                    
-                    tFiltSaldo += (valAbsoluto * mult);
-
                     if (fData === "" && (fMes === 'todos' || fAno === 'todos')) { 
                         const grpAtual = `${mes}/${ano}`; 
                         if (grpAtual !== uGrp) { 
-                            let tEntMes = 0, tSaiMes = 0;
-                            tOrd.forEach(tx => {
-                                const [txA, txM, txD] = tx.data.split('-');
-                                if(txM === mes && txA === ano) {
-                                    const txTp = tx.tipo || 'despesa';
-                                    if(txTp === 'entrada') tEntMes += Math.abs(tx.valor);
-                                    else tSaiMes += Math.abs(tx.valor);
-                                }
-                            });
-
-                            corpo.innerHTML += `<tr style="background-color:#f1f3f5;"><td colspan="6" style="text-align:center; font-weight:bold;">🗓️ ${mes}/${ano} <span style="margin-left: 20px; color:#28a745; font-size: 0.9em;">+ ${fMoeda(tEntMes)}</span> <span style="margin-left: 15px; color:#dc3545; font-size: 0.9em;">- ${fMoeda(tSaiMes)}</span></td></tr>`; 
+                            const resumoMes = totaisPorMes[grpAtual] || { ent: 0, sai: 0 };
+                            linhasHTML.push(`<tr style="background-color:#f1f3f5;"><td colspan="7" style="text-align:center; font-weight:bold;">🗓️ ${grpAtual} <span style="margin-left: 20px; color:#28a745; font-size: 0.9em;">+ ${fMoeda(resumoMes.ent)}</span> <span style="margin-left: 15px; color:#dc3545; font-size: 0.9em;">- ${fMoeda(resumoMes.sai)}</span></td></tr>`); 
                             uGrp = grpAtual; 
                         } 
                     }
-                    const cVal = tpReal === 'entrada' ? '#28a745' : '#dc3545'; const sin = tpReal === 'entrada' ? '+' : '-'; const bdg = tpReal === 'entrada' ? 'badge-entrada' : 'badge-saida';
-                    corpo.innerHTML += `<tr data-valor="${valAbsoluto}" data-tipo="${tpReal}">
+                    const cVal = tpReal === 'entrada' ? '#28a745' : '#dc3545';
+                    const sin = tpReal === 'entrada' ? '+' : '-';
+                    const bdg = tpReal === 'entrada' ? 'badge-entrada' : 'badge-saida';
+                    const obsTexto = t.obs || '';
+                    linhasHTML.push(`<tr data-valor="${valAbsoluto}" data-tipo="${tpReal}">
                         <td style="text-align: center;"><input type="checkbox" class="chk-trans" value="${t.id}" onchange="verificarSelecao('trans')"></td>
                         <td>${t.desc}</td>
                         <td><span class="${bdg}">${t.cat||'Sem Categoria'}</span></td>
+                        <td>${obsTexto}</td>
                         <td>${dia}/${mes}/${ano}</td>
                         <td style="color:${cVal}; font-weight:bold;">${sin} ${fMoeda(valAbsoluto)}</td>
                         <td style="white-space:nowrap;"><button class="btn-editar" onclick="abrirEdicaoTransacao(${t.id})">Editar</button><button class="btn-excluir" onclick="deletarItem(${t.id}, 'trans')">Excluir</button></td>
-                    </tr>`;
+                    </tr>`);
                 }
-            });
-            const dFx = document.getElementById('dash-fluxo'); dFx.innerText = fMoeda(tMesDash); dFx.style.color = tMesDash >= 0 ? '#28a745' : '#dc3545';
+            }
+
+            corpo.innerHTML = linhasHTML.join('');
+            const dFx = document.getElementById('dash-fluxo');
+            dFx.innerText = fMoeda(tMesDash);
+            dFx.style.color = tMesDash >= 0 ? '#28a745' : '#dc3545';
             calcularTotaisTransacoes();
         }
 
@@ -1268,7 +1484,7 @@
                 inputs.forEach((input, index) => { 
                     const textoFiltro = input.value.toLowerCase(); 
                     if (textoFiltro !== '') { 
-                        const celula = row.cells[index + 1]; // +1 para pular o checkbox
+                        const celula = row.cells[index + 1];
                         if (celula) { 
                             if (!celula.textContent.toLowerCase().includes(textoFiltro)) { mostrarLinha = false; } 
                         } 
@@ -1307,7 +1523,7 @@
                 tfoot.innerHTML = ''; 
             } else {
                 let corSaldoTabela = sumSaldo >= 0 ? '#4dd0e1' : '#ff9999'; 
-                tfoot.innerHTML = `<tr style="background-color: #0f3460; color: white; font-weight: bold; border-top: 3px solid #e94560;"><td colspan="4" style="text-align: right; padding: 15px 10px;">📊 TOTAIS (Filtro Ativo):</td><td style="padding: 15px 10px; color: ${corSaldoTabela};">${fMoeda(sumSaldo)}</td><td></td></tr>`;
+                tfoot.innerHTML = `<tr style="background-color: #0f3460; color: white; font-weight: bold; border-top: 3px solid #e94560;"><td colspan="5" style="text-align: right; padding: 15px 10px;">📊 TOTAIS (Filtro Ativo):</td><td style="padding: 15px 10px; color: ${corSaldoTabela};">${fMoeda(sumSaldo)}</td><td></td></tr>`;
             }
 
             const boxTotais = document.getElementById('box-totais-transacoes');
@@ -1324,55 +1540,101 @@
             }
         }
 
-        function abrirEdicaoTransacao(id) { const t = transacoes.find(i => i.id === id); if(t) { document.getElementById('edit-trans-id').value = t.id; document.getElementById('edit-trans-tipo').value = t.tipo || 'despesa'; document.getElementById('edit-trans-data').value = t.data; document.getElementById('edit-trans-valor').value = Math.abs(t.valor); const selDesc = document.getElementById('edit-trans-desc'); if(!descricoesAtuais.includes(t.desc)) selDesc.innerHTML += `<option value="${t.desc}">${t.desc}</option>`; selDesc.value = t.desc; const selCat = document.getElementById('edit-trans-cat'); if(!categoriasAtuais.includes(t.cat)) selCat.innerHTML += `<option value="${t.cat}">${t.cat}</option>`; selCat.value = t.cat; document.getElementById('modal-editar-trans').style.display = 'flex'; } }
+        function abrirEdicaoTransacao(id) { const t = transacoes.find(i => i.id === id); if(t) { document.getElementById('edit-trans-id').value = t.id; document.getElementById('edit-trans-tipo').value = t.tipo || 'despesa'; document.getElementById('edit-trans-obs').value = t.obs || ''; document.getElementById('edit-trans-data').value = t.data; document.getElementById('edit-trans-valor').value = Math.abs(t.valor); const selDesc = document.getElementById('edit-trans-desc'); if(!descricoesAtuais.includes(t.desc)) selDesc.innerHTML += `<option value="${t.desc}">${t.desc}</option>`; selDesc.value = t.desc; const selCat = document.getElementById('edit-trans-cat'); if(!categoriasAtuais.includes(t.cat)) selCat.innerHTML += `<option value="${t.cat}">${t.cat}</option>`; selCat.value = t.cat; document.getElementById('modal-editar-trans').style.display = 'flex'; } }
         function fecharEdicaoTransacao() { document.getElementById('modal-editar-trans').style.display = 'none'; }
-        function salvarEdicaoTransacao() { const id = parseInt(document.getElementById('edit-trans-id').value); const idx = transacoes.findIndex(i => i.id === id); if(idx !== -1) { transacoes[idx].tipo = document.getElementById('edit-trans-tipo').value; transacoes[idx].desc = document.getElementById('edit-trans-desc').value; transacoes[idx].cat = document.getElementById('edit-trans-cat').value; transacoes[idx].data = document.getElementById('edit-trans-data').value; transacoes[idx].valor = parseFloat(document.getElementById('edit-trans-valor').value); salvarNoBanco(); fecharEdicaoTransacao(); } }
+        function salvarEdicaoTransacao() { const id = parseInt(document.getElementById('edit-trans-id').value, 10); const idx = transacoes.findIndex(i => i.id === id); if(idx !== -1) { transacoes[idx].tipo = document.getElementById('edit-trans-tipo').value; transacoes[idx].desc = document.getElementById('edit-trans-desc').value; transacoes[idx].cat = document.getElementById('edit-trans-cat').value; transacoes[idx].obs = document.getElementById('edit-trans-obs').value.trim(); transacoes[idx].data = document.getElementById('edit-trans-data').value; transacoes[idx].valor = parseFloat(document.getElementById('edit-trans-valor').value); fecharEdicaoTransacao(); salvarNoBanco('transacoes'); } }
 
-        // =========================================================
-        // 6. CAIXINHAS / METAS 
-        // =========================================================
         function toggleFormMeta() { const f = document.getElementById('form-meta'); f.style.display = (f.style.display === 'none' || f.style.display === '') ? 'grid' : 'none'; }
-        function adicionarMeta(e) { e.preventDefault(); listaMetas.push({ id: Date.now(), nome: document.getElementById('meta-nome').value, alvo: parseFloat(document.getElementById('meta-alvo').value), aportes: [{ id: Date.now() + 1, data: document.getElementById('meta-data').value, valor: parseFloat(document.getElementById('meta-valor').value), taxa: parseFloat(document.getElementById('meta-taxa').value) }] }); document.getElementById('meta-nome').value = ''; document.getElementById('meta-alvo').value = ''; document.getElementById('meta-data').value = ''; document.getElementById('meta-valor').value = ''; document.getElementById('meta-taxa').value = ''; toggleFormMeta(); salvarNoBanco(); }
-        function renderizarMetas() {
-            const cont = document.getElementById('container-metas'); cont.innerHTML = '';
-            if(listaMetas.length === 0) return cont.innerHTML = '<p style="text-align:center; color:#666;">Nenhuma caixinha definida ainda.</p>';
-            listaMetas.forEach(m => {
-                let p = (m.liqAtual / m.alvo) * 100; if(p > 100) p = 100;
-                let htmlAportes = `<table style="width:100%; font-size:0.9em; margin-top:15px; border-top: 1px solid #eee; padding-top: 10px;"><tr style="text-align:left; color:#666; border-bottom:1px solid #ddd;"><th>Data</th><th>Investido</th><th>Taxa</th><th>Líquido Atual</th><th></th></tr>`;
-                if(m.aportes && m.aportes.length > 0) { m.aportes.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(ap => { const [ano, mes, dia] = ap.data.split('-'); htmlAportes += `<tr><td>${dia}/${mes}/${ano}</td><td>${fMoeda(ap.valor)}</td><td>${fTaxa(ap.taxa)}%</td><td style="color:blue; font-weight:bold;">${fMoeda(ap.liqCalculado||0)}</td><td style="text-align:right;"><button style="background:none;border:none;cursor:pointer;font-size:1.1em;margin-right:8px;" onclick="abrirAporte(${m.id}, ${ap.id})" title="Editar Aplicação">✏️</button><button style="background:none;border:none;cursor:pointer;font-size:1.1em;" onclick="deletarAporte(${m.id}, ${ap.id})" title="Excluir Aplicação">❌</button></td></tr>`; }); } htmlAportes += `</table>`;
-                cont.innerHTML += `<div class="meta-card"><div class="meta-info" style="margin-bottom: 10px;"><span style="font-size:1.2em;">🎯 <strong style="color:#1a1a2e;">${m.nome}</strong></span><div><button class="btn-editar" onclick="abrirEdicaoMeta(${m.id})">Editar Alvo</button><button class="btn-excluir" onclick="deletarItem(${m.id}, 'meta')">Excluir Caixinha</button></div></div><div class="meta-info"><span style="color:#666;">Total Aplicado: ${fMoeda(m.invAtual||0)} | Total Atual: <strong style="color:blue;">${fMoeda(m.liqAtual||0)}</strong></span><span style="color:#1a1a2e;">Alvo: ${fMoeda(m.alvo)} (${fNum(p)}%)</span></div><div class="barra-fundo" style="margin-top:5px; height:10px;"><div class="barra-progresso" style="width: ${p}%; ${p===100?'background-color:#28a745;':''}"></div></div>${htmlAportes}<button class="btn-acao secundario" style="margin-top:15px; font-size:0.9em; padding:10px;" onclick="abrirAporte(${m.id}, null)">+ Nova Aplicação nesta Caixinha</button></div>`;
+        function adicionarMeta(e) {
+            e.preventDefault();
+            listaMetas.push({
+                id: gerarIdUnico(),
+                nome: document.getElementById('meta-nome').value,
+                alvo: parseFloat(document.getElementById('meta-alvo').value),
+                aportes: [{
+                    id: gerarIdUnico(1),
+                    data: document.getElementById('meta-data').value,
+                    valor: parseFloat(document.getElementById('meta-valor').value),
+                    taxa: parseFloat(document.getElementById('meta-taxa').value)
+                }]
             });
+            document.getElementById('meta-nome').value = '';
+            document.getElementById('meta-alvo').value = '';
+            document.getElementById('meta-data').value = '';
+            document.getElementById('meta-valor').value = '';
+            document.getElementById('meta-taxa').value = '';
+            toggleFormMeta();
+            salvarNoBanco('carteira');
+        }
+        function renderizarMetas() {
+            const cont = document.getElementById('container-metas');
+            if (listaMetas.length === 0) {
+                cont.innerHTML = '<p style="text-align:center; color:#666;">Nenhuma caixinha definida ainda.</p>';
+                return;
+            }
+            const cardsHTML = listaMetas.map(m => {
+                let p = (m.liqAtual / m.alvo) * 100;
+                if (p > 100) p = 100;
+                let linhasAportes = '';
+                if (m.aportes && m.aportes.length > 0) {
+                    const aportesOrd = [...m.aportes].sort((a, b) => a.data.localeCompare(b.data));
+                    linhasAportes = aportesOrd.map(ap => {
+                        const [ano, mes, dia] = ap.data.split('-');
+                        return `<tr><td>${dia}/${mes}/${ano}</td><td>${fMoeda(ap.valor)}</td><td>${fTaxa(ap.taxa)}%</td><td style="color:blue; font-weight:bold;">${fMoeda(ap.liqCalculado || 0)}</td><td style="text-align:right;"><button style="background:none;border:none;cursor:pointer;font-size:1.1em;margin-right:8px;" onclick="abrirAporte(${m.id}, ${ap.id})" title="Editar Aplicação">✏️</button><button style="background:none;border:none;cursor:pointer;font-size:1.1em;" onclick="deletarAporte(${m.id}, ${ap.id})" title="Excluir Aplicação">❌</button></td></tr>`;
+                    }).join('');
+                }
+                const htmlAportes = `<table style="width:100%; font-size:0.9em; margin-top:15px; border-top: 1px solid #eee; padding-top: 10px;"><tr style="text-align:left; color:#666; border-bottom:1px solid #ddd;"><th>Data</th><th>Investido</th><th>Taxa</th><th>Líquido Atual</th><th></th></tr>${linhasAportes}</table>`;
+                return `<div class="meta-card"><div class="meta-info" style="margin-bottom: 10px;"><span style="font-size:1.2em;">🎯 <strong style="color:#1a1a2e;">${m.nome}</strong></span><div><button class="btn-editar" onclick="abrirEdicaoMeta(${m.id})">Editar Alvo</button><button class="btn-excluir" onclick="deletarItem(${m.id}, 'meta')">Excluir Caixinha</button></div></div><div class="meta-info"><span style="color:#666;">Total Aplicado: ${fMoeda(m.invAtual || 0)} | Total Atual: <strong style="color:blue;">${fMoeda(m.liqAtual || 0)}</strong></span><span style="color:#1a1a2e;">Alvo: ${fMoeda(m.alvo)} (${fNum(p)}%)</span></div><div class="barra-fundo" style="margin-top:5px; height:10px;"><div class="barra-progresso" style="width: ${p}%; ${p === 100 ? 'background-color:#28a745;' : ''}"></div></div>${htmlAportes}<button class="btn-acao secundario" style="margin-top:15px; font-size:0.9em; padding:10px;" onclick="abrirAporte(${m.id}, null)">+ Nova Aplicação nesta Caixinha</button></div>`;
+            });
+            cont.innerHTML = cardsHTML.join('');
         }
         function abrirEdicaoMeta(id) { const m = listaMetas.find(i => i.id === id); if(m) { document.getElementById('edit-meta-id').value = m.id; document.getElementById('edit-meta-nome').value = m.nome; document.getElementById('edit-meta-alvo').value = m.alvo; document.getElementById('modal-editar-meta').style.display = 'flex'; } }
         function fecharEdicaoMeta() { document.getElementById('modal-editar-meta').style.display = 'none'; }
-        function salvarEdicaoMeta() { const id = parseInt(document.getElementById('edit-meta-id').value); const idx = listaMetas.findIndex(i => i.id === id); if(idx !== -1) { listaMetas[idx].nome = document.getElementById('edit-meta-nome').value; listaMetas[idx].alvo = parseFloat(document.getElementById('edit-meta-alvo').value); salvarNoBanco(); fecharEdicaoMeta(); } }
+        function salvarEdicaoMeta() { const id = parseInt(document.getElementById('edit-meta-id').value, 10); const idx = listaMetas.findIndex(i => i.id === id); if(idx !== -1) { listaMetas[idx].nome = document.getElementById('edit-meta-nome').value; listaMetas[idx].alvo = parseFloat(document.getElementById('edit-meta-alvo').value); fecharEdicaoMeta(); salvarNoBanco('carteira'); } }
         function abrirAporte(metaId, aporteId) { document.getElementById('aporte-meta-id').value = metaId; document.getElementById('aporte-id').value = aporteId || ""; if(aporteId) { document.getElementById('titulo-modal-aporte').innerText = "Editar Aplicação"; const meta = listaMetas.find(m => m.id === metaId); const ap = meta.aportes.find(a => a.id === aporteId); if(ap) { document.getElementById('aporte-data').value = ap.data; document.getElementById('aporte-valor').value = ap.valor; document.getElementById('aporte-taxa').value = ap.taxa; } } else { document.getElementById('titulo-modal-aporte').innerText = "Nova Aplicação na Caixinha"; document.getElementById('aporte-data').value = ""; document.getElementById('aporte-valor').value = ""; document.getElementById('aporte-taxa').value = "100"; } document.getElementById('modal-aporte-meta').style.display = 'flex'; }
         function fecharAporte() { document.getElementById('modal-aporte-meta').style.display = 'none'; }
-        function salvarAporte() { const metaId = parseInt(document.getElementById('aporte-meta-id').value), aporteId = document.getElementById('aporte-id').value, data = document.getElementById('aporte-data').value, valor = parseFloat(document.getElementById('aporte-valor').value), taxa = parseFloat(document.getElementById('aporte-taxa').value); if(!data || isNaN(valor) || isNaN(taxa)) return alert("Preencha todos os campos."); const metaIndex = listaMetas.findIndex(m => m.id === metaId); if(metaIndex !== -1) { if(!listaMetas[metaIndex].aportes) listaMetas[metaIndex].aportes = []; if(aporteId === "") { listaMetas[metaIndex].aportes.push({ id: Date.now(), data, valor, taxa }); } else { const apIndex = listaMetas[metaIndex].aportes.findIndex(a => a.id === parseInt(aporteId)); if(apIndex !== -1) { listaMetas[metaIndex].aportes[apIndex].data = data; listaMetas[metaIndex].aportes[apIndex].valor = valor; listaMetas[metaIndex].aportes[apIndex].taxa = taxa; } } salvarNoBanco(); fecharAporte(); } }
-        function deletarAporte(metaId, aporteId) { if(confirm("Deseja excluir esta aplicação da Caixinha?")) { const idx = listaMetas.findIndex(m => m.id === metaId); if(idx !== -1) { listaMetas[idx].aportes = listaMetas[idx].aportes.filter(a => a.id !== aporteId); salvarNoBanco(); } } }
+        function salvarAporte() {
+            const metaId = parseInt(document.getElementById('aporte-meta-id').value, 10);
+            const aporteId = document.getElementById('aporte-id').value;
+            const data = document.getElementById('aporte-data').value;
+            const valor = parseFloat(document.getElementById('aporte-valor').value);
+            const taxa = parseFloat(document.getElementById('aporte-taxa').value);
+            if(!data || isNaN(valor) || isNaN(taxa)) return notificar("Preencha todos os campos.", "aviso");
+            const metaIndex = listaMetas.findIndex(m => m.id === metaId);
+            if(metaIndex !== -1) {
+                if(!listaMetas[metaIndex].aportes) listaMetas[metaIndex].aportes = [];
+                if(aporteId === "") {
+                    listaMetas[metaIndex].aportes.push({ id: gerarIdUnico(), data, valor, taxa });
+                } else {
+                    const apIndex = listaMetas[metaIndex].aportes.findIndex(a => a.id === parseInt(aporteId, 10));
+                    if(apIndex !== -1) {
+                        listaMetas[metaIndex].aportes[apIndex].data = data;
+                        listaMetas[metaIndex].aportes[apIndex].valor = valor;
+                        listaMetas[metaIndex].aportes[apIndex].taxa = taxa;
+                    }
+                }
+                fecharAporte();
+                salvarNoBanco('carteira');
+            }
+        }
+        function deletarAporte(metaId, aporteId) { const idx = listaMetas.findIndex(m => m.id === metaId); if(idx !== -1) { listaMetas[idx].aportes = listaMetas[idx].aportes.filter(a => a.id !== aporteId); salvarNoBanco('carteira'); } }
 
-        // =========================================================
-        // 7. SIMULADOR E COMPARADOR
-        // =========================================================
-        function calcularSimulacao() { const p = parseFloat(document.getElementById('sim-inicial').value)||0, pmt = parseFloat(document.getElementById('sim-mensal').value)||0, rAn = parseFloat(document.getElementById('sim-taxa').value)||0, anos = parseInt(document.getElementById('sim-anos').value)||0; const rMes = (Math.pow(1 + (rAn/100), 1/12) - 1), nMeses = anos * 12; let fv = p * Math.pow(1 + rMes, nMeses); if(rMes>0) fv += pmt * ((Math.pow(1 + rMes, nMeses) - 1) / rMes); else fv += pmt * nMeses; const tInv = p + (pmt * nMeses); document.getElementById('sim-res-investido').innerText = fMoeda(tInv); document.getElementById('sim-res-juros').innerText = fMoeda(fv-tInv); document.getElementById('sim-res-total').innerText = fMoeda(fv); document.getElementById('resultado-simulador').style.display = 'block'; }
-        function calcularComparacao() { const v = parseFloat(document.getElementById('comp-valor').value)||0, dias = parseInt(document.getElementById('comp-dias').value)||1, tCdb = parseFloat(document.getElementById('comp-cdb').value)/100, tLci = parseFloat(document.getElementById('comp-lci').value)/100, cdiAno = parseFloat(document.getElementById('comp-cdi').value)/100; const rCDB = cdiAno * tCdb, rLCI = cdiAno * tLci; let ir = 15; if (dias<=180) ir=22.5; else if(dias<=360) ir=20; else if(dias<=720) ir=17.5; const bCDB = v * (rCDB * (dias/365)), lCDB = bCDB - (bCDB * (ir/100)), lLCI = v * (rLCI * (dias/365)); document.getElementById('comp-res-cdb').innerText = fMoeda(v+lCDB); document.getElementById('comp-res-lci').innerText = fMoeda(v+lLCI); const txt = document.getElementById('comp-vencedor'); if(lCDB>lLCI){txt.innerText="🏆 O CDB é a melhor opção!";txt.style.color="#1a1a2e";}else if(lLCI>lCDB){txt.innerText="🏆 A LCI/LCA é a melhor opção!";txt.style.color="#28a745";}else{txt.innerText="⚖️ Ambos rendem igual.";txt.style.color="#666";} document.getElementById('resultado-comparador').style.display = 'block'; }
+        function calcularSimulacao() { const p = parseFloat(document.getElementById('sim-inicial').value)||0, pmt = parseFloat(document.getElementById('sim-mensal').value)||0, rAn = parseFloat(document.getElementById('sim-taxa').value)||0, anos = parseInt(document.getElementById('sim-anos').value, 10)||0; const rMes = (Math.pow(1 + (rAn/100), 1/12) - 1), nMeses = anos * 12; let fv = p * Math.pow(1 + rMes, nMeses); if(rMes>0) fv += pmt * ((Math.pow(1 + rMes, nMeses) - 1) / rMes); else fv += pmt * nMeses; const tInv = p + (pmt * nMeses); document.getElementById('sim-res-investido').innerText = fMoeda(tInv); document.getElementById('sim-res-juros').innerText = fMoeda(fv-tInv); document.getElementById('sim-res-total').innerText = fMoeda(fv); document.getElementById('resultado-simulador').style.display = 'block'; }
+        function calcularComparacao() { const v = parseFloat(document.getElementById('comp-valor').value)||0, dias = parseInt(document.getElementById('comp-dias').value, 10)||1, tCdb = parseFloat(document.getElementById('comp-cdb').value)/100, tLci = parseFloat(document.getElementById('comp-lci').value)/100, cdiAno = parseFloat(document.getElementById('comp-cdi').value)/100; const rCDB = cdiAno * tCdb, rLCI = cdiAno * tLci; let ir = 15; if (dias<=180) ir=22.5; else if(dias<=360) ir=20; else if(dias<=720) ir=17.5; const bCDB = v * (rCDB * (dias/365)), lCDB = bCDB - (bCDB * (ir/100)), lLCI = v * (rLCI * (dias/365)); document.getElementById('comp-res-cdb').innerText = fMoeda(v+lCDB); document.getElementById('comp-res-lci').innerText = fMoeda(v+lLCI); const txt = document.getElementById('comp-vencedor'); if(lCDB>lLCI){txt.innerText="🏆 O CDB é a melhor opção!";txt.style.color="#1a1a2e";}else if(lLCI>lCDB){txt.innerText="🏆 A LCI/LCA é a melhor opção!";txt.style.color="#28a745";}else{txt.innerText="⚖️ Ambos rendem igual.";txt.style.color="#666";} document.getElementById('resultado-comparador').style.display = 'block'; }
 
-        // =========================================================
-        // NOVA SESSÃO: PROJEÇÃO DE CARTEIRA (Avançada)
-        // =========================================================
         function gerarProjecaoCarteira() {
             const inputData = document.getElementById('proj-data-alvo').value;
             const inputCDI = parseFloat(document.getElementById('proj-cdi-anual').value);
             const filtroLiq = document.getElementById('proj-filtro-liquidez').value;
             const aporteMensal = parseFloat(document.getElementById('proj-aporte-mensal').value) || 0;
 
-            if(!inputData || isNaN(inputCDI)) return alert("Preencha a data alvo e a taxa do CDI.");
+            if(!inputData || isNaN(inputCDI)) return notificar("Preencha a data alvo e a taxa do CDI.", "aviso");
 
             const dataAlvo = new Date(inputData + 'T00:00:00');
             const hoje = new Date();
             hoje.setHours(0,0,0,0);
 
-            if(dataAlvo <= hoje) return alert("A data alvo deve ser no futuro (maior que hoje).");
+            if(dataAlvo <= hoje) return notificar("A data alvo deve ser maior que hoje.", "aviso");
 
             const taxaCdiDiaria = Math.pow(1 + (inputCDI / 100), 1 / 252) - 1;
 
@@ -1426,7 +1688,7 @@
             });
 
             if(ativos.length === 0 && aporteMensal <= 0) {
-                return alert("Você não possui investimentos ativos para este filtro e não definiu nenhum aporte mensal futuro.");
+                return notificar("Sem investimentos ativos para este filtro e sem aporte mensal futuro.", "aviso");
             }
 
             const taxaMediaPonderada = somaBrutoAtual > 0 ? (somaBrutoVezesTaxa / somaBrutoAtual) : 0;
@@ -1497,7 +1759,7 @@
                     const valorFuturoBruto = inv.valorBrutoAtual * fatorAcumulado;
                     somaB += valorFuturoBruto;
 
-                    const diasCorridosTotais = Math.ceil(Math.abs(dataReferenciaCalculo - inv.dataInicio) / (1000 * 60 * 60 * 24));
+                    const diasCorridosTotais = Math.ceil(Math.abs(dataReferenciaCalculo - inv.dataInicio) / 86400000);
                     
                     let ir = 0;
                     if (inv.tipoInvestimento !== 'LCI/LCA') {
@@ -1521,7 +1783,7 @@
                         const valorFuturoBruto = ap.valorInicial * fatorAcumulado;
                         somaB += valorFuturoBruto;
 
-                        const diasCorridosTotais = Math.ceil(Math.abs(dataPonto - ap.dataInicio) / (1000 * 60 * 60 * 24));
+                        const diasCorridosTotais = Math.ceil(Math.abs(dataPonto - ap.dataInicio) / 86400000);
                         let ir = 15; 
                         if (diasCorridosTotais <= 180) ir = 22.5;
                         else if (diasCorridosTotais <= 360) ir = 20;
@@ -1560,6 +1822,7 @@
                     ]
                 },
                 options: {
+                    animation: { duration: 250 },
                     layout: { padding: 10 },
                     responsive: true,
                     maintainAspectRatio: false,
@@ -1570,10 +1833,6 @@
             });
         }
 
-        // =========================================================
-        // 8. GRÁFICOS E FILTROS DINÂMICOS
-        // =========================================================
-        
         function atualizarGraficoPizza() {
             const filtroLiquidez = document.getElementById('filtro-liquidez-dash') ? document.getElementById('filtro-liquidez-dash').value : 'todos';
             let totaisPizza = {}; let totalGeralPizza = 0;
@@ -1597,7 +1856,7 @@
             const ctx = document.getElementById('graficoPizza').getContext('2d'); 
             if (chartPizzaInstance) chartPizzaInstance.destroy(); 
             const bancos = Object.keys(totaisPizza); const valores = Object.values(totaisPizza);
-            if (bancos.length === 0) { chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] } }); return; }
+            if (bancos.length === 0) { chartPizzaInstance = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [] }, options: { animation: false } }); return; }
 
             const labelsComPerc = bancos.map(b => { 
                 let val = totaisPizza[b];
@@ -1615,6 +1874,7 @@
                     }] 
                 }, 
                 options: { 
+                    animation: false,
                     layout: { padding: 10 }, 
                     responsive: true, 
                     maintainAspectRatio: false, 
@@ -1650,7 +1910,9 @@
         }
         
         function desenharGrafico() {
-            const ctx = document.getElementById('meuGrafico').getContext('2d'); const per = document.getElementById('select-periodicidade').value, bSel = document.getElementById('select-filtro-banco').value;
+            const ctx = document.getElementById('meuGrafico').getContext('2d');
+            const per = document.getElementById('select-periodicidade').value;
+            const bSel = document.getElementById('select-filtro-banco').value;
             if (chartInstance) chartInstance.destroy(); 
             if (carteira.length === 0 && listaMetas.length === 0) return chartInstance = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [] } });
             
@@ -1659,46 +1921,63 @@
             listaMetas.forEach(m => { if(m.aportes) m.aportes.forEach(ap => mixLinhaTempo.push({banco: "Caixinhas (Metas)", data: ap.data, valor: ap.valor, taxa: ap.taxa, dataResgate: null, tipoInvestimento: 'CDB/LC'})); });
             
             let cartProc = bSel !== 'todos' ? mixLinhaTempo.filter(i => (i.banco || "Não Informado") === bSel) : mixLinhaTempo; 
-            const ord = [...cartProc].sort((a, b) => new Date(a.data) - new Date(b.data)); 
+            const ord = [...cartProc].sort((a, b) => a.data.localeCompare(b.data)).map(item => ({
+                dataMs: parseDataLocalMs(item.data),
+                valOri: parseFloat(item.valor),
+                valAtu: parseFloat(item.valor),
+                mult: parseFloat(item.taxa) / 100,
+                dataResgMs: item.dataResgate ? parseDataLocalMs(item.dataResgate) : null,
+                tipoInvestimento: item.tipoInvestimento || 'CDB/LC'
+            }));
             
             const cdiEfetivo = obterCDIEfetivo();
-            const cdiF = cdiEfetivo.map(i => { const [d,m,y] = i.data.split('/'); return { dataObj: new Date(y, m-1, d), valor: parseFloat(i.valor)/100 }; }); 
             let lab = [], bru = [], liq = [], ativ = [], idx = 0;
             
-            for (let i = 0; i < cdiF.length; i++) { 
-                const dia = cdiF[i]; 
-                while (idx < ord.length && dia.dataObj >= new Date(ord[idx].data + 'T00:00:00')) { 
-                    ativ.push({ dataObj: new Date(ord[idx].data + 'T00:00:00'), valOri: parseFloat(ord[idx].valor), valAtu: parseFloat(ord[idx].valor), mult: parseFloat(ord[idx].taxa)/100, dataResg: ord[idx].dataResgate ? new Date(ord[idx].dataResgate + 'T00:00:00') : null, tipoInvestimento: ord[idx].tipoInvestimento || 'CDB/LC' }); 
+            for (let i = 0; i < cdiEfetivo.length; i++) { 
+                const dia = cdiEfetivo[i]; 
+                while (idx < ord.length && dia.dataMs >= ord[idx].dataMs) { 
+                    ativ.push(ord[idx]); 
                     idx++; 
                 } 
                 
                 if (ativ.length > 0) { 
                     let b = 0, l = 0; 
-                    ativ = ativ.filter(inv => !inv.dataResg || dia.dataObj <= inv.dataResg);
-                    ativ.forEach(inv => { 
-                        inv.valAtu *= truncaFatorB3(1 + (dia.valor * inv.mult)); 
+                    ativ = ativ.filter(inv => !inv.dataResgMs || dia.dataMs <= inv.dataResgMs);
+                    for (let j = 0; j < ativ.length; j++) {
+                        const inv = ativ[j];
+                        inv.valAtu *= truncaFatorB3(1 + (dia.taxaDiaria * inv.mult)); 
                         b += inv.valAtu; 
-                        const dias = Math.ceil(Math.abs(dia.dataObj - inv.dataObj) / (1000*60*60*24)); 
+                        const dias = Math.ceil(Math.abs(dia.dataMs - inv.dataMs) / 86400000); 
                         
-                        // LÓGICA DE IR HISTÓRICO (Isenta LCI/LCA)
                         let ir = 0;
                         if (inv.tipoInvestimento !== 'LCI/LCA') {
-                            if (dias <= 180) ir = 22.5; else if (dias <= 360) ir = 20; else if (dias <= 720) ir = 17.5; else ir = 15; 
+                            if (dias <= 180) ir = 22.5;
+                            else if (dias <= 360) ir = 20;
+                            else if (dias <= 720) ir = 17.5;
+                            else ir = 15; 
                         }
 
-                        l += inv.valAtu - ((inv.valAtu - inv.valOri) > 0 ? (inv.valAtu - inv.valOri) * (ir/100) : 0); 
-                    }); 
+                        l += inv.valAtu - ((inv.valAtu - inv.valOri) > 0 ? (inv.valAtu - inv.valOri) * (ir / 100) : 0); 
+                    }
                     
-                    const isUlt = (i === cdiF.length - 1); let fM = isUlt, fA = isUlt; 
-                    if (!isUlt) { const prx = cdiF[i+1]; if (prx.dataObj.getMonth() !== dia.dataObj.getMonth()) fM = true; if (prx.dataObj.getFullYear() !== dia.dataObj.getFullYear()) fA = true; } 
-                    if (per === 'mensal' && fM) { lab.push(`${String(dia.dataObj.getMonth()+1).padStart(2,'0')}/${dia.dataObj.getFullYear()}`); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } 
-                    else if (per === 'anual' && fA) { lab.push(`${dia.dataObj.getFullYear()}`); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } 
+                    const isUlt = (i === cdiEfetivo.length - 1);
+                    let fM = isUlt, fA = isUlt;
+                    const mesAtualStr = dia.data.substring(3, 5);
+                    const anoAtualStr = dia.data.substring(6, 10);
+                    if (!isUlt) {
+                        const prx = cdiEfetivo[i + 1];
+                        if (prx.data.substring(3, 5) !== mesAtualStr) fM = true;
+                        if (prx.data.substring(6, 10) !== anoAtualStr) fA = true;
+                    }
+                    if (per === 'mensal' && fM) { lab.push(`${mesAtualStr}/${anoAtualStr}`); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } 
+                    else if (per === 'anual' && fA) { lab.push(anoAtualStr); bru.push(b.toFixed(2)); liq.push(l.toFixed(2)); } 
                 } 
             }
             chartInstance = new Chart(ctx, { 
                 type: 'line', 
                 data: { labels: lab, datasets: [ { label: 'Valor Bruto', data: bru, borderColor: '#0f3460', backgroundColor: 'rgba(15, 52, 96, 0.1)', fill: true, tension: 0.3 }, { label: 'Valor Líquido', data: liq, borderColor: '#e94560', backgroundColor: 'rgba(233, 69, 96, 0.1)', fill: true, tension: 0.3 } ]}, 
                 options: { 
+                    animation: { duration: 250 },
                     layout: { padding: 10 },
                     responsive: true, 
                     maintainAspectRatio: false, 
@@ -1729,7 +2008,8 @@
             const fDesc = selDesc ? selDesc.value : 'todas';
             
             let transacoesFiltradas = transacoes.filter(t => { 
-                const [a, m, d] = t.data.split('-'); 
+                const a = t.data.substring(0, 4);
+                const m = t.data.substring(5, 7);
                 if (fMes !== 'todos' && m !== fMes) return false; 
                 if (fAno !== 'todos' && a !== fAno) return false; 
                 if (fCat !== 'todas' && t.cat !== fCat) return false; 
@@ -1813,6 +2093,7 @@
                 type: 'doughnut', 
                 data: { labels: labelsComInfo, datasets: [{ data: data, backgroundColor: bgColors }] }, 
                 options: { 
+                    animation: { duration: 250 },
                     layout: { padding: 10 }, 
                     responsive: true, 
                     maintainAspectRatio: false, 
@@ -1837,9 +2118,6 @@
             });
         }
 
-        // =========================================================
-        // 9. NAVEGAÇÃO E EXPORTAÇÃO/IMPORTAÇÃO DUPLA
-        // =========================================================
         function navegar(idTela) { 
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); 
             document.getElementById(idTela).classList.add('ativa'); 
@@ -1857,21 +2135,34 @@
         
         function renderizarCardsBancos(totais) { 
             const cont = document.getElementById('container-resumo-bancos'); 
-            if (Object.keys(totais).length === 0) return cont.innerHTML = ''; 
-            let h = ``; 
-            for (const b in totais) {
-                let taxaPonderada = totais[b].bru > 0 ? (totais[b].bruVezesTaxa / totais[b].bru) : 0;
-                h += `<div class="card-banco"><h4>${b}</h4><p style="font-size: 0.85em; color: #666; font-weight: normal; margin-bottom: 3px;">Bruto: ${fMoeda(totais[b].bru)}</p><p title="Valor Líquido">Líq: ${fMoeda(totais[b].liq)}</p><p style="font-size: 0.8em; color: #e94560; font-weight: bold; margin-top: 5px; border-top: 1px solid #eee; padding-top: 3px;" title="Taxa Média Ponderada baseada no montante bruto de cada ativo">CDI Médio: ${fTaxa(taxaPonderada)}%</p></div>`;
-            }
-            cont.innerHTML = h; 
+            const chaves = Object.keys(totais);
+            if (chaves.length === 0) { cont.innerHTML = ''; return; }
+            cont.innerHTML = chaves.map(b => {
+                const taxaPonderada = totais[b].bru > 0 ? (totais[b].bruVezesTaxa / totais[b].bru) : 0;
+                return `<div class="card-banco"><h4>${b}</h4><p style="font-size: 0.85em; color: #666; font-weight: normal; margin-bottom: 3px;">Bruto: ${fMoeda(totais[b].bru)}</p><p title="Valor Líquido">Líq: ${fMoeda(totais[b].liq)}</p><p style="font-size: 0.8em; color: #e94560; font-weight: bold; margin-top: 5px; border-top: 1px solid #eee; padding-top: 3px;" title="Taxa Média Ponderada baseada no montante bruto de cada ativo">CDI Médio: ${fTaxa(taxaPonderada)}%</p></div>`;
+            }).join('');
         }
 
-        function atualizarFiltroGrafico() { const sel = document.getElementById('select-filtro-banco'); const vAt = sel.value; const unicos = [...new Set(carteira.map(i => i.banco || "Não Informado"))]; if(listaMetas.length > 0 && !unicos.includes("Caixinhas (Metas)")) unicos.push("Caixinhas (Metas)"); unicos.sort(); let opt = `<option value="todos">Todos</option>`; unicos.forEach(b => opt += `<option value="${b}">${b}</option>`); sel.innerHTML = opt; sel.value = unicos.includes(vAt) ? vAt : "todos"; }
-        function deletarItem(id, tipo = 'inv') { if (confirm("Excluir registro?")) { if(tipo === 'inv') carteira = carteira.filter(i => i.id !== id); if(tipo === 'trans') transacoes = transacoes.filter(i => i.id !== id); if(tipo === 'meta') listaMetas = listaMetas.filter(i => i.id !== id); salvarNoBanco(); if(document.getElementById('tela-grafico').classList.contains('ativa')) { desenharGrafico(); desenharGraficoDespesas(); } } }
+        function atualizarFiltroGrafico() {
+            const sel = document.getElementById('select-filtro-banco');
+            const vAt = sel.value;
+            const unicos = [...new Set(carteira.map(i => i.banco || "Não Informado"))];
+            if (listaMetas.length > 0 && !unicos.includes("Caixinhas (Metas)")) unicos.push("Caixinhas (Metas)");
+            unicos.sort();
+            sel.innerHTML = `<option value="todos">Todos</option>` + unicos.map(b => `<option value="${b}">${b}</option>`).join('');
+            sel.value = unicos.includes(vAt) ? vAt : "todos";
+        }
+        function deletarItem(id, tipo = 'inv') {
+            if(tipo === 'inv') carteira = carteira.filter(i => i.id !== id);
+            if(tipo === 'trans') transacoes = transacoes.filter(i => i.id !== id);
+            if(tipo === 'meta') listaMetas = listaMetas.filter(i => i.id !== id);
+            salvarNoBanco(tipo === 'trans' ? 'transacoes' : 'carteira');
+            if(document.getElementById('tela-grafico').classList.contains('ativa')) { desenharGrafico(); desenharGraficoDespesas(); }
+        }
         
         function baixarCSV(tipo) { 
             if(tipo === 'investimentos') {
-                if(carteira.length===0) return alert("Sem dados de investimentos."); 
+                if(carteira.length===0) return notificar("Sem dados de investimentos.", "aviso"); 
                 let csv="banco;tipoInvestimento;data;valor;taxa;liquidez;vencimento\n"; 
                 carteira.forEach(i=>{ 
                     const val = i.valor.toString().replace('.', ','); 
@@ -1881,12 +2172,13 @@
                 }); 
                 const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="investimentos.csv"; link.click(); 
             } else if (tipo === 'transacoes') {
-                if(transacoes.length===0) return alert("Sem dados de transações."); 
-                let csv="data;descricao;valor\n"; 
+                if(transacoes.length===0) return notificar("Sem dados de transações.", "aviso"); 
+                let csv="data;descricao;observacao;valor\n"; 
                 transacoes.forEach(t=>{ 
                     const sinal = t.tipo === 'entrada' ? '+' : '-';
                     const val = t.valor.toString().replace('.', ','); 
-                    csv+=`${t.data};${t.desc.replace(/;/g,'')};${sinal}${val}\n`;
+                    const obsLimpa = (t.obs || '').replace(/;/g, '');
+                    csv+=`${t.data};${t.desc.replace(/;/g,'')};${obsLimpa};${sinal}${val}\n`;
                 }); 
                 const link=document.createElement("a"); link.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'})); link.download="transacoes.csv"; link.click(); 
             }
@@ -1894,14 +2186,14 @@
         
         function prepararEmail(tipo) { 
             if (tipo === 'investimentos') {
-                if(carteira.length===0) return alert("Sem dados!"); 
+                if(carteira.length===0) return notificar("Sem dados para enviar.", "aviso"); 
                 let msg="Relatório de Investimentos - InvestDash\n\n"; 
                 document.querySelectorAll('#corpo-tabela tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=11 && tr.style.display!=='none') msg+=`${tds[1].innerText.replace(/\n/g, ' ')} | Inicial: ${tds[5].innerText} | Liq: ${tds[10].innerText}\n`; }); 
                 window.location.href=`mailto:?subject=Relatorio de Investimentos&body=${encodeURIComponent(msg)}`; 
             } else if (tipo === 'transacoes') {
-                if(transacoes.length===0) return alert("Sem dados!"); 
+                if(transacoes.length===0) return notificar("Sem dados para enviar.", "aviso"); 
                 let msg="Relatório de Transações - InvestDash\n\n"; 
-                document.querySelectorAll('#corpo-tabela-transacoes tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=5 && tr.style.display!=='none') msg+=`${tds[1].innerText} | ${tds[2].innerText} | Data: ${tds[3].innerText} | Valor: ${tds[4].innerText}\n`; }); 
+                document.querySelectorAll('#corpo-tabela-transacoes tr').forEach(tr=>{ const tds=tr.querySelectorAll('td'); if(tds.length>=6 && tr.style.display!=='none') msg+=`${tds[1].innerText} | ${tds[2].innerText} | Obs: ${tds[3].innerText} | Data: ${tds[4].innerText} | Valor: ${tds[5].innerText}\n`; }); 
                 window.location.href=`mailto:?subject=Relatorio de Transacoes&body=${encodeURIComponent(msg)}`; 
             }
         }
@@ -1909,7 +2201,7 @@
         function importarCSV(tipo) { 
             const inputId = tipo === 'investimentos' ? 'input-csv-inv' : 'input-csv-trans';
             const f = document.getElementById(inputId).files[0]; 
-            if(!f) return alert("Selecione o arquivo."); 
+            if(!f) return notificar("Selecione o arquivo CSV.", "aviso"); 
             const r = new FileReader(); 
             r.onload = function(e){ 
                 const l = e.target.result.split('\n'); let q = 0; 
@@ -1938,12 +2230,14 @@
                         const liq = c[4 + offset] ? c[4 + offset].trim() : "Sim"; 
                         const ven = c[5 + offset] ? c[5 + offset].trim() : "";
                         
-                        if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:Date.now()+i, banco:b, tipoInvestimento:tipoInv, data:d, valor:v, taxa:t, liquidez:liq, vencimento:ven}); q++; } 
+                        if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id:gerarIdUnico(i), banco:b, tipoInvestimento:tipoInv, data:d, valor:v, taxa:t, liquidez:liq, vencimento:ven}); q++; } 
                     } else if (tipo === 'transacoes') {
                         if (bancoOrigem === 'nubank' && c.length >= 3) {
                             const d = c[0].trim(); 
                             const desc = c[1] ? c[1].trim() : ""; 
-                            let strVal = c[2];
+                            const temObs = c.length >= 4;
+                            const obs = temObs ? c[2].trim() : "";
+                            let strVal = temObs ? c[3] : c[2];
 
                             if (strVal) {
                                 let vOriginal = parseFloat(strVal.replace(',','.')) * -1;
@@ -1954,17 +2248,16 @@
 
                                     if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
                                     if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
-                                    transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                                    transacoes.push({id: gerarIdUnico(i), tipo: tp, desc: desc, cat: cat, obs: obs, data: d, valor: vFinal}); q++;
                                 }
                             }
                         } else if (bancoOrigem === 'c6' && c.length >= 9) {
-                            const dataRaw = c[0].trim(); // DD/MM/YYYY
+                            const dataRaw = c[0].trim();
                             const cat = c[3] ? c[3].trim() : "Outros";
                             const desc = c[4] ? c[4].trim() : "";
                             let strVal = c[8];
 
                             if (dataRaw && strVal) {
-                                // CONVERT DATE DD/MM/YYYY to YYYY-MM-DD
                                 const partes = dataRaw.split('/');
                                 let d = dataRaw;
                                 if (partes.length === 3) {
@@ -1979,20 +2272,24 @@
 
                                     if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
                                     if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
-                                    transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                                    transacoes.push({id: gerarIdUnico(i), tipo: tp, desc: desc, cat: cat, obs: "", data: d, valor: vFinal}); q++;
                                 }
                             }
                         }
                     }
                 } 
-                if(q > 0) { salvarNoBanco(); alert(`${q} registros importados com sucesso!`); navegar(tipo === 'investimentos' ? 'tela-investimentos' : 'tela-transacoes'); } 
+                if(q > 0) {
+                    salvarNoBanco(tipo === 'investimentos' ? 'carteira' : 'transacoes');
+                    notificar(`${q} registro(s) importado(s) com sucesso!`, "sucesso");
+                    navegar(tipo === 'investimentos' ? 'tela-investimentos' : 'tela-transacoes');
+                }
             }; r.readAsText(f); 
         }
 
         function importarCSVTexto(tipo) {
             const inputId = tipo === 'investimentos' ? 'input-csv-texto-inv' : 'input-csv-texto-trans';
             const texto = document.getElementById(inputId).value.trim();
-            if(!texto) return alert("Cole os dados no campo de texto primeiro.");
+            if(!texto) return notificar("Cole os dados no campo de texto primeiro.", "aviso");
             const l = texto.split('\n'); let q = 0; let inicio = 0;
             
             const bancoOrigem = document.getElementById('banco-importacao-trans') ? document.getElementById('banco-importacao-trans').value : 'nubank';
@@ -2021,12 +2318,14 @@
                     const liq = c[4 + offset] ? c[4 + offset].trim() : "Sim"; 
                     const ven = c[5 + offset] ? c[5 + offset].trim() : "";
                     
-                    if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: Date.now() + i, banco: b, tipoInvestimento: tipoInv, data: d, valor: v, taxa: t, liquidez: liq, vencimento: ven}); q++; }
+                    if(b && d && !isNaN(v) && !isNaN(t)){ carteira.push({id: gerarIdUnico(i), banco: b, tipoInvestimento: tipoInv, data: d, valor: v, taxa: t, liquidez: liq, vencimento: ven}); q++; }
                 } else if (tipo === 'transacoes') {
                     if (bancoOrigem === 'nubank' && c.length >= 3) {
                         const d = c[0].trim(); 
                         const desc = c[1] ? c[1].trim() : ""; 
-                        let strVal = c[2];
+                        const temObs = c.length >= 4;
+                        const obs = temObs ? c[2].trim() : "";
+                        let strVal = temObs ? c[3] : c[2];
 
                         if (strVal) {
                             let vOriginal = parseFloat(strVal.replace(',','.')) * -1;
@@ -2037,7 +2336,7 @@
 
                                 if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
                                 if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
-                                transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                                transacoes.push({id: gerarIdUnico(i), tipo: tp, desc: desc, cat: cat, obs: obs, data: d, valor: vFinal}); q++;
                             }
                         }
                     } else if (bancoOrigem === 'c6' && c.length >= 9) {
@@ -2061,14 +2360,20 @@
 
                                 if(!descricoesAtuais.includes(desc)) descricoesAtuais.push(desc);
                                 if(!categoriasAtuais.includes(cat)) categoriasAtuais.push(cat);
-                                transacoes.push({id: Date.now() + i, tipo: tp, desc: desc, cat: cat, data: d, valor: vFinal}); q++;
+                                transacoes.push({id: gerarIdUnico(i), tipo: tp, desc: desc, cat: cat, obs: "", data: d, valor: vFinal}); q++;
                             }
                         }
                     }
                 }
             }
-            if(q > 0) { document.getElementById(inputId).value = ''; salvarNoBanco(); alert(`${q} registros importados com sucesso!`); navegar(tipo === 'investimentos' ? 'tela-investimentos' : 'tela-transacoes'); } 
-            else { alert("Nenhum dado válido encontrado. Verifique se o formato está correto."); }
+            if(q > 0) {
+                document.getElementById(inputId).value = '';
+                salvarNoBanco(tipo === 'investimentos' ? 'carteira' : 'transacoes');
+                notificar(`${q} registro(s) importado(s) com sucesso!`, "sucesso");
+                navegar(tipo === 'investimentos' ? 'tela-investimentos' : 'tela-transacoes');
+            } else {
+                notificar("Nenhum dado válido encontrado. Verifique o formato.", "erro");
+            }
         }
     </script>
 </body>
